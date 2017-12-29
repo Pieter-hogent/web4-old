@@ -1,0 +1,975 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>2 - ES6</title>
+
+  <!-- Theme used for syntax highlighting of code -->
+  <link rel="stylesheet" href="lib/css/zenburn.css">
+
+  <link rel="stylesheet" href="css/reveal.css">
+  <!-- <link rel="stylesheet" href="css/theme/solarized.css"> -->
+  <link rel="stylesheet" href="css/theme/sky.css">
+
+  <!-- pieter overrides -->
+  <link rel="stylesheet" href="webapps.css">
+  <link rel="stylesheet" href="plugin/codestepper/codestepper.css">
+
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+</head>
+
+<body>
+
+  <div class="reveal">
+
+    <div class="slides">
+      <section>
+        <h2>Typescript</h2>
+      </section>
+      <section>
+        <h3>Javascript with types</h3>
+        <img src="img/tdd.jpg" alt="" height='500px'>
+      </section>
+      <section>
+        <h3>Typescript</h3>
+        <ul>
+          <li class="fragment">Typescript is an extension of Javascript 6</li>
+          <li class="fragment">Javascript 6 aka ES6 aka ES2016</li>
+          <li class="fragment">big shift from ES5</li>
+          <li class="fragment">forget everything you learned in Web2</li>
+        </ul>
+      </section>
+      <section>
+        <h3>Typescript</h3>
+        <div class="fragment">Quick overview, this class is about Angular, not ES6 or Typescript</div>
+        <ul>
+          <li class="fragment">let / var / const</li>
+          <li class="fragment">class</li>
+          <li class="fragment">arrow functions</li>
+          <li class="fragment">backtick strings</li>
+          <li class="fragment">destructuring</li>
+          <li class="fragment">spread operator and rest parameters</li>
+          <li class="fragment">Set and Map</li>
+          <li class="fragment">functional programming</li>
+          <li class="fragment">promises & observables (later, separate class)</li>
+
+        </ul>
+      </section>
+      <section>
+        <h3>let / var / const</h3>
+        There are many problems with using 'var' to declare variables
+        <pre><code data-noescape data-trim>
+function getValue() {
+  <span class="fragment current-visible" data-fragment-index="1">// 1</span>
+  if (condition) {
+    var value = "yes";
+    <span class="fragment current-visible" data-fragment-index="1">// 2</span>
+    return value;
+  } else {
+    <span class="fragment current-visible" data-fragment-index="1">// 3</span>
+    return null;
+  }
+  <span class="fragment current-visible" data-fragment-index="1">// 4</span> 
+}
+			</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">at which points does 'value' exist?</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">EVERYWHERE! (hoisting)</p>
+
+        </div>
+      </section>
+      <section>
+        <pre><code data-noescape data-trim>
+	<span class="fragment highlight-current-red" data-fragment-index="1">let</span> myVariable <span class="fragment highlight-current-red" data-fragment-index="2">: string</span>;
+	</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">use 'let' to declare a variable with sensible scoping rules</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">(Typescript only) explicitly add a type with ': typename'</p>
+        </div>
+      </section>
+      <section>
+        <div class='fragment' code-step>
+          <pre class='typescript'><code data-noescape data-trim>
+            function getValue() {
+              <span show-steps='1-2'>var </span><span show-steps='3-4'>let </span>value = 5;
+              if (true) {
+                <span show-steps='1-2'>var </span><span show-steps='3-4'>let </span>value = 6;
+              }
+              console.log(value); <span show-steps='2'>// '6' </span><span show-steps='4'>// '5'</span>
+            }
+            </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'></p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <pre><code data-noescape data-trim>
+<span class="fragment highlight-current-red" data-fragment-index="1">const</span> name <span class="fragment highlight-current-red" data-fragment-index="3">: string</span> = "rudy";
+<span class="fragment current-visible" data-fragment-index="2">name = "tony"; // ERROR </span>
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">const has a similar usage as let, but you have to set an initial value and can't change it later</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">in typescript you can explicitly set a type, but it's inferred by assigning an initial value, so it's a bit useless
+            for strings (can be useful for 'const x : double = 8;'</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">the variable can't get a new value</p>
+        </div>
+      </section>
+      <section>
+        <h3>let / const summary</h3>
+        <ul>
+          <li class="fragment">use const if the value won't change</li>
+          <li class="fragment">use let when it does</li>
+          <li class="fragment">never use var anymore</li>
+        </ul>
+      </section>
+      <section>
+        <h3>class</h3>
+        <ul>
+          <li class="fragment">ES6 added the class keyword</li>
+          <li class="fragment">but in a way it's not much more than some syntax sugar hiding all the .prototype. shenanigans</li>
+          <li class="fragment">typescript class, however, behaves like a real class</li>
+        </ul>
+      </section>
+      <section>
+        <h3>typescript class</h3>
+        <pre><code data-noescape data-trim>
+<span class="fragment highlight-current-red" data-fragment-index="1">class</span> Greeter {
+    <span class="fragment highlight-current-red" data-fragment-index="2">greeting: string;</span>
+		
+    <span class="fragment highlight-current-red" data-fragment-index="4">constructor</span>(message: string) {
+        <span class="fragment highlight-current-red" data-fragment-index="3">this.</span>greeting = message;
+    }
+    <span class="fragment highlight-current-red" data-fragment-index="5">greet()</span> {
+        return "Hello, " + this.greeting;
+    }
+}
+
+let greeter = <span class="fragment highlight-current-red" data-fragment-index="6">new Greeter("world")</span>;				
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">there is a class keyword</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">classes can have properties</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">inside member functions properties are accessed using 'this.'</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">the constructor keyword is used to denote the constructor (so not 'Greeter()' like Java...)</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="5">you can create member functions (return types can be implicit)</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="6">objects of a class are constructed using new</p>
+        </div>
+      </section>
+      <section>
+        <h3>typescript class</h3>
+        the usual object oriented features exist
+        <pre><code data-noescape data-trim>
+class Animal {
+    name: string;
+    constructor(theName: string) { this.name = theName; }
+}
+
+class Snake <span class="fragment highlight-current-red" data-fragment-index="1">extends</span> Animal {
+    constructor(name: string) { <span class="fragment highlight-current-red" data-fragment-index="2">super</span>(name); }
+} 
+</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">inheritance, using the extends keyword</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">and 'super' to access the super class</p>
+
+        </div>
+      </section>
+      <section>
+        <h3>typescript class</h3>
+        the usual object oriented features exist
+        <pre><code data-noescape data-trim>
+class Animal {
+    <span class="fragment highlight-current-red" data-fragment-index="1">private</span> name: string;
+    <span class="fragment highlight-current-red" data-fragment-index="1">public</span> constructor(theName: string) { 
+      this.name = theName; 
+    }
+    <span class="fragment highlight-current-red" data-fragment-index="1">protected</span> move() {}
+}
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">access modifiers: private / public / protected</p>
+        </div>
+      </section>
+      <section>
+        <h3>typescript class</h3>
+        <pre><code data-noescape data-trim>
+class Snake {
+    private _name: string;
+    <span class="fragment highlight-current-red" data-fragment-index="1">readonly</span> numberOfLegs = 0;
+
+    <span class="fragment highlight-current-red" data-fragment-index="2">get</span> name() {
+      return this._name;
+    }
+    <span class="fragment highlight-current-red" data-fragment-index="2">set</span> name(newName: string) {
+      this._name = newName;
+    }
+}
+let snake = new Snake("sammy");
+snake<span class="fragment highlight-current-red" data-fragment-index="3">.name</span> = "rudy";
+	</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">readonly properties, they MUST be initialized at their declaration or in the constructor</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">you can declare setters and getters, using 'get' and 'set'</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">after which you can use them as if they were public properties</p>
+        </div>
+      </section>
+      <section>
+        <h3>typescript class</h3>
+        <div class="replace" style="height: 200px">
+          <pre class="fragment current-visible current-replace" data-fragment-index="1"><code data-noescape data-trim>
+class Animal {
+  private _name: string;
+
+  constructor(name: string) {
+    this._name = name;
+}
+  </code></pre>
+          <pre class="fragment current-visible  current-replace" data-fragment-index="2"><code data-noescape data-trim>
+class Animal {
+  constructor(private _name : string) {
+  }
+}
+  </code></pre>
+        </div>
+        <div class="replace">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">having a private variable and setting it in the constructor is a very (very!) common pattern</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">so there is a shorthand, no separate property, nothing in the body of the constructor</p>
+        </div>
+      </section>
+      <section>
+        <h3>interface</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+<span highlight-steps='1'>interface</span> Animal {
+  <span highlight-steps='2'>legs: integer;</span>
+  <span show-steps='4'>name?: string;</span>
+}
+
+class Cat <span highlight-steps='3'>implements</span> Animal {
+  legs: integer;
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>Typescript has interfaces too (NOT es6)</p>
+            <p show-steps='2'>there are no access specifiers in an interface, everything is public</p>
+            <p show-steps='3'>A class that implements an interface must implement all properties</p>
+            <p show-steps='4'>... unless they are specified as optional</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>typescript class summary</h3>
+        <ul>
+          <li class="fragment">there is a class (and interface) with all the object oriented behaviour you'd expect</li>
+          <li class="fragment">extends / abstract</li>
+          <li class="fragment">public / protected / private & readonly</li>
+          <li class="fragment">get / set</li>
+        </ul>
+      </section>
+      <section>
+        <h3>arrow functions</h3>
+        basically, it's a shorthand syntax for writing functions
+        <pre class="fragment " data-fragment-index="1"><code data-noescape data-trim>
+function add(x : int, y: int) : int {
+  let sum = x + y;
+  return sum;
+}
+          </code></pre>
+        <pre class="fragment " data-fragment-index="2"><code data-noescape data-trim>
+(x, y) => x + y;
+</code></pre>
+        <div class="fragment" data-fragment-index="2">
+          (parameters) => functionbody, if the function body is only one statement, it's also the return value of the function
+        </div>
+      </section>
+      <section>
+        <h3>arrow functions</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+(x, y) => {
+  x = x *2;
+  <span show-steps='2,3'>return </span>x + y;
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>if you need more than one line in the function body, you can always add {}</p>
+            <p show-steps='2'>if you do that however, you must add an explicit return</p>
+            <p show-steps='3'>while it's possible to write 'large' functions with arrow syntax, one could wonder, why use arrow functions at
+              all then?</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>arrow functions</h3>
+        mainly useful for 'one liners' passed as a parameter to other functions
+        <div class="replace">
+
+
+          <pre class="fragment current-visible current-replace">ES5<code data-noescape data-trim>
+var numbers = [1,2,3,4];
+var timesTwo = numbers.map(function (number) {
+  return number * 2;
+});
+console.log(timesTwo); // [2, 4, 6, 8]
+        </code></pre>
+          <pre class="fragment current-visible current-replace">ES6<code data-noescape data-trim>
+let numbers = [1,2,3,4];
+let timesTwo = numbers.map((number) => number * 2);
+console.log(timesTwo); // [2, 4, 6, 8]
+        </code></pre>
+        </div>
+      </section>
+      <section>
+        <h3>arrow functions</h3>
+        <ul>
+          <li class="fragment">so it's just syntactic sugar for functions, behaves the same as regular functions</li>
+          <li class="fragment">with one important distinction: there's NO this binding in arrow functions</li>
+        </ul>
+      </section>
+      <section>
+        <h3>arrow functions</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let ClickHandler = {
+  init: function() {<span class="samespot">
+    <span show-steps='2,3' no-highlight-first>
+    document.addEventListener("click", <span highlight-steps='2'>function(event) {
+      this.logTheClick(event.type);
+    }</span>, false);</span>
+    <span show-steps='4,5' no-highlight-first>
+    document.addEventListener("click", 
+      <span highlight-steps='4'>event => this.logTheClick(event.type)</span>, false);</span>
+    </span>
+  },
+  logTheClick: function(eventType) {
+      console.log(eventType);
+  }
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>imagine you have a click handler, which has a function to log clicks</p>
+            <p show-steps='2'>if you add a regular function, and try to use
+              <i>this</i>,
+              <i>this</i>, as always, is bound when the function is called</p>
+            <p show-steps='3'>in this case, the
+              <i>this</i> would be bound to the document, this can be fixed by using IIFE (ugly)</p>
+            <p show-steps='4'>arrow functions do not rebind anything, they are always called in the context in which they were defined </p>
+            <p show-steps='5'>so in the above example,
+              <i>this</i> would be the ClickHandler, exactly what you'd want</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>backtick strings</h3>
+        <ul>
+          <li class="fragment">there's a new way to define string constants, using ` (backtick)</li>
+          <li class="fragment">backtick strings can be multiline, and preserve whitespace, which is very useful when writing html inside javascript</li>
+          <li class="fragment">they can contain parameterized values using ${}</li>
+        </ul>
+      </section>
+      <section>
+        <h3>backtick strings</h3>
+        <p class="fragment">some examples will make this clear</p>
+        <pre class="fragment"><code data-noescape data-trim>
+let htmlString = `
+  &lt;div class=&quot;ui&quot;&gt;
+    &lt;span class=&quot;segment&quot;&gt;some text&lt;/span&gt;
+  &lt;/div&gt;
+`;
+        </code></pre>
+      </section>
+      <section>
+        <h3>backtick strings</h3>
+        <pre class="fragment" data-fragment-index="1"><code data-noescape data-trim>
+  let anyvar = 15.0;
+  let replace = `you can have ${anyvar} here`;
+        </code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="2">I hope you can guess what replace string will contain</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">this is very similar to Swift string handling (for anyone following iOS)</p>
+      </section>
+      <section>
+        <h3>backtick strings</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let price = 12;
+let amount = 7;
+let output = `${amount} will cost you ${amount*price}`;
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>you can even add calculations inside the ${} (don't overdo this)</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>destructuring</h3>
+        <span class="fragment" data-fragment-index="1">a concise way to 'unwrap' objects</span>
+        <pre class="fragment" data-fragment-index="2"><code data-noescape data-trim>
+  let course = {
+    name: "webapps",
+    year: 2017
+  };
+
+  <span class="fragment " data-fragment-index="3">// ES5
+  let name = course.name;
+  let year = course.year;</span>
+
+  <span class="fragment " data-fragment-index="4">// ES6
+  let {name, year} = course;</span>
+
+        </code></pre>
+      </section>
+      <section>
+        <h3>destructuring</h3>
+        <span class="fragment">you can take this pretty far</span>
+        <pre class="fragment"><code data-noescape data-trim>
+  let tryhard = {
+    person = {
+      name = "Rudy",
+      age = 22
+    },
+    class = {
+      school = {
+        name = "HoGent"
+      },
+      course = "webapps"
+    }
+  };
+
+  <span class="fragment">let {{name, city="Brussels"}, {{name : schoolName}}} = tryhard;</span>
+
+  <span class="fragment">console.log(name); // Rudy
+  console.log(city); // Brussels
+  console.log(schoolName); // HoGent
+  </span>
+        </code></pre>
+      </section>
+      <section>
+        <h3>parameter destructuring</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+<span class="samespot">
+  <span show-steps='1-3'>
+function http(url, method, <span highlight-steps="1">options</span>) {
+  let userAgent = <span highlight-steps='2'>options.userAgent || "Safari"</span>;
+  let body = options.body;
+  let contentLength = options.contentLength;
+  </span>
+  <span show-steps='4'>
+function http(url, method, {userAgent = "Safari", 
+                            body, contentLength}) {
+  </span>
+</span>
+}
+<span show-steps='3,4' no-highlight-first>
+http("http://www.hogent.be", "POST", <span highlight-steps='3'>{ userAgent: "Chrome" }</span>) 
+</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>the same principle can be applied to function parameters, it isn't uncommon to have an extra options object as
+              a parameter for optional parameters</p>
+            <p show-steps='2'>you'd access the different keys of the options parameter, and could even add default values if you wanted</p>
+            <p show-steps='3'>you would call them using an object as a parameter, specifying those options you wish to provide</p>
+            <p show-steps='4'>by using a destructuring parameter, you need less boilerplate code -and- it's much clearer from your function
+              signature which options are supported</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>spread operator and rest parameters</h3>
+        <ul>
+          <li class="fragment">the spread operator and rest parameters are two sides of the same coin, using the triple dot 'operator' (...) you
+            either spread out something iterable, or capture an enumeration</li>
+          <li class="fragment">this often makes it easier to call functions without having to create a collection just so you can pass a set of
+            parameters to the function</li>
+          <li class="fragment">some examples will make this a lot clearer</li>
+        </ul>
+      </section>
+      <section>
+        <h3>rest parameters</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+function retrieveUserInfo(<span show-steps='6'>url, method, </span><span show-steps='1-3'>user1, user2, user3, user4, user5, 
+                          user6, user7<span show-steps='3'>, user8</span></span><span show-steps='4'>users</span><span show-steps='5,6'>...users</span>) {
+  <span show-steps='5' no-highlight-first>for (user of users) {
+  }</span>
+}
+retrieveUserInfo(<span show-steps='6'>'hogent.be', 'GET', </span><span show-steps='1-3,5,6'>'destiny', 'candy', 'ruby', 'melody', 'harmony'<span show-steps='3'>, 'shelby', 'kimberly', 'felicity'</span></span><span show-steps='4'>['destiny', 'candy', 'ruby', 'melody']</span>);
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>when you have a function to which you want to pass up to seven user parameters you have a few options</p>
+            <p show-steps='2'>you can just create a function with the maximum number of parameters (parameters are always optional in javascript,
+              so this works for
+              <7 too, simply check for 'undefined')</p>
+                <p show-steps='3'>what if you ever need to pass eight parameters? simply add one?</p>
+                <p show-steps='4'>you could chose to have an array as parameter, but then the caller of the function has to create (or convert
+                  to) an array when he calls your function </p>
+                <p show-steps='5'>that's why rest parameters exist, use ... followed by a parameter name to capture all (remaining) parameters
+                  in an array</p>
+                <p show-steps='6'>there can be other parameters in front of the rest parameters, but the rest parameters are always the last
+                  one
+                </p>
+
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>spread operator</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+function retrieveUserInfo(...users) {
+}
+// ...
+let usersArray = ['destiny', 'candy', 'ruby', 'melody'];
+retrieveUserInfo( <span show-steps='1'><span highlight-steps='1'>???</span></span><span show-steps='2,3'>...usersArray</span> );
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>that's fine if you simply want to pass a number of parameters, but what if you already have an array? </p>
+            <p show-steps='2'>that's what the spread operator is for! add ... in front of your array and it will be 'spread out' as a number
+              of different parameters</p>
+            <p show-steps='3'>it's actually not just arrays, everything that's 'iterable', so also Set, Map or any class you write yourself
+              if you add an iterator</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Spread objects</h3>
+        <div class='fragment' code-step>
+          <pre class='typescript'><code data-noescape data-trim>
+              let course = {
+                name: 'web3',
+                teacher: 'pieter'
+              }<span show-steps='3'>
+              let otherCourse = {
+                name: 'web4',
+                hours: '3'
+              }</span><span show-steps='1-2'>
+              let clone = { ...course }
+              console.log(clone) // { name: 'web3', teacher: 'pieter'}</span>
+             <span show-steps='3'> clone = { ...course, ...otherCourse }
+              console.log(clone) 
+              // { name: 'web4', teacher: 'pieter', hours: '3' }</span>
+              <span show-steps='4-5'>clone = { ...course, name: 'webapps'}
+              consle.log(clone) // { name: 'webapps', teacher: 'pieter' }</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>you can spread objects too, which will generate all key-value pairs</p>
+            <p show-steps='2'>this makes it a lot easer to clone objects ( Object.assign...)</p>
+            <p show-steps='3'>but you can even use this to merge objects, when a key appears in both objects, the last value is used</p>
+            <p show-steps='4'>or simply override one (or more) keys from an object, while cloning it</p>
+            <p show-steps='5'>remember this syntax, it makes working with immutable objects a lot easier</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Set and Map</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+<span class="samespot">
+<span show-steps='1'>let mySet = new Set();
+let myMap = new Map();</span>
+<span show-steps='2-4' no-highlight-first>let fakeMap = { 'name' : 'kelly', 'age' : '25'};
+
+let userName = fakeMap[<span highlight-steps='4'>'name'</span>];
+console.log("this works too " + fakeMap.name);
+<span show-steps='3-4'>
+let fakeSet = { 'kelly' : true, 'destiny': true};</span></span>
+<span show-steps='5' no-highlight-first>let fakeMap = Object.create(null);
+
+fakeMap[42] = 'the universe';
+console.log(fakeMap['42']); // outputs 'the universe'
+</span>
+<span show-steps='6-8' no-highlight-first>let myMap = Object.create(null);
+let key1 = { name: "zanger rinus"};
+let key2 = { notatallaname: "strawberry"};
+
+myMap[key1] = "met romana op de scooter";
+console.log(myMap[key2]);<span show-steps='7-8'> // "met romana op de scooter", wtf?
+<span show-steps='8'>
+console.log("key1: " + key1);  // key1: [object Object]
+console.log("key2: " + key2);  // key2: [object Object]</span></span></span>
+</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>talking about sets and maps, they both became built in datastructures in ES6</p>
+            <p show-steps='2'>since every object is in essence a key-value store in javascript, a map can be 'faked' using regular objects</p>
+            <p show-steps='3'>sets can similarly be emulated, by using a value of 'true' for each key that exists in your set</p>
+            <p show-steps='4'>while this mostly works, there are problems with this approach: keys are ALWAYS strings</p>
+            <p show-steps='5'>combine this with javascript's no static typing and automatic conversions and you've got a recipe for subtle
+              bugs
+            </p>
+            <p show-steps='6-8'>on top of that, objects themselves are effectively unusable as keys in a map (or set)</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Set</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+<span class="samespot">
+<span show-steps='1-3'>let myset = new Set();
+myset.add(42);
+</span>
+
+<span show-steps='2-3'>
+myset.has(42); // true
+myset.has('42'); // false
+</span>
+
+<span show-steps='3'>
+myset.add('42');
+console.log(myset.size; // 2
+mysel.delete(42);
+console.log(myset.size); // 1
+</span>
+</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1-3'>so ES6 has a native Set type, which behaves much more sensible</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Map</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let myMap = new Map();
+myMap.set("course", "webapps");
+myMap.set("year", 2017);
+
+console.log(myMap.get("course"));
+console.log(myMap.get("year"));
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>there's also a Map, which behaves pretty much the same, except that there's a
+              <i>set</i> and
+              <i>get</i> method instead of
+              <i>add</i> and
+              <i>has</i>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>weakset and weakmap</h3>
+        <ul>
+          <li class="fragment">we're not going into much detail here (you're all asleep already), but there's also a WeakSet and WeakMap</li>
+          <li class="fragment">the problem is that putting something in a Map or Set keeps a strong reference to it, keeping it alive as long
+            as it's in the Map, so it won't get garbage collected</li>
+          <li class="fragment">that's often what you want, but not always (say you use a map to track DOM elements), for those cases you have
+            a WeakMap and WeakSet, so you won't create memory leaks</li>
+        </ul>
+      </section>
+      <section>
+        <h3>forEach</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let myMap = new Map([['course', 'webapps'], ['year', '2017']]);
+
+myMap.forEach(<span show-steps='2-3'>function(<span highlight-steps='3'>value</span>, key, collection) {
+  console.log(key + ": " + value);  
+}</span>);
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>both Sets and Maps have a forEach member function (as do Array's btw)</p>
+            <p show-steps='2'>these functions expect a function as parameter, which will be called on each element, making it easier to work
+              with every element in these collections</p>
+            <p show-steps='3'>note that the value is first! this is done so you can more easily use the same function for your Map, Set and
+              Array (the latter two only having a value)</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>functional programming</h3>
+        <ul>
+          <li>this seamlessly brings us to the last (big) topic for today: functional programming</li>
+          <li class="fragment">we won't go into too much detail (that's a 12 week course on its own), but good modern javascript requires at least
+            a little knowledge about this, so here we are</li>
+          <li class="fragment">'pure' functional programming considers programs as the evaluation of mathematical functions, and involves no changing
+            state or mutable data</li>
+          <li class="fragment">(we're javascript, which is hardly 'pure', but still)</li>
+        </ul>
+      </section>
+      <section>
+        <h3>functional programming</h3>
+        <ul>
+          <li class="fragment">the general idea is that you write small functions who don't hold any state, and chain those together</li>
+          <li class="fragment">making it easier to reuse code, and easier to test</li>
+          <li class="fragment">and easier to reason about and understand code, ...but it takes some getting used to</li>
+          <li class="fragment">let's look at an example</li>
+        </ul>
+      </section>
+      <section>
+        <h3>functional programming</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+const birthdates = [1999, 1998, 1980, 1966];
+<span class="samespot">
+<span show-steps='1-2'>
+for (<span highlight-steps='2'>let year in birthdates</span>) {
+  const age = 2017 - year;
+  console.log("age :" + age);
+}
+</span>
+<span show-steps='3' no-highlight-first>
+birthdates.forEach(function(year) {
+  const age = 2017 - year;
+  console.log("age :" + age);
+});
+</span>
+<span show-steps='4-5' no-highlight-first>
+let calculateAge = function(year) {
+  const age = 2017 - year;
+  console.log("age :" + age);
+});
+birthdates.forEach(calculateAge);
+</span>
+</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>the problem is not that a for loop makes it hard to interact with a collection</p>
+            <p show-steps='2'>but that the (type of) the collection is a part of the algorithm (simple here, but use your imagination)</p>
+            <p show-steps='3'>at first it might look like using forEach instead doesn't really 'help' in any way, what's the difference? what's
+              the point?</p>
+            <p show-steps='4'>but functions are first class objects in javascript, you can assign them to a variable and easily reuse them</p>
+            <p show-steps='5'>the real power will then come from combining and reusing many of these small functions (and write them in arrow
+              function syntax, for more clarity)</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>functional programming - map</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let values = [3, 7, 1, 13, 9];
+<span show-steps='2' no-highlight-first>
+const timesTwo = (val) => val * 2;
+values = values.map(timesTwo);
+console.log(values); // [6, 14, 2, 26, 18]
+</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>some helper functions to more easily apply these paradigms are built in, the first one is map</p>
+            <p show-steps='2'>it will essentially change each element in a collection with the result of a function applied to that element</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>functional programming - filter</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let values = [3, 7, 1, 13, 9];
+
+const greaterThanFive = (val) => val > 5;
+values = values.filter(greaterThanFive);
+console.log(values); // [7, 13, 9]
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>then there's filter, as the name suggests using filter you only keep those elements for which your function returns
+              true (a function that returns true or false is often called a predicate)</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>functional programming - reduce</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let values = [3, 7, 1, 13, 9];
+
+const sum = (total, value) => total + value;
+values.reduce(sum, 0); // 33
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>as last one there's reduce, reduce applies a function against an accumulator and every element of the array,
+              reducing the array to a single value</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>functional programming - currying</h3>
+        <ul>
+          <li class="fragment">currying is the technique of translating the evaluation of a function with multiple arguments into evaluating a
+            sequence of functions, each with one argument</li>
+          <li class="fragment">the name comes from the mathematician Haskell Curry (I hope his firstname rings a bell?)</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3>currying</h3>
+        <div class='fragment' code-step>
+          <pre><code class="js" data-noescape data-trim>
+<span class="samespot">
+<span show-steps='1-2'>function age(year, birthdate) {
+  return year - birthdate;
+}
+<span show-steps='2'>
+function age(year) {
+  return function (birthdate) {
+    return year - birthdate;
+  }
+}</span></span>
+<span show-steps='3' no-highlight-first>
+(year, birthdate) => year - birthdate;
+
+(year) => (birthdate) => year - birthdate;
+
+</span>
+</span>
+
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>in more practical terms, instead of creating functions with multiple arguments, </p>
+            <p show-steps='2'>you create a function that takes one argument, and returns a function that takes one argument which returns ...
+              and so on</p>
+            <p show-steps='3'>using arrow functions, this becomes a lot clearer</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>currying - why though?</h3>
+        <ul>
+          <li class="fragment">this makes it a lot easier and clearer to do partial function application</li>
+          <li class="fragment">you should view this as a sort of dependency injection, someone else can provide (part of) what you need to complete
+            a function, and pass it on to you, where you provide everything else</li>
+          <li class="fragment">once you get the hang of it, it can really help you writing clean, "separation of concerns" code</li>
+        </ul>
+      </section>
+      <section>
+        <h3>summary</h3>
+        <ul>
+          <li class="fragment">use let and const to declare variables, not var</li>
+          <li class="fragment">
+            <pre><code data-noescape data-trim>
+let canBeChanged : string = "original";
+const staysTheSame = "fixed";
+canBeChanged = "change!";
+            </code></pre>
+          </li>
+          <li class="fragment">there is a real class now, behaves much more like classes in e.g. Java than the old .prototype shenanigans</li>
+          <li class="fragment">
+            <pre><code data-noescape data-trim>
+class ARealClass {
+  aProperty: string;
+
+  constructor() {
+  }
+}           </code></pre>
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h3>summary</h3>
+        <ul>
+          <li class="fragment">arrow functions are a more convenient way of writing small functions (beware of this binding!)</li>
+          <li class="fragment">
+            <pre><code data-noescape data-trim>
+let calcAge = (birthdate, year) => year - birthdate;
+            </code></pre>
+          </li>
+          <li class="fragment">backtick strings allow for easier multiline strings and variable replacement</li>
+          <li class="fragment">
+            <pre><code data-noescape data-trim>
+let text = `some text
+  different line ${variable}
+`;
+            </code></pre>
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h3>summary</h3>
+        <ul>
+          <li class="fragment">destructuring makes it easier to access parts of an object</li>
+          <li class="fragment">
+            <pre><code data-noescape data-trim>
+let {name, year} = {"name":"rudy", "year" : 2017};
+            </code></pre>
+          </li>
+          <li class="fragment">the ... collapses multiple arguments in an array, or spreads out an array into arguments</li>
+          <li class="fragment">
+            <pre><code data-noescape data-trim>
+function manyArguments(...argumentArray) {
+}
+let manyNames = ['destiny', 'kelly', 'kimberly'];
+manyArguments(...manyNames);
+            </code></pre>
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h3>summary</h3>
+        <ul>
+          <li class="fragment">Set and Map became native types and behave correctly for all kinds of keys</li>
+          <li class="fragment">
+            <pre><code data-noescape data-trim>
+let aMap = new Map([['key', 'initalValue']]);
+aMap.set('otherKey', 'someVaue');
+let value = aMap.get('key');
+
+let aSet = new Set(['initial', 'values']);
+aSet.add('third value');
+if (aSet.has('initial')){
+}
+            </code></pre>
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h3>exercises</h3>
+        <p>it's about time we do some exercises, which will focus on functional programming (I hope everything else 'registered',
+          so you know what to google if you need it, you'll pick it up as we advance in this course)</p>
+      </section>
+      <section>
+        <h3>exercises</h3>
+        <pre data-trim class='console'>
+
+<span class='prompt'>~/(webappslides)/$</span> git pull
+<span class='prompt'>~/(webappslides)/$</span> cd exercises
+<span class='prompt'>~/(webappslides)/exercises/$</span> npm install
+<span class='prompt'>~/(webappslides)/exercises/$</span> node js_functional_programming.js
+          </pre> which should result in
+        <pre data-trim class='console'>
+
+  ERROR in exercise1, output: '[]' expected '["pieter","jens",...
+          </pre>
+      </section>
+
+
+      <script src="lib/js/head.min.js"></script>
+      <script src="js/reveal.js"></script>
+      <script>
+        // More info about config & dependencies:
+        // - https://github.com/hakimel/reveal.js#configuration
+        // - https://github.com/hakimel/reveal.js#dependencies
+        Reveal.initialize({
+          controls: false,
+          slideNumber: true,
+          dependencies: [
+            {
+              src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+
+                // during development, always start at last slide
+                var indices = Reveal.getIndices(document.getElementById('sectionID'));
+                // Reveal.slide(Reveal.getTotalSlides());
+              }
+            },
+            { src: 'plugin/codestepper/codestepper.js' }
+
+          ],
+        });
+      </script>
+</body>
+
+</html>

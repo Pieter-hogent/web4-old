@@ -1,0 +1,677 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>4 Async</title>
+
+  <!-- Theme used for syntax highlighting of code -->
+  <link rel="stylesheet" href="lib/css/zenburn.css">
+
+  <link rel="stylesheet" href="css/reveal.css">
+  <link rel="stylesheet" href="css/theme/sky.css">
+
+  <!-- pieter overrides -->
+  <link rel="stylesheet" href="webapps.css">
+  <link rel="stylesheet" href="plugin/codestepper/codestepper.css">
+
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+</head>
+
+<body>
+
+  <div class="reveal">
+
+    <div class="slides">
+      <section>
+        <h2>async</h2>
+        <h4>how to handle asynchronous requests</h4>
+      </section>
+      <!-- <section>
+				<h3>Ajax</h3>
+				<ul>
+					<li class="fragment">Asynchronous Javascript And XML (º1998, Microsoft)</li>
+					<li class="fragment">conceptually, instead of only doing full reloads, load a part of your page, asynchronously, as XML, and incorporate
+						the XML response in you DOM</li>
+					<li class="fragment">nobody uses XML anymore though, it's all JSON, but 'AJAJ' sounds like you're having a stroke</li>
+				</ul>
+			</section> -->
+      <section>
+        <h3>What is Async?</h3>
+        <pre><code data-noescape data-trim>
+<span class="fragment highlight-current-red" data-fragment-index="3">let notAMoon</span> = <span class="fragment highlight-current-red" data-fragment-index="2">buildDeathStar()</span>;
+<span class="fragment highlight-current-red" data-fragment-index="5">let alderaan</span> = <span class="fragment highlight-current-red" data-fragment-index="4">destroyPlanet(notAMoon)</span>;
+<span class="fragment highlight-current-red" data-fragment-index="7">let disturbedForce</span> = <span class="fragment highlight-current-red" data-fragment-index="6">aMillionVoicesCriedOut(alderaan);</span>
+					</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">synchronous programming is calling a function, and waiting for the response before you call the next function</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">the first function is called</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">the program waits for the function to finish and assigns the result</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">and only then, the next function starts executing</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="5">and so on</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="6">and so on</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="7">and so on</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="8">until the program is finished, it's easy to follow along and reason about synchronous code</p>
+        </div>
+      </section>
+      <section>
+        <h3>What is async?</h3>
+        <pre class="fragment" data-fragment-index="1"><code data-noescape data-trim>
+let notAMoon = buildADeathStarAsync();
+let bobbaFett = createACloneArmyAsync();
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">but sometimes, completing a function takes a long time, and the next function is not dependent on the result of
+            the previous one</span>
+            <p class="fragment current-visible current-replace" data-fragment-index="2">we'd like to start creating the clone army while the death star is still being built</p>
+            <p class="fragment current-visible current-replace" data-fragment-index="3">that's what asynchronous programming is (in a nutshell), not waiting for a function to finish before you start the next one</p>
+            <p class="fragment current-visible current-replace" data-fragment-index="4">this leads to a couple of difficulties...</p>
+        </div>
+      </section>
+      <section>
+        <h3>what is async?</h3>
+        <pre><code data-noescape data-trim>
+let <span class="fragment highlight-current-red" data-fragment-index="3">notAMoon</span> = <span class="fragment highlight-current-red" data-fragment-index="2">buildADeathStarAsync()</span>;
+let bobbaFett = createACloneArmyAsync();
+
+...
+
+let alderaan = destroyPlanet(<span class="fragment highlight-current-red" data-fragment-index="3">notAMoon</span>);
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">when can you start using the result of an asynchronous function?</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">remember, we're not waiting for the result of buildADeathStarASync</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">so it's possible notAMoon doesn't hold the result yet, while we're trying to use it</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">solving this is what async programming is all about (and deceptively difficult)</p>
+        </div>
+      </section>
+      <section>
+        <h3>javascript ways to handle this</h3>
+        <ul>
+          <li>callbacks</li>
+          <li>promises</li>
+          <li>observables</li>
+        </ul>
+      </section>
+      <section>
+        <h3>callbacks</h3>
+        <pre class="fragment" data-fragment-index="1"><code data-noescape data-trim>
+let notAMoon = buildADeathStar();
+let alderaan = destroyPlanet(notAMoon);
+				</code></pre>
+        <p class="fragment" data-fragment-index="1">instead of returning a value from a function, and then calling another function yourself</p>
+        <pre class="fragment" data-fragment-index="2"><code data-noescape data-trim>
+buildADeathStar(function (notAMoon) {
+	destroyPlanet(notAMoon);
+});	
+				</code></pre>
+        <p class="fragment" data-fragment-index="2">you pass a function as a parameter, and that function will be called when the buildADeathStar is finished, with its
+          result as a parameter</p>
+      </section>
+      <section>
+        <h3>callbacks</h3>
+        <pre class="fragment" data-fragment-index="1"><code data-noescape data-trim>
+function buildADeathStar() {
+	let deathStar = constructGiantSphere();
+	addLasers(deathStar);
+	return deathStar;
+}	
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">so instead of having a function call that performs some operation and returns the result</p>
+        </div>
+        <pre class="fragment" data-fragment-index="2"><code data-noescape data-trim>
+function buildADeathStar(completionCallback) {
+	let deathStar = constructGiantSphere();
+	addLasers(deathStar);	
+	<span class="fragment highlight-current-red" data-fragment-index="2">completionCallback(deathStar);</span>
+}	
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="2">you perform the same operations, but then call the callback function on the result, i.s.o. returning it</p>
+        </div>
+      </section>
+      <section>
+        <h3>callbacks</h3>
+        <pre><code data-noescape data-trim>
+buildADeathStar(function (notAMoon) {
+	destroyPlanet(notAMoon);
+});	
+				</code></pre>
+        <ul>
+          <li class="fragment">this is in and on itself not inherently an asynchronous mechanism</li>
+          <li class="fragment">synchronous callbacks exist, and are often used</li>
+          <li class="fragment">basically, a callback says "when X happens, call Y"</li>
+          <li class="fragment">but while the callbacks themselves are not necessarily asynchronous, the invocation of the callbacks often is (think event handlers, no way to know the order in which user events will happen) </li>
+        </ul>
+      </section>
+      <section>
+        <h3>callbacks</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+function <span highlight-steps='2'>buildADeathStar</span>( <span highlight-steps='6'>callbackFn</span>) {
+  <span highlight-steps='5'>let theDeathStar</span> = <span highlight-steps='4'>doLotsOfWork()</span>;
+  <span highlight-steps='9'>let callBackResult</span> = <span highlight-steps='6'>callbackFn</span>(<span highlight-steps='7'>theDeathStar</span>);
+  <span highlight-steps='10'>if (callBackResult) {</span>
+    <span highlight-steps='11'>return "somethingElse"</span>;
+  }
+}
+        
+<span highlight-steps='12,11,13'>let buildResult</span> = <span highlight-steps='2,3'>buildADeathStar</span>(function (<span highlight-steps='7'>notAMoon</span>) {
+  <span highlight-steps='12,9,13'>return</span> <span highlight-steps='8'>destroyPlanet(notAMoon)</span>;
+});	
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps="1">do not mistake passing a callback function to another function with defining a function</p>
+            <p show-steps="2">buildADeathStar is defined somewhere, and called with a callback somewhere else, lets go through it to let this
+              sink in</p>
+            <p show-steps="3">buildADeathStar is called</p>
+            <p show-steps="4,5">this results in the functions of buildADeathStar being called</p>
+            <p show-steps="6">until we reach the callbackFunction</p>
+            <p show-steps="7">the created death star is here passed to this callbackfunction</p>
+            <p show-steps="8">now execution continues inside our callbackfunction</p>
+            <p show-steps="9">until the return is reached, which goes back to the buildADeathStar</p>
+            <p show-steps="10">here too, we keep processing until we reach a return</p>
+            <p show-steps="11">and that return becomes the return value of the original invocation of buildADeathStar</p>
+            <p show-steps="12">so THESE ARE NOT RELATED AT ALL</p>
+            <p show-steps="13">NOT!</p>
+            <p show-steps="14">(I've heard this error once to many from your predecessors)</p>
+            <p show-steps="15">so, are these callbacks the solution to our async woes?</p>
+
+          </div>
+        </div>
+      </section>
+      <section class="gifsection" data-background-image="img/turnen_ringen.gif">
+        <h2 class="giftext">not a perfect solution, we're still struggling</h2>
+      </section>
+      <section>
+        <h3>callbacks - problems</h3>
+        <div class="replace" style="height: 300px">
+          <span class="fragment current-visible current-replace" data-fragment-index="1">the main problem with callbacks is that once you're inside a callback, you're "stuck", leading to "callback hell" or "the pyramid of doom"</span>
+          <div class='fragment current-replace' data-fragment-index="2" code-step>
+            <pre><code data-noescape data-trim>
+createGalacticEmpire(function (empire) {
+  buildADeathStar(function (notAMoon) {
+    destroyPlanet(function (alderaan) {
+      eliminateRebels(function (disturbance) {
+        ....
+      })
+    })
+  })
+})	
+              </code></pre>
+            <div class='samespot'>
+              <p show-steps='2'>even without any error handling or real code, you can already tell this will quickly become a mess</p>
+              <p show-steps='3'>and what if at later point you want to do more than simply <i>eliminateRebels</i>?</p>
+              <p show-steps='4'>you either end up with code duplication, or you start parameterizing a set of nested callbacks, neither is desirable</p>
+            </div>
+          </div>
+      </section>
+      <section>
+        <h3>callbacks - problems</h3>
+        <ul>
+          <li class="fragment">there's more, error handling is intertwined with regular code, with a few nested callbacks it quickly becomes non
+            trivial to see if all errors are handled correctly</li>
+          <li class="fragment">and what if two function run in parallel, and you only want to continue after both are finished (or only want to
+            continue if either is finished)?</li>
+          <li class="fragment">this is a hard problem, you have to track multiple callback operations (and their clean functions) yourself</li>
+        </ul>
+      </section>
+
+      <section>
+        <h3>promises</h3>
+        <ul>
+          <li class="fragment">promises are a rather old idea (70's), but really started gaining popularity the last ~5 years</li>
+          <li class="fragment">many languages have the concept these days, often called 'futures' (C++, Java, ...)</li>
+          <li class="fragment">the idea is to represent the result of an asynchronous operation, which you can pass around and with which you
+            can interact at any time</li>
+        </ul>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <ul>
+          <li class="fragment">a promise is a placeholder for the result of an asynchronous operation</li>
+          <pre class="fragment"><code data-noescape data-trim>
+let buildPromise = buildADeathStarAsync();	
+					</code></pre>
+          <li class="fragment">the <i>buildADeathStarAsync</i> will in the future be completed (either with an error or with a proper result),
+            the <i>buildPromise</i> variable lets you interact with that future result</li>
+          <li class="fragment">so it's not a regular variable that holds a value, it's an object on which you call functions to interact with
+            a future value</li>
+        </ul>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let buildPromise = buildADeathStar();
+<span show-steps='2-9'>let army = buildCloneArmy();</span>
+<span show-steps='4-9'>buildPromise.then(notAMoon => notAMoon.destroyPlanet());</span>
+<span show-steps='5-9'>let luke = meetYourDad();</span>
+<span show-steps='6-9'>buildPromise.catch(error => console.log(error));</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>so buildADeathStar is an async function, the promise is IMMEDIATELY returned, but it doesn't hold the final value yet, it's a placeholder</p>
+            <p show-steps='2'>so if other function calls follow the buildADeathStar, they are immediately started, there's no waiting for the (async) buildADeathStar to finish</p>
+            <p show-steps='3'>how do you interact with this placeholder? with this future value?</p>
+            <p show-steps='4'>by calling a then function with a callback, this callback will be called as soon as the async buildADeathStar is finished</p>
+            <p show-steps='5'>so a then() is not blocking either, processing continues until the async buildADeathStar is completed, and then the callback is called</p>
+            <p show-steps='6'>you can also provide a catch() function, which will be called if an error occurred during buildADeathStar</p>
+            <p show-steps='7'>this looks a lot like callbacks (you pass a function that gets called when the async function is finished), the
+              difference might look subtle, but is important</p>
+            <p show-steps='8'>by adding an extra level of indirection, you can 'capture' any point in the chain (by keeping the result in a variable),
+              and diverge in multiple directions from that point</p>
+            <p show-steps='9'>let's look at an example</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <pre><code data-noescape data-trim>
+createGalacticEmpire(function (empire) {
+	buildADeathStar(function (notAMoon) {
+		destroyPlanet(function (alderaan) {
+			eliminateRebels(function (disturbance) {
+				....
+			})
+		})
+	})
+})				
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">remember this? what if we at a later point in the code want the same callback sequence, but we don't want to <i>eliminateRebels</i>            once we destroyed the planet, but <i>killAllJedi</i></p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">with callbacks this leads to code duplication, or weirdly parameterized functions</p>
+        </div>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <pre class="fragment" data-fragment-index="1"><code data-noescape data-trim>
+<span class="fragment highlight-current-red" data-fragment-index="3">let empirePromise</span> = createGalacticEmpire()
+	<span class="fragment highlight-current-red" data-fragment-index="2">.then</span>(empire => buildADeathStar())
+	<span class="fragment highlight-current-red" data-fragment-index="2">.then</span>(notAMoon => destroyPlanet());	
+
+<span class="fragment highlight-current-red" data-fragment-index="4">empirePromise.then</span>(alderaan => eliminateRebels());
+<span class="fragment highlight-current-red" data-fragment-index="4">empirePromise.then</span>(alderaan => killAllJedi());
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">doing the same thing with promises can be done without much trouble</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">you chain <i>then</i>'s until you're at the point in the sequence where you want to perform multiple operations</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">you assign this 'point' to a (promise) variable</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">and then you can divert into multiple operations from this starting point</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="5">it's obvious but still important to note that the whole chain is only calculated once, empirePromise will hold
+            the result up to that point in the callback chain, and reuse the result</p>
+        </div>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <ul>
+          <li class="fragment">internally promises are like little state machines, who go through a certain lifecycle</li>
+          <li class="fragment">when created, they are in the <i>pending</i> state, the async operation is running, no <i>then</i> nor <i>catch</i>            functions are started yet</li>
+          <li class="fragment">once the async operation is finished, the promise either ends up in the <i>fulfilled</i> state or the <i>rejected</i>            state</li>
+          <li class="fragment">then either the <i>then</i> or <i>catch</i> function will be called respectively</li>
+        </ul>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <div class="fragment" code-step>
+          <pre><code data-noescape data-trim>
+let fs = require("fs");
+<span show-steps="3-6">function readFile() {</span>
+  <span show-steps="3-6">return new Promise(function(<span highlight-steps="4">resolve, reject</span>) {</span>
+    fs.readFile(filename, function(<span highlight-steps="2">err, contents</span>) {
+      if (<span highlight-steps="2">err</span>) {
+        <span class="samespot">
+          <span show-steps="1-4">log(err);</span>
+          <span show-steps="5,6">reject(<span highlight-steps="6">err</span>);</span>
+        </span>
+        return;
+      }
+      <span class="samespot">
+        <span show-steps="1-4">this.fileContents = <span highlight-steps="2">contents</span>;</span>
+        <span show-steps="5,6">resolve(<span highlight-steps="6">contents</span>);</span>
+      </span>
+    });
+  <span show-steps="3-6">});</span>				
+<span show-steps="3-6">}</span>				
+					</code></pre>
+          <div class="samespot">
+            <p show-steps="1">let's look at an example of how such promises can be created, we start with a 'classic' callback scenario</p>
+            <p show-steps="2">we're reading a file, once the read operation is completed we use a callback to either deal with the errors or
+              process the contents</p>
+            <p show-steps="3">we create a new function that returns a promise object, the Promise constructor expects a function as parameter</p>
+            <p show-steps="4">this promise class will take care of supplying the correct <i>then</i> and <i>catch</i> methods as resolve /
+              reject parameters to your promise function</p>
+            <p show-steps="5">you must take care to call these resolve/reject methods at the appropriate times</p>
+            <p show-steps="6">whatever you pass as parameter(s) in the resolve/reject methods, will be passed to the then/catch function as
+              parameter</p>
+          </div>
+        </div>
+      </section>
+    
+      <section>
+        <h3>promises</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let promise = new Promise(function(resolve, reject) {
+  <span highlight-steps='1'>throw new Error("exception thrown");</span>
+});
+
+promise.catch(<span highlight-steps='2'>function(error) {
+  console.log(error.message);
+});</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>what if an error is thrown inside your promise construction code?</p>
+            <p show-steps='2'>it will automatically be catched and passed to the 'catch' handlers of your promise</p>
+            <p show-steps='3'>so you don't have to explicitly try catch, exceptions will take the same route as everything you 'reject'</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let build = buildADeathStar();
+<span show-steps='1-6'><span show-steps='2'>let alderaan = </span>build<span highlight-steps='1'>.then</span>(<span class="samespot"><span show-steps='1-4'>notAMoon => notAMoon.destroyPlanet())</span><span show-steps='5-6'>function(notAMoon) {
+  <span highlight-steps='6'>return notAMoon.destroyPlanet();</span>
+}).then(function(<span highlight-steps='6'>alderaan</span>) {
+  return alderaan.eliminateRebels(); 
+});</span></span></span></span><span show-steps='7-10'><span highlight-steps='8,9'>let promise2</span> = build.then(function(notAMoon) {
+  <span highlight-steps='8'>return notAMoon.destroyPlanet();</span>
+});
+promise2.<span highlight-steps='10'>then</span>(function(<span highlight-steps='10'>alderaan</span>) {
+  return alderaan.eliminateRebels(); 
+});</span>
+<span class="samespot">
+<span show-steps='1,3-4'>  <span highlight-steps='1'>.then</span>(alderaan => alderaan.eliminateRebels());</span>
+<span show-steps='2'>alderaan.eliminateRebels(); // when would this be called?</span>
+</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>a promise itself always return a new promise, so you can chain then() calls</p>
+            <p show-steps='2'>this makes sense, as soon as you are async you can't really continue in a sync way, can you?</p>
+            <p show-steps='3'>this begs the question, what happens with whatever you return from the then function?</p>
+            <p show-steps='4'>remember, a single statement at the right of => is returned</p>
+            <p show-steps='5'>so it's equivalent to this code</p>
+            <p show-steps='6'>as you might guess the return value from the first promise becomes the parameter for the callback of the second</p>
+            <p show-steps='7'>same code split into several statements</p>
+            <p show-steps='8'>just like before, don't get confused, this return does not end up here</p>
+            <p show-steps='9'>a new promise is created, in the same (fulfilled) state, which is returned here</p>
+            <p show-steps='10'>and when its then function is called, it gets the return from the previous one as a parameter</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <div class='fragment' code-step>
+          <pre class='javascript'><code data-noescape data-trim>
+let ret1 = new Promise(function(resolve, reject) {
+  resolve('prom1');
+});
+
+<span highlight-steps='4-7'>let ret2</span> = prom1.then(function(val) {
+  <span highlight-steps='4-7'>return new Promise</span>(function(resolve, reject) {
+    resolve('prom2');
+  });
+});
+
+<span show-steps='2-7' no-highlight-first>ret2.then(val => console.log('resolved ' + val));
+ret2.catch(val => console.log('rejected ' + val));
+</span><span show-steps='3-7'>// resolved prom2</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>things get slightly different when you start returning promises from inside then (or catch) handlers</p>
+            <p show-steps='2'>now the promise returned by the then gets put in the same state as the one you return (resolved or rejected), with that promises value as its value</p>
+            <p show-steps='3'>so 'resolved prom2' will be logged here</p>
+            <p show-steps='4'>it's still true that the value returned by the then function is not the value returned in the callback</p>
+            <p show-steps='5'>but the then will return a promise and it will be in the same state as the promise returned from the callback and it will have the same value</p>
+            <p show-steps='6'>so it's not the same object, but in a way that's a technicality, it's an exact copy</p>
+            <p show-steps='7'>so now these are related, somehow</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <p>the returned value from the handler function</p>
+        <ul>
+          <li class="fragment">a value is returned, the promise returned by then gets resolved with this value</li>
+          <li class="fragment">an error is thrown, the promise returned by then gets rejected with this thrown error as value</li>
+          <li class="fragment">an already resolved/rejected promise is returned, the promise returned by then gets resolved/rejected with that promise's value as its value</li>
+          <li class="fragment">a pending promise is returned, the promise returned by then will also be pending</li>
+        </ul>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <ul>
+          <li class='fragment'>as one of the problems with callbacks I mentioned it's a hard problem to only continue after several unrelated callbacks are finished</li>
+          <li class='fragment'>or after any one out of several unrelated callbacks is finished</li>
+          <li class='fragment'>promises have a construct to solve each of these problems</li>
+        </ul>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let prom1 = <span show-steps='1-2'>new Promise();</span><span show-steps='3-4'>Promise.resolve('1 resolved');</span><span show-steps='5'>Promise.reject('one failed');</span>
+let prom2 = <span show-steps='1-2'>new Promise();</span><span show-steps='3-5'><span highlight-steps='4'>57</span>;</span>
+let prom3 = new Promise(<span show-steps='3-5'>resolve => resolve('prom3')</span>);
+<span show-steps='2-5'>
+Promise.all([prom1, prom2, prom3]).then( values => {
+  console.log(values); <span show-steps='3-4'>// ['1 resolved', 57, 'prom3']</span>
+})<span show-steps='2-4'>;</span><span show-steps='5'>.catch(console.log); // 'one failed'</span>
+</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>the problem is this: I have several, unrelated, promises, I want to start them all simultaneously, and perform an operation after ALL of them are finished</p>
+            <p show-steps='2'>Promise.all does just this, simply pass an array of promises, and it will resolve with an array of values</p>
+            <p show-steps='3'>so the resolve value will be an array with all the values in it</p>
+            <p show-steps='4'>any non promises in there, will simply be passed if all the others resolve</p>
+            <p show-steps='5'>if any of them is rejected, the all will be rejected as well (fail fast)</p>
+
+
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>promises</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+let car1 = new Promise(res => setTimeout(res, 700, 'car 1'));
+let car2 = new Promise(<span show-steps='1,2'>res => setTimeout(res, 100, 'car 2'));</span><span show-steps='3-4'>(res, reject) => {
+  setTimeout(reject, 100, 'car 2 crashed');
+});
+</span>
+let car3 = new Promise(res => setTimeout(res, 2000, 'car 3'));
+
+Promise.race([car1, car2, car3]).then(console.log).catch(console.log); 
+<span show-steps='2'>// 'car 2'</span><span show-steps='3-4'>// 'car 2 crashed'</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>another helper function, but less useful, is Promise.race</p>
+            <p show-steps='2'>when one of the promises is fullfilled, the then handler is called with that promise's value</p>
+            <p show-steps='3'>but also when ONE fails, the race fails with that promise's error</p>
+            <p show-steps='4'>so basically when one finishes, the race finishes too, with its result</p>
+          </div>
+        </div>
+      </section>
+      <section class="gifsection" data-background-image="img/hoogspringen.gif">
+        <h2 class="giftext">the perfect solution?</h2>
+      </section>
+      <section>
+        <h3>promises - problems?</h3>
+        <ul>
+          <li class="fragment">promises solve async handling pretty well</li>
+          <li class="fragment">nothing is ever perfect though, there is room for some improvement</li>
+          <ul>
+            <li class="fragment">once a promise is created it will complete and call the resolve or reject callback, there's no easy way to cancel it</li>
+            <li class="fragment">if a promise failed, given only the promise object there's no easy way to 'retry' the promise</li>
+          </ul>
+        </ul>
+      </section>
+      <section>
+        <h3>observables</h3>
+        <ul>
+          <li class="fragment">reactive programming, which uses observables, is a fairly new way of dealing with asynchronous functions</li>
+          <li class="fragment">angular uses the RxJS library for this (MS / Netflix)</li>
+        </ul>
+        <img src="img/rxjs_googletrend.png" alt="" class='fragment'>
+      </section>
+      <section>
+        <h3>observables</h3>
+        <ul>
+          <li class="fragment">it's not just javascript, reactive extension exist for pretty much every language you'd want to use (java, .net, c++, kotlin, swift, python, ...)</li>
+          <li class="fragment">put simply: reactive programming is programming with asynchronous data streams</li>
+          <li class="fragment">in a way this is nothing new: click events are an async event stream, which you observe and respond to</li>
+          <li class="fragment">it's like that, but on steroids</li>
+        </ul>
+      </section>
+      <section>
+        <h3>observables</h3>
+        <ul>
+          <li class="fragment">we said a Promise is the future result of an operation</li>
+          <li class="fragment">well, an observable are ALL future results of an operation, and an immense toolbox to work with them</li>
+          <li class="fragment">imperative code 'pulls' data where reactive code 'pushes' data, you subscribe to get notified of changes, and those changes are pushed to you</li>
+          <li class="fragment">RxJS is functional, the functional programming exercises from two weeks ago? preparing you for today</li>
+        </ul>
+      </section>
+      <section>
+        <h3>observables</h3>
+        <ul>
+          <li class="fragment">the streams are composable, think of streams as a pipeline of operations over your data, you can subscribe to any part of the stream or combine them to make new streams</li>
+          <li class="fragment">working with observables requires a different way of thinking, you subscribe to streams, and update your app based on these changes. There is very little imperative thinking left</li>
+          <li class="fragment">more reading about what this is all about? <a href="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754">"the introduction to reactive programming you've been missing"</a></li>
+        </ul>
+      </section>
+      <section>
+        <h3>observables</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+<span show-steps='2-6'>let stream = Rx.Observable.from([1, 2, 3, 4]);</span> 
+<span show-steps='4-6'>stream.subscribe(val => console.log("got one " + val);</span>
+<span show-steps='5-6'>// got one 1
+// got one 2
+// got one 3
+// got one 4
+</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>observables can be created from many different sources in many different ways</p>
+            <p show-steps='2'>for this simple example, we'll create a stream from an array</p>
+            <p show-steps='3'>how should you interpret this? conceptually four different values are added to our stream, so if we subscribe to changes, we will be called four times</p>
+            <p show-steps='4-5'>you can simply subscribe with a function, which means that function is called for each value on our stream</p>
+            <p show-steps='6'>so it's like a promise, but instead of being called once when the async function is done, you get called everytime a new value is available, forever (= until you unsubscribe or the stream is completed)</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>observables</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+Rx.Observable.from([1, 2, 3]).subscribe(
+  val => console.log("got one " + val),
+  err => console.log("error occurred")<span show-steps='2-3'>,
+  () => console.log("completed!")</span>
+);
+<span show-steps='3'>// got one 1
+// got one 2
+// got one 3
+// completed!</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>just like with promises, you can also add a second function, which is called when an error occurs</p>
+            <p show-steps='2-3'>and even a third one, which is called when the stream is 'completed'</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>observables</h3>
+        <ul>
+          <li class="fragment">as said before the real power comes from the immense toolbox available to work with and manipulate streams, let's look at a few examples</li>
+          <li class="fragment">I'll simply show a more complex example so you'll hopefully realize these are powerfull things, there are many resources available online to dive into the details if you're so inclined</li>
+        </ul>
+      </section>
+      <section>
+        <h3>observables</h3>
+        <div class='fragment' code-step>
+          <pre class='javascript'><code data-noescape data-trim>
+<span class="samespot"><span show-steps='1-3'>getEmployees()<span show-steps='2-3'>
+    .filter( emp => emp.department === department)
+    .map( emp => emp.name )
+</span></span>
+<span show-steps='4-8'>getDepartments()
+  <span show-steps='5-8'>.debounce(1000)
+  </span>.map(department => {
+    </span><span show-steps='4-8' no-highlight-first>getEmployees()
+      <span show-steps='6-8'>.retry(3)
+      </span>.filter( emp => emp.department === department)
+      .map( emp => emp.name )
+  </span><span show-steps='4-8'>})<span show-steps='7-8'>
+  .distinctUntilChanged()</span></span>
+</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>assume we have a function that gives us a 'stream' of all employees</p>
+            <p show-steps='2'>we could filter them to only show the employees of a certain department, and then only show their names</p>
+            <p show-steps='3'>so far, we're not really doing anything we can't achieve with arrays and functional programming either</p>
+            <p show-steps='4'>now the departments on which we'll filter also come from a stream, which is generated by a selection from the user</p>
+            <p show-steps='5'>we only want to respond to the last selection made each second, so we don't unnecessarily update constantly</p>
+            <p show-steps='6'>if the requests fails, we want to retry up to three times</p>
+            <p show-steps='7'>and we only want to pay attention if the result is different then it was last time</p>
+            <p show-steps='8'>and so on, reactive programming can be very powerfull, but requires some getting used to</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>observables</h3>
+        <ul>
+          <li class="fragment">in Angular, http request will always return an observable</li>
+          <li class="fragment">this is done so you can easily cancel and retry requests (http responses are not real 'streams' of data, there is always just one result)</li>
+          <li class="fragment">next week, when we have a backend and something to call, we'll go into some examples</li>
+        </ul>
+      </section>
+      <section>
+        <h3>promises - exercises</h3>
+        <ul>
+          <li class="fragment">I was creating exercises but then bumped into a great online workshop</li>
+          <li class="fragment"><a href="https://github.com/stevekane/promise-it-wont-hurt">promise-it-wont-hurt</a></li>
+          <li class="fragment">you can easily find the solutions online, if you'd want to</li>
+
+        </ul>
+      </section>
+
+      <script src="lib/js/head.min.js"></script>
+      <script src="js/reveal.js"></script>
+      <script>
+        // More info about config & dependencies:
+        // - https://github.com/hakimel/reveal.js#configuration
+        // - https://github.com/hakimel/reveal.js#dependencies
+        Reveal.initialize({
+          controls: false,
+          slideNumber: true,
+          dependencies: [
+            {
+              src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+
+                // during development, always start at last slide
+                var indices = Reveal.getIndices(document.getElementById('sectionID'));
+                // Reveal.slide(Reveal.getTotalSlides());
+              }
+            },
+            { src: 'plugin/codestepper/codestepper.js' }
+
+          ],
+        });
+      </script>
+</body>
+
+</html>

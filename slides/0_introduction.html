@@ -1,0 +1,173 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>0 - Introduction</title>
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/sky.css">
+
+	<!-- pieter overrides -->
+	<link rel="stylesheet" href="webapps.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+</head>
+
+<body>
+
+	<div class="reveal">
+
+		<div class="slides">
+			<section>
+				<h3>What are we going to do?</h3>
+				<ul>
+					<li class="fragment">Single Page Application (SPA)</li>
+					<li class="fragment">Angular 5.1 (º 6 december 2017)</li>
+					<li class="fragment">open source, made by Google</li>
+					<li class="fragment">other similar frameworks exist: React (Facebook), Vue (Alibaba)</li>
+				</ul>
+			</section>
+			<section>
+				<h3>Why Angular? (I love React!)</h3>
+				<ul>
+					<li class="fragment">first of all: it doesn't (really) matter</li>
+					<li class="fragment">learning modern javascript (framework) is what matters</li>
+					<li class="fragment">neither will exist (in it's current form) in 5 years anyway</li>
+					<li class="fragment">still, which one to chose to teach a modern javascript framework?</li>
+					<li class="fragment">vdab: # jobs for programmers in Gent +60km mentioning (Angular | React)</li>
+				</ul>
+			</section>
+			<section>
+				<h3>Why Angular? (I love React!)</h3>
+				<!-- <canvas data-chart="line" data-chart-src="angular_react.csv"> -->
+				<canvas data-chart="line">
+					<!-- prettier-ignore -->
+					Month, April, May, June, July, August, September, October, November, December
+					Angular, 231, 270, 294, 296, 241, 278, 303, 296, 311
+					React, 51, 67, 87, 83, 63, 80, 90, 96, 107
+
+				</canvas>
+
+				<iframe id="angular-react-chart" width="500px" , height="400px" data-chart></iframe>
+				<div>angular vs react vs vue</div>
+			</section>
+			<section>
+				<h3>Web vs Mobile</h3>
+				<div class="fragment">while we're at it</div>
+				<!-- <canvas class="fragment" data-chart="line" data-chart-src="angular_android_ios.csv"> -->
+				<canvas class="fragment" data-chart="line">
+					Month, April, May, June, July, August, September, October, November, December 
+					Angular, 231, 270, 294, 296, 241, 278, 303, 296, 311
+					Android, 37, 42, 44, 42, 36, 44, 38, 34, 32
+					iOS, 27, 32, 31, 32, 23, 33, 32, 35, 33
+				</canvas>
+
+			</section>
+			<section>
+				<h3>windows mobile?</h3>
+				<p>you forgot the line for windows mobile in the previous graph</p>
+				<img src="img/heart-flatline.jpg" alt="heart-flatline" class="fragment" />
+				<p class="fragment" style="font-size:0.4em">(don't tell mister Van Herreweghe about this slide)</p>
+			</section>
+			<section>
+				<h3>class</h3>
+				<ol>
+					<li class="fragment">introduction, Angular basics</li>
+					<li class="fragment">ES6</li>
+					<li class="fragment">multiple components / services</li>
+					<li class="fragment">async (promises / observables)</li>
+					<li class="fragment">Node.js / Mongoose</li>
+					<li class="fragment">reactive forms</li>
+				</ol>
+			</section>
+			<section>
+				<ol start="7">
+					<li class="fragment">modules / angular routing</li>
+					<li class="fragment">users and authentication</li>
+					<li class="fragment">testing</li>
+					<li class="fragment">deploy a production build</li>
+					<li class="fragment">???</li>
+					<li class="fragment">React</li>
+				</ol>
+			</section>
+			<section>
+				<h3>software?</h3>
+				<ul>
+					<li>Visual Studio Code
+						<a href="https://code.visualstudio.com">https://code.visualstudio.com</a>
+					</li>
+					<li>Node.js v9.3.x
+						<a href="https://nodejs.org/en/">https://nodejs.org/en/</a>
+					</li>
+					<li>Angular CLI (v1.6+): "npm install -g @angular/cli"</li>
+					<li>everything else we'll npm install as needed</li>
+				</ul>
+			</section>
+		</div>
+	</div>
+
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
+	<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/Chart.js/2.6.0/Chart.bundle.js"></script> -->
+	<script>
+		// More info about config & dependencies:
+		// - https://github.com/hakimel/reveal.js#configuration
+		// - https://github.com/hakimel/reveal.js#dependencies
+		Reveal.initialize({
+			controls: false,
+			slideNumber: true,
+			dependencies: [
+				{
+					src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+						hljs.initHighlightingOnLoad();
+
+						// during development, always start at last slide
+						var indices = Reveal.getIndices(document.getElementById('sectionID'));
+						// Reveal.slide(Reveal.getTotalSlides());
+					}
+				},
+				{ src: 'plugin/chartjs/Chart.min.js' },
+				{ src: 'plugin/chartjs/csv2chart.js' },
+				{ src: 'plugin/fullscreen/fullscreen.js' }
+
+			],
+			chart: {
+				defaults: {
+					responsive: true,
+					global: {
+						title: { fontColor: "#FFF" },
+					},
+					legend: {
+						labels: { fontColor: "#FFF" },
+					},
+					scale: {
+						scaleLabel: { fontColor: "#000" },
+						gridLines: { color: "#FFF", zeroLineColor: "#000" },
+						ticks: { fontColor: "#000", beginAtZero: true },
+					}
+				},
+				line: { borderColor: ["rgba(20,220,220,.8)", "rgba(220,120,120,.8)", "rgba(20,120,220,.8)"], "borderDash": [[5, 10], [0, 0]] },
+				bar: { backgroundColor: ["rgba(20,220,220,.8)", "rgba(220,120,120,.8)", "rgba(20,120,220,.8)"] },
+				pie: { backgroundColor: [["rgba(0,0,0,.8)", "rgba(220,20,20,.8)", "rgba(20,220,20,.8)", "rgba(220,220,20,.8)", "rgba(20,20,220,.8)"]] },
+				radar: { borderColor: ["rgba(20,220,220,.8)", "rgba(220,120,120,.8)", "rgba(20,120,220,.8)"] },
+			},
+		});
+
+	</script>
+</body>
+
+</html>

@@ -1,0 +1,982 @@
+<!doctype html>
+<html>
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+  <title>5. nodejs</title>
+
+  <!-- Theme used for syntax highlighting of code -->
+  <link rel="stylesheet" href="lib/css/zenburn.css">
+
+  <link rel="stylesheet" href="css/reveal.css">
+  <link rel="stylesheet" href="css/theme/sky.css">
+
+  <!-- pieter overrides -->
+  <link rel="stylesheet" href="webapps.css">
+  <link rel="stylesheet" href="plugin/codestepper/codestepper.css">
+
+
+  <!-- Printing and PDF exports -->
+  <script>
+    var link = document.createElement('link');
+    link.rel = 'stylesheet';
+    link.type = 'text/css';
+    link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+    document.getElementsByTagName('head')[0].appendChild(link);
+  </script>
+</head>
+
+<body>
+
+  <div class="reveal">
+
+    <div class="slides">
+      <section>
+        <h2>Node.js</h2>
+        <h4 class="fragment">a backend for our app</h4>
+      </section>
+      <section>
+        <h3>backend</h3>
+        <ul>
+          <li class="fragment">this is completely separate from Angular</li>
+          <li class="fragment">often used together though (MEAN stack)</li>
+          <li class="fragment">you've already learned a few backends (Spring / .NET)</li>
+          <li class="fragment">focus this course is on Angular, consider Node.js an 'extra'</li>
+        </ul>
+      </section>
+      <section>
+        <h3>Express & MongoDB</h3>
+        <ul>
+          <li class="fragment">we'll use Express and MongoDB (the E and M in MEAN)</li>
+          <li class="fragment">you should have MongoDB installed already (DB3 class)</li>
+        </ul>
+        <pre class="fragment console">npm install -g express-generator</pre>
+        <p class="fragment">this added the 'express' command, test with "express -v"</p>
+      </section>
+      <section>
+        <h3>frontend + backend</h3>
+        <ul>
+          <li class="fragment">in the end we want everything to be served, somewhere on the internet</li>
+          <li class="fragment">so everything will be build into one big app, with the backend API's, serving the html etc.</li>
+          <li class="fragment">while developing however, it's much easier to keep them separate, using live reloading for the frontend</li>
+          <li class="fragment">when building two separate apps, be aware of CORS / XSS problems</li>
+        </ul>
+      </section>
+      <section>
+        <h3>express backend</h3>
+        now let's create our backend app, using the express generator
+        <pre class="fragment console" data-fragment-index="1">
+<span class="prompt">~$</span> <span class="fragment highlight-current-red" data-fragment-index="2">express recipebackend</span>
+<span class="prompt">~$</span> cd recipebackend
+<span class="prompt">~/recipebackend$</span> <span class="fragment highlight-current-red" data-fragment-index="3">npm install</span>
+<span class="prompt">~/recipebackend$</span> <span class="fragment highlight-current-red" data-fragment-index="4">npm start</span>
+</pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="2">calling express with a name will create a folder with all necessary files for a node - express app in there</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">npm install will download and install all dependencies which we need</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">the start command will start serving our backend, accessible at
+            <a href="http://localhost:3000/">http://localhost:3000/</a>
+          </p>
+
+        </div>
+      </section>
+      <section>
+        <h3>express backend</h3>
+        let's have a look at what is created
+        <pre class="fragment console" data-fragment-index="1">
+<span class="fragment highlight-current-red" data-fragment-index="4">app.js</span>
+<span class="cli-cyan">bin</span>	
+<span class="cli-cyan"><span class="fragment highlight-current-red" data-fragment-index="3">node_modules</span></span>
+package-lock.json
+<span class="fragment highlight-current-red" data-fragment-index="2">package.json</span>
+<span class="cli-cyan"><span class="fragment highlight-current-red" data-fragment-index="5">public</span></span>
+<span class="cli-cyan"><span class="fragment highlight-current-red" data-fragment-index="7">routes</span></span>
+<span class="cli-cyan"><span class="fragment highlight-current-red" data-fragment-index="6">views</span></span>
+</pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="2">package.json contains the node.js configuration, containing all dependencies we'll use</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">using this info 'npm install' will create a node_modules/ folder and put all the dependencies there </p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">app.js is our main file, entry point of our app</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="5">public/ will contain the frontend, so our angular should end up here if we deploy our app (not while developing)</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="6">views/ contains files in a templating engine that get converted to html, if you use angular you typically won't
+            use this
+          </p>
+          <p class="fragment current-visible current-replace" data-fragment-index="7">routes/ contains the meat of our (backend) app, all our API routes are defined here</p>
+        </div>
+      </section>
+      <section>
+        <h3>express backend</h3>
+        while running, the console provides valuable output
+        <pre class="console fragment" data-fragment-index="1">
+> recipebackend@0.0.0 start /recipeapp/recipebackend
+> node ./bin/www
+
+GET / <span class="cli-green">200</span> 342.739 ms - 170
+GET /favicon.ico <span class="cli-yellow">404</span> 27.879 ms - 1265
+<span class="fragment highlight-current-red" data-fragment-index="2">GET</span> <span class="fragment highlight-current-red" data-fragment-index="3">/stylesheets/style.css</span> <span class="cli-green"><span class="fragment highlight-current-red" data-fragment-index="4">200</span></span> <span class="fragment highlight-current-red" data-fragment-index="5">32.075 ms - 111</span>
+GET / <span class="cli-green">200</span> 31.863 ms - 170
+GET /favicon.ico <span class="cli-yellow">404</span> 57.223 ms - 1265
+GET /stylesheets/style.css <span class="cli-cyan">304</span> 57.931 ms - -
+				</pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="2">for each request it will show your http request method</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">the exact URL being requested on the server</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">the http status code that was returned</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="5">the time it took etc., less relevant while developing your app</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="6">this is a very valuable debug tool, always check here first if you don't get the expected response</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="7">IMPORTANT: note that our express server is not live reloading! ctrl-c / restart if you made changes</p>
+        </div>
+      </section>
+      <section>
+        <h3>app.js</h3>
+        let's have a look at a few parts of the generated app.js, we won't go in too much detail
+        <pre class="fragment" data-fragment-index="1"><code data-noescape data-trim>
+<span class="fragment highlight-current-red" data-fragment-index="2">var express = require('express');
+var path = require('path');
+var favicon = require('serve-favicon');
+var logger = require('morgan');
+var cookieParser = require('cookie-parser');
+var bodyParser = require('body-parser');</span>
+
+<span class="fragment highlight-current-red" data-fragment-index="3">var index = require('./routes/index');
+var users = require('./routes/users');</span>
+				</code></pre>
+        <div class="replace">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">importing other stuff uses require.js (this predates the import keyword)</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">this is used both for third party imports</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">as for including our own stuff, just like import in Angular</p>
+        </div>
+      </section>
+      <section>
+        <h3>app.js</h3>
+        <div class="fragment replace current-visible current-replace" data-fragment-index="1">
+          after importing everything and creating the app object, pretty much everything else that is done is defining and adding so
+          called 'middleware' functions
+        </div>
+        <pre class="fragment" data-fragment-index="2"><code data-noescape data-trim>
+<span class="fragment highlight-current-red" data-fragment-index="3">app.use(bodyParser.json());
+app.use(cookieParser());</span>
+
+<span class="fragment highlight-current-red" data-fragment-index="4">app.use('/', index);
+app.use('/users', users);</span>
+
+// catch 404 and forward to error handler
+<span class="fragment highlight-current-red" data-fragment-index="5">app.use(function(req, res, next) {
+  var err = new Error('Not Found');
+  err.status = 404;
+  next(err);
+});</span>
+</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="3">third party middleware, doing the grunt work, defined in all our imports</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">functionality we defined in different files ourselves, which we also need to import from local files</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="5">or simply inline defined middleware functions</p>
+        </div>
+      </section>
+      <section>
+        <h3>example</h3>
+        <span class="fixedfont">http://backend.com/API/recipe?id=23</span>
+        <ul>
+          <li class="fragment">when an url hits our server, one or more of these middleware functions are called to process the url</li>
+          <li class="fragment">first, the grunt work is done: parsing this url, parsing cookies and everything else that needs to be done when
+            a request hits your server (this is done by middleware functions defined in the framework, you don't write this
+            code yourself)</li>
+
+          <li class="fragment">then, node.js goes looking for a middleware function which handles this specific url</li>
+        </ul>
+      </section>
+      <section>
+        <div class="fixedfont">http://backend.com
+          <span class="fragment highlight-current-red" data-fragment-index="1">/API/recipe</span>?id=23</div>
+        <pre><code data-noescape data-trim>
+var router = express.Router();
+
+router.<span class="fragment highlight-current-red" data-fragment-index="2">get</span>('<span class="fragment highlight-current-red" data-fragment-index="1">/API/recipe/</span>', function(<span class="fragment highlight-current-red" data-fragment-index="3">req</span>, <span class="fragment highlight-current-red" data-fragment-index="4">res</span>, <span class="fragment highlight-current-red" data-fragment-index="5">next</span>) {
+  <span class="fragment highlight-current-red" data-fragment-index="6">res.send("process the request here");</span>
+});
+				</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">if a matching url is found, it's callback function is called</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">note that this is a GET request of this url, you can similarly define POST, PUT, DELETE, ... requests too</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">the callback gets a req object as a parameter, this is an object that represents the request, with all info about
+            the request accessible</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">additionally, you have a 'res' parameter, res is where you can formulate a response, where you write the output
+            that should be returned</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="5">finally, next is a reference to the next middleware callback that can handle this request, you should call next
+            if you haven't (fully) handled the request (e.g. the cookieparser will parse the cookie, add it to the request
+            object, and then always call next)</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="6">in this example a simple string is output, we will typically do some database operation and output the JSON result
+            with a res.send</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="7">if you look at node.js examples on the web, you will often see res.render() being used, this is to create a html
+            response using the template engine (everything in the view/ folder), we won't do that in this class</p>
+        </div>
+      </section>
+      <section>
+        <div class="fixedfont">http://backend.com/API/recipe?id=23</div>
+        <br/>
+        <ul>
+          <li class="fragment">what's important, is that conceptually you end up with a request object, with everything neatly parsed and accessible</li>
+          <li class="fragment">then the backend will go through all the middleware functions you defined, looking for one that can handle this
+            url
+          </li>
+          <li class="fragment">and all matching callbacks will be called until one doesn't call next anymore</li>
+        </ul>
+      </section>
+      <section>
+        <h3>REST</h3>
+        <ul>
+          <li class="fragment">backends for SPA's are typically REST servers (REpresentational State Transfer)</li>
+          <li class="fragment">they use the http operations POST GET PUT DELETE to perform CRUD operations on a database</li>
+          <li class="fragment">REST services should be stateless (important!)</li>
+          <li class="fragment">REST is not without its problems, alternatives start to pop up (GraphQL)</li>
+        </ul>
+      </section>
+      <section>
+        <h3>Mongoose</h3>
+        <ul>
+          <li class="fragment">inside most of our API callbacks, we will be doing database operations</li>
+          <li class="fragment">
+            <a href="http://mongoosejs.com">mongoose</a> makes it easy to model MongoDB objects in Node.js</li>
+        </ul>
+        <pre data-trim class="console fragment">
+<span class="prompt">~$recipebackend/</span> npm install mongoose --save
+	</pre>
+
+      </section>
+      <section>
+        <h3>mongoose</h3>
+        first, we need to connect to our database
+        <pre>app.js<code data-noescape data-trim>
+<span class="fragment highlight-current-red" data-fragment-index="1">var mongoose = require('mongoose');</span>
+
+<span class="fragment highlight-current-red" data-fragment-index="2">mongoose.connect('mongodb://localhost/recipedb', {  useMongoClient: true });</span>
+			</code></pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="1">import the mongoose library</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">call connect, with the url of the database</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">that's it, we now have a working connection to our database</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="4">restart nodejs to make sure everything runs correctly, if you get errors that's typically because mongod is not
+            running
+          </p>
+        </div>
+      </section>
+      <section>
+        <h3>mongod</h3>
+        <pre data-trim class="console">
+<span class="prompt">~$</span> mongod
+				</pre>
+        <span class="fragment">simply calling mongod will look for a database in /data/db, if there is none it will quit with an error. If you rather
+          not create a mongodb in your root directory, you can specify the path</span>
+        <pre class="console fragment" data-trim>
+<span class="prompt">~$</span> mkdir mongodb
+<span class="prompt">~$</span> mongod --dbpath ~/mongodb/
+				</pre>
+      </section>
+      <section>
+        <h3>mongoose</h3>
+        <div class='fragment' code-step>
+          <pre>~/recipebackend/models/Recipe.js<code data-noescape data-trim>
+var mongoose = require('mongoose');
+
+var RecipeSchema = new mongoose.Schema({
+  <span show-steps='2-3'>name: String,
+  ingredients: <span highlight-steps='3'>[</span>String<span highlight-steps='3'>]</span>,
+  directions: <span highlight-steps='3'>[</span>String<span highlight-steps='3'>]</span>,</span>
+});	
+mongoose.model('Recipe', RecipeSchema);
+				  </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>we need Mongoose Schema's for each collection ('table') we want to represent</p>
+            <p show-steps='2'>we'll add a name : Type for each field ('column') we want to represent</p>
+            <p show-steps='3'>these fields can be array's, unlike relational databases array's are easily represented</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>nodejs</h3>
+        <div class='fragment' code-step>
+          <pre>~/recipebackend/app.js<code data-noescape data-trim>
+var mongoose = require('mongoose');
+// ...
+require('./models/Recipe');
+
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>we first need to register these schema's, we do this by importing the definitions in our app.js file, making
+              them accessible</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>nodejs</h3>
+        <div class='fragment' code-step>
+          <pre>~/recipebackend/routes/index.js<code data-noescape data-trim>
+let mongoose = require('mongoose');
+let Recipe = mongoose.model('Recipe');
+
+<span show-steps='2-6'>router.get('/API/recipes/', <span highlight-steps='4'>function(req, res, next) {</span>
+</span><span show-steps='3-6'>  Recipe.find(<span highlight-steps='4'>function(err, recipes) {</span>
+</span><span show-steps='5-6'>    if (err) { return next(err); }
+    res.json(recipes);
+</span><span show-steps='3-6'>  });
+</span><span show-steps='2-6'>});</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>after which we can start using them in our routes</p>
+            <p show-steps='2'>we start with a GET route, which will simply return all our recipes</p>
+            <p show-steps='3'>the mongoose find, without a find parameter, will return everything</p>
+            <p show-steps='4'>notice the callback pattern, used all over nodejs</p>
+            <p show-steps='5'>then we need some error handling, and converting our recipes to json, before we send them as result</p>
+            <p show-steps='6'>
+              <a href="http://localhost:3000/API/recipes">try this out</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>nodejs</h3>
+        <div class='fragment' code-step>
+          <pre>~/recipebackend/routes/index.js<code data-noescape data-trim>
+router.<span highlight-steps='2'>post</span>('/API/recipes/', function (req, res, next) {
+  let recipe = new Recipe(<span highlight-steps='3'>req.body</span>);
+  recipe.<span highlight-steps='4'>save</span>(function(err, rec) {
+    if (err){ return next(err); }
+    <span highlight-steps='5'>res.json(rec);</span>
+  });
+});    
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>you probably have an empty screen when you try this, that's obvious, your database is empty...</p>
+            <p show-steps='2'>to get something in there we need a POST request too</p>
+            <p show-steps='3'>we pass the body of the request to the Recipe constructor, this will work if our body is a json file with key:value
+              pairs as they are defined in our Recipe schema</p>
+            <p show-steps='4'>after which we call save on the object, once more with a callback that will be called when the save operation
+              completed
+            </p>
+            <p show-steps='5'>in the end we will return the object we just added, this is usually a good idea, this way the user of your API
+              has the object as it exists in the database (with an ID, possibly some conversions happened...)</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>nodejs</h3>
+        <ul>
+          <li class="fragment">testing this is harder, we can't easily fabricate POST requests in our browser, certainly not with json bodies</li>
+          veranderen naar insomnia?
+          <li class="fragment">we'll use
+            <a href="https://www.getpostman.com">postman</a> to test our API</li>
+          <li class="fragment">postman makes it easy to test all our REST routes, it's certainly a lot easier then finishing your frontend first</li>
+        </ul>
+      </section>
+      <section>
+        <h3>postman</h3>
+        <img src="img/postman_1.png" alt="postman explanation screenshot 1">
+      </section>
+      <section>
+        <h3>postman</h3>
+        <img src="img/postman_2.png" alt="postman explanation screenshot 1">
+      </section>
+      <section>
+        <h3>postman</h3>
+        <img src="img/postman_3.png" alt="postman explanation screenshot 1">
+      </section>
+      <section>
+        <h3>status</h3>
+        <ul>
+          <li class="fragment">we have a basic backend, with two REST routes, one to add new recipe, one to get all recipes, backed by a MongoDB
+            database
+          </li>
+          <li class="fragment">we need more routes, and our database layout is way too basic right now</li>
+          <li class="fragment">and we have no user authentication whatsoever</li>
+          <li class="fragment">but we have enough to show how to perform these calls from Angular, so let's do that first</li>
+        </ul>
+      </section>
+      <section>
+        <h3>HttpModule</h3>
+        <ul>
+          <li class="fragment">before we can do anything, we need to add the HttpModule to our list of modules</li>
+        </ul>
+        <div class='fragment' code-step>
+          <pre>src/app/app.module.ts<code data-noescape data-trim>
+import { HttpModule } from '@angular/http';
+
+import { AppComponent } from './app.component';
+
+@NgModule({
+  imports: [
+    BrowserModule,
+    HttpModule
+  ], ...
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'></p>
+          </div>
+        </div>
+
+      </section>
+      <section>
+        <h3>CORS</h3>
+        <ul>
+          <li class="fragment">before we can use our backend from Angular we have to make sure our cross domain calls work (port 4200 to port
+            3000)
+          </li>
+          <li class="fragment">first: if you REALLY need CORS, this is not the way to do it, implement proper headers on your backend</li>
+          <li class="fragment">but this is only during development, two separate ports on our localhost, not how we'd serve it live</li>
+        </ul>
+      </section>
+      <section>
+        <h3>CORS</h3>
+        <ul>
+          <li class="fragment">it's easiest to set up a proxy server on the angular side for this</li>
+        </ul>
+        <div class='fragment' code-step>
+          <pre>./proxy.conf.json<code data-noescape data-trim>
+{
+  "<span highlight-steps='1'>/API</span>": {
+    "target": "<span highlight-steps='2'>http://localhost:3000</span>",
+    "secure": false
+  } 
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>all requests made to /API in our Angular app (so to http://localhost:4200/API)</p>
+            <p show-steps='2'>will be passed to http://localhost:3000/</p>
+            <p show-steps='3'>http://localhost:4200/API/recipes becomes http://localhost:3000/API/recipes</p>
+            <p show-steps='4'>http://localhost:4200/recipes stays http://localhost:4200/recipes</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Proxy</h3>
+        <pre data-trim class='console'>
+<span class='prompt'>~$</span> ng serve --proxy-config proxy.conf.json
+        </pre>
+        <ul>
+          <li>if you want to use this you have to pass it as a command line parameter</li>
+          <li class='fragment'>let's add it to the package.json scripts so we don't have to type this every time</li>
+        </ul>
+        <div class='fragment' code-step>
+          <pre>package.json<code data-noescape data-trim>
+"scripts": {
+  "start": "ng serve --proxy-config proxy.conf.json",  
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>so from now on, we no longer start our enviornment with 'ng serve' but with 'npm start', just like nodejs</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>http</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+<span show-steps='2-4'>import { Http, Response } from '@angular/http';
+import { Observable } from 'rxjs/Rx';
+import 'rxjs/add/operator/map';
+
+</span>@Injectable()
+export class RecipeDataService {
+  <span show-steps='3-4'>private const _appUrl = 'http://localhost:4200/API/recipes/';
+  </span>
+  constructor(<span show-steps='3-4'>private http: Http</span>) {
+  }
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>we'll adapt our RecipeDataService, so it'll get the data from our backend</p>
+            <p show-steps='2'>@angular/http is the part of angular where all the http tools reside</p>
+            <p show-steps='3'>we'll add the backend url, and we inject http in the constructor</p>
+            <p show-steps='4'>and now for the real meat, PAY ATTENTION</p>
+          </div>
+        </div>
+      </section>
+      <section class="gifsection" data-background-image="img/karate_kid.gif">
+        <h2 class="giftext">this is what you were trained for!</h2>
+      </section>
+      <section>
+        <h3>http</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+get recipes()<span show-steps='5-11'>: Observable&lt;Recipe[]&gt;</span> {
+  <span show-steps='2-11'><span highlight-steps='11'>return</span> this.http.get(this._appUrl)</span><span show-steps='7-11'>.<span highlight-steps='10'>map</span>(response =></span>
+    <span show-steps='8-11'>response.json()</span><span show-steps='9-11'>.<span highlight-steps='10'>map</span>(item =>
+      new Recipe(item.name, item.ingredients, item.directions)
+    )</span>
+  <span show-steps='7-11'>);</span>
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>we'll add a method which will request our recipes for us</p>
+            <p show-steps='2'>we want a 'get' to our /API/recipes url, that one will return a json array of all our recipes</p>
+            <p show-steps='3'>the result of a http.get is an
+              <i>Observable&lt;Response&gt;</i>
+            </p>
+            <p show-steps='4'>http is async, angular uses observables for this, so our getRecipes will return an observable to</p>
+            <p show-steps='5'>we will translate the (json)
+              <a href="https://angular.io/api/http/Response">Response</a> to proper Recipe objects, so we'll return an
+              <i>Observable&lt;Recipe[]&gt;</i>
+            </p>
+            <p show-steps='6'>note that we just as well could've returned an
+              <i>Observable&lt;Recipe&gt;</i> (no array)</p>
+            <p show-steps='7'>we will map the Observable. An RxJS.map will use a T -> U function to convert Observable&lt;T&gt; to Observable&lt;U&gt;
+              (so our callbackfunction should do Response -> Recipe[])</p>
+            <p show-steps='8'>so how do we convert a Response to a Recipe[]? first of all we parse it as a json object (which its body is)</p>
+            <p show-steps='9'>on the resulting array we'll call a map to convert each json element to a singular Recipe object</p>
+            <p show-steps='10'>note that these two map's are different functions, one is the RxJs map working on Observable, other is the regular
+              map, working on Array</p>
+            <p show-steps='11'>when all the returns are handled, we end up with a Observable&lt;Recipe[]&gt;, does everyone get this?</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>http</h3>
+        <ul>
+          <li class="fragment">now we need to adapt the rest of our code</li>
+          <div class='fragment' code-step>
+            <pre>src/app/app.component.ts<code data-noescape data-trim>
+get recipes()<span show-steps='1'>: Recipe[]</span><span show-steps='2'><s>: Recipe[]</s></span> {
+  return this._recipeDataService.recipes;
+}
+            </code></pre>
+            <li class="fragment">first we get rid of the explicit type in our app component, we no longer return a Recipe[] but an Observable&lt;Recipe[]&gt;</li>
+        </ul>
+      </section>
+      <section>
+        <h3>http</h3>
+        <ul>
+          <li class="fragment">still, nothing is shown, if we look at the error console in our browser</li>
+          <img class="fragment" src="img/ngfor_observable_error.png" alt="">
+          <li class="fragment">we can't loop over an observable...</li>
+          <li class="fragment">but there's more, as mentioned last week you need to subscribe to an Observable for it to 'start', if you refresh
+            the page and look at your nodejs console, no http calls are being made</li>
+        </ul>
+      </section>
+      <section>
+        <h3>http</h3>
+        <ul>
+          <li class="fragment">you can explicitly .subscribe() and unravel the Observable (and we'll do that soon)</li>
+          <li class="fragment">but if you simply want to loop over a list and display its results there's an easier construct:
+            <a href="https://angular.io/api/common/AsyncPipe">AsyncPipe</a>
+          </li>
+        </ul>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+*ngFor='let localRecipe of recipes<span show-steps='2-4'> | async</span>'
+            </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>so we have our for loop, but we're trying to loop over an Observable&lt;Recipe[]&gt;, which doesn't work</p>
+            <p show-steps='2'>adding the pipe symbol | and then the name of our (built in) async pipe will fix this</p>
+            <p show-steps='3'>adding '| async' subscribes to the observable and returns its results as they come in, since it's an array you
+              can then loop over the result</p>
+            <p show-steps='4'>
+              <a href="http://localhost:4200/">let's try this</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>AsyncPipe</h3>
+        <ul>
+          <li class="fragment">so if you simply try that, you get an endless loop and you keep requesting the same http get of your backend</li>
+          <li class="fragment">(now's a good time to ctrl-c your nodejs and ng serve btw)</li>
+          <li class="fragment">so what's happening? change detection is biting us in the ass</li>
+          <li class="fragment">our
+            <i>get recipe()</i> is a computed property and returns the result of a http.get call</li>
+        </ul>
+      </section>
+      <section>
+        <h3>AsyncPipe</h3>
+        <ul>
+          <li class="fragment">so we get an observable, to which
+            <i>|async</i> subscribes</li>
+          <li class="fragment">this returns a result, our component's state changed</li>
+          <li class="fragment">this triggers the change detection, so the 'recipes' property is resolved again</li>
+          <li class="fragment">which is a computed property so http.get is called again, a NEW observable is returned</li>
+          <li class="fragment">to which | async subscribes, so new results, so a change, so recipes property resolved, so http.get, and so on
+            and so on</li>
+        </ul>
+      </section>
+      <section>
+        <h3>AsyncPipe</h3>
+        <div class='fragment' code-step>
+          <pre>app/src/app.component.ts<code data-noescape data-trim>
+export class AppComponent <span show-steps='3-6'>implements OnInit</span> {
+  <span show-steps='2-6'>private _recipes;</span>
+  <span show-steps='3-6'>
+  ngOnInit() {
+    this._recipes = this._recipeDataService.recipes;
+  }
+  </span>
+  get recipes() {
+    <span class='samespot'>
+    <span show-steps='1-2'>return this._recipeDataService.recipes;</span>
+    <span show-steps='3-6'>return this._recipes;</span>
+    </span>
+  }
+            </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>change detection sees different observables, even though their contents are the same</p>
+            <p show-steps='2'>we fix this by 'caching' the observable in a variable</p>
+            <p show-steps='3'>retrieve the data from the service in the OnInit method, and assign it to the var</p>
+            <p show-steps='4'>you generally want to retrieve data from services (over http) in your ngOnInit method</p>
+            <p show-steps='5'>ngOnInit is one of the lifecycle hooks, called once after the first ngOnChanges (so after all @Input variables
+              are set)</p>
+            <p show-steps='6'>
+              <a href="http://localhost:4200/">let's try this out</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>Http get</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim><span show-steps='3-4'>interface RecipeResponse {
+  name: string,
+  ingredients: string[]
+}
+</span>this.http.get<span show-steps='3-4'>&lt;RecipeResponse&gt;</span>('http://myincredibleapi/<span show-steps='2'>textfile.txt', 
+	{ responseType: 'text'} </span>)<span show-steps='4'>
+  .subscribe(data => 
+    recipe.name = data.name; // data is of type RecipeResponse
+  );
+	</span><span show-steps='5-6'>.subscribe( 
+    data => { ... },
+    (err: HttpErrorResponse) => {
+      if (err.error instanceof Error) {
+        // client side or network error
+      } else {
+        // server side error
+      }
+    });
+	</span>
+					</code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>we'll usually have json objects as our response, but other object types are possible too</p>
+            <p show-steps='2'>you specify them by passing a
+              <a href="https://angular.io/api/http/ResponseContentType">responseType parameter</a> to the request</p>
+            <p show-steps='3-4'>it's also possible to typecheck the response</p>
+            <p show-steps='5'>error handling is done using the second handler method, providing a
+              <a href="https://angular.io/api/common/http/HttpErrorResponse">HttpErrorResponse</a>
+            </p>
+            <p show-steps='6'>you can handle both client side/network errors and server errors</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>http post</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+<span show-steps='2-10'>let recipe: Recipe<span show-steps='9'>Response</span>;</span>
+this.http.post('http://myincredibleapi/'<span show-steps='2-10'>, recipe</span>)<span show-steps='5-10'>.subscribe()</span>
+<span show-steps='6-10'>// {
+//   <span show-steps='6-7'>_</span>name: 'spaghetti'   
+// }</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>a POST operation is done very similar to a get </p>
+            <p show-steps='2'>there is one extra parameter, the body of the request</p>
+            <p show-steps='3'>the contentType is
+              <i>application/json</i> by default, so if you want to send a json representation, you don't have to specify the
+              contentType
+            </p>
+            <p show-steps='4'>do not convert it to a json-string yourself, simply pass an object, it will be converted</p>
+            <p show-steps='5'>note that all http requests are 'cold' or 'lazy', they only start when you call subscribe, so to actually send
+              something here, subscribe to the result</p>
+            <p show-steps='6'>when using the proper convention of starting private variables with an underscore, the json object will be 'weird'</p>
+            <p show-steps='7'>you either work with underscore keys in the backend (bad)</p>
+            <p show-steps='8'>you don't use an underscore in the names for the private variables (meh)</p>
+            <p show-steps='9'>create a separate class for communicating (depends, can be a good idea)</p>
+            <p show-steps='10'>or you override the default json conversion function (usually best balance between cumbersome boilerplate and
+              ugly code)</p>
+
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>http post</h3>
+        <div class='fragment' code-step>
+          <pre>src/app/recipe/recipe.model.ts<code data-noescape data-trim>
+export class Recipe {
+  let _name: string;
+  // ...
+
+  toJSON() {
+    return {
+      name: this._name;
+      // ...
+    };
+  }
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>you do this by providing a 'toJSON()' method in your class</p>
+            <p show-steps='2'>make sure you return an object, not a string, and simply map the keys on the private members</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>http post</h3>
+        <div class='fragment' code-step>
+          <pre>src/app/recipe-data.service.ts<code data-noescape data-trim>
+addNewRecipe(rec): Observable&lt;Recipe&gt; {
+  return this.http.post(this._appUrl, <span highlight-steps='1'>rec</span>)
+    .map(res => res.json()).<span highlight-steps='2-3'>map</span>(item =>
+      new Recipe(item.name, item.ingredients, item.directions));
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>very similar to a get, but now we have an extra parameter, our recipe</p>
+            <p show-steps='2'>note that this map is not on the res.json() array (as it was in the 'get') but on the result of the map</p>
+            <p show-steps='3'>it's another Rx.map, our post request returns a single object (the one we added), not a list</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>http post</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+            export class AppComponent implements OnInit {
+              private _recipes: Recipe[];
+             
+              newRecipeAdded(recipe) {
+                this._recipeDataService.addNewRecipe(recipe)<span highlight-steps='1'>.subscribe()</span>; 
+              }
+            }
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>if we want the post to be actually called, we need to subscribe to the Observable</p>
+            <p show-steps='2'>now new recipes can be added to the database (you can check in the nodejs output), our client won't be automatically
+              updated however</p>
+            <p show-steps='3'>
+              <a href="http://localhost:4200/">let's try this</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>refresh</h3>
+        <ul>
+          <li class="fragment">when you update the backend, this won't automatically result in an updated frontend</li>
+          <li class="fragment">you want this though, the user expects to see the changes he made without having to refresh the page</li>
+          <li class="fragment">the most natural way is to reload (part of) the page internally, which is usually done by reloading a route</li>
+          <li class="fragment">we'll only learn about routes in a few weeks though</li>
+        </ul>
+      </section>
+      <section>
+        <h3>refresh</h3>
+        <div class='fragment' code-step>
+          <pre>src/app/app.component.ts<code data-noescape data-trim>
+export class AppComponent implements OnInit {
+  private _recipes<span show-steps='2-7'>: Recipe[]</span>;
+
+  ngOnInit() {
+    <span show-steps='1-2'>this._recipes = </span>this._recipeDataService.recipes<span show-steps='3-7'>.subscribe(
+       items => this._recipes = items)</span>;
+  }
+ 
+  newRecipeAdded(recipe: Recipe) 
+    <span show-steps='5'>this._recipes.push(recipe);
+    </span>this._recipeDataService.addNewRecipe(recipe)
+      .subscribe(<span show-steps='4,6-7'>item => this._recipes.push(item)</span>);
+  }
+}  
+            </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>so for now we'll do something else, we'll cache the result i.s.o. the observable holding the result </p>
+            <p show-steps='2'>i.s.o. the _recipes being an Observable we got from the service, we make it an array of Recipes again</p>
+            <p show-steps='3'>we subscribe in our code, and unwrap the result in the callback</p>
+            <p show-steps='4'>then when we add a new one, we also add the result to our cached array when we got a response</p>
+            <p show-steps='5'>we can just as well add the recipe immediately, without waiting for the backend, which is better?</p>
+            <p show-steps='6'>now we just need to remove the
+              <i>| async</i> from the html and we're done</p>
+            <p show-steps='7'>
+              <a href="http://localhost:4200/">let's try this out</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>unsubscribe?</h3>
+        <ul>
+          <li class="fragment">we manually subscribe to observables in our components init methods, should we unsubscribe to?</li>
+          <li class="fragment">yes-and-no, http calls are 'finite' observables, so it's handled automatically by the library</li>
+          <li class="fragment">if you've subscribed to infinite observables though, you should always unsubscribe or you'll leak memory!</li>
+          <li class="fragment">doing this correctly requires a bit more knowledge of RxJS then we're covering, so I'll just present the solution</li>
+        </ul>
+      </section>
+      <section>
+        <h3>unsubscribe</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+import { Component, OnDestroy, OnInit } from '@angular/core';
+import { Subject } from 'rxjs/Subject';
+import 'rxjs/add/operator/takeUntil';
+
+export class MyComponent implements OnDestroy, OnInit {
+  private myUnsubscribe: Subject&lt;boolean&gt; = new Subject&lt;boolean&gt;(); 
+
+  constructor(private _myService: MyService) { }
+
+  ngOnInit() {
+    this._MyService.getStuff()
+      .takeUntil(this.myUnsubscribe)
+      .subscribe(stuff => ...);
+  }
+
+  ngOnDestroy() {
+    this.myUnsubscribe.next(true);
+    this.myUnsubscribe.complete();
+  }
+}
+          </code></pre>
+        </div>
+      </section>
+      <section>
+        <h3>http</h3>
+        <ul>
+          <li class="fragment">until now we only did a post and get to a fixed url</li>
+          <li class="fragment">when designing our app we'll often want to get or update one recipe</li>
+          <li class="fragment">so we want to use REST routes pointing to e.g. http://localhost/API/recipe/15/</li>
+          <li class="fragment">when designing REST routes, parameters can be either part of the url, or added to the request ?id=15</li>
+          <li class="fragment">both have their uses, usually when it's an inherent part of the route (like an id if you want to access a single
+            item), it's part of the url</li>
+        </ul>
+      </section>
+      <section>
+        <h3>node</h3>
+        <ul>
+          <li class="fragment">if we want to use such a route in our frontend, we need to have it at our backend first</li>
+          <li class="fragment">let's add routes to get, update, remove one recipe</li>
+        </ul>
+      </section>
+      <section>
+        <h3>node</h3>
+        <div class='fragment' code-step>
+          <pre>routes/index.js<code data-noescape data-trim>
+router.get('/API/recipe/<span show-steps='2-6'>:id</span>', function(req, res, next) {
+  <span show-steps='3'>res.json(req.params.id);</span><span show-steps='4-6'>Recipe.findById(req.params.id, function(err, recipe) {
+    <span show-steps='5-6'>if (err) return next(err);
+    if (!recipe) 
+      return next(new Error('not found ' + req.params.id));
+    res.json(recipe);</span>
+  });</span>
+});
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>back in our node.js routes file, let's add a GET route for once specific recipe</p>
+            <p show-steps='2'>you do this by adding ':name' in your url</p>
+            <p show-steps='3'>after which it's available as req.params.name in the body of your code</p>
+            <p show-steps='4'>instead of find we'll now use findById with the id as parameter</p>
+            <p show-steps='5'>and then we'll return the found recipe</p>
+            <p show-steps='6'>
+              <a href="http://localhost:3000/API/recipe/xxx">let's try this out</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>node</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+router.<span highlight-steps='2'>param</span>('recipe', function(req, res, next, <span highlight-steps='2'>id</span>) {
+  let query = Recipe.findById(id);
+  query.exec(function (err, recipe){
+    if (err) { return next(err); }
+    if (!recipe) { return next(new Error('not found ' + id)); }
+    <span highlight-steps='3'>req.recipe = recipe;</span>
+    <span highlight-steps='4'>return next();</span>
+  });
+});   
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>we'll need this recipe from an id for many routes, and we don't want to repeat this code over and over, there's
+              a better way to do this</p>
+            <p show-steps='2'>we define a 'recipe' param on the router, these have a fourth parameter in the callback, the value of this param</p>
+            <p show-steps='3'>now we won't return the recipe in our response, we add it to the request!</p>
+            <p show-steps='4'>and then we call the next() handler</p>
+            <p show-steps='5'>so we didn't fully handle the request, we simply processed the param and called the next handler</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>node</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+  router.get('/API/recipe/:recipe', function(req, res) {
+    res.json(req.recipe);
+  });
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>the get then becomes really simple, we only capture the param and immediately pass it to the response</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>node</h3>
+        <div class='fragment' code-step>
+          <pre><code data-noescape data-trim>
+router.<span highlight-steps='1'>delete</span>('/API/recipe/:recipe', function(req, res, next) {
+  <span show-steps='2-3'>req.recipe.remove(function(err) {
+    if (err) { return next(err); }   
+    res.json("removed recipe");
+  });</span>
+})
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>now we can reuse this param in our DELETE route</p>
+            <p show-steps='2'>then we call remove on the object, and if it succeeds we'll simply signal this</p>
+            <p show-steps='3'>a put to update would be similar, but then you'd call save i.s.o. remove</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>angular</h3>
+        <ul>
+          <li class="fragment">now we have to add code to the angular side to call this route</li>
+          <li class="fragment">try to do that yourself as an exercise, add a button to recipe component that will delete the recipe if clicked</li>
+          <li class="fragment">(hint: you'll have to start storing the id of the recipe too)</li>
+        </ul>
+      </section>
+      <section>
+        <h3>summary</h3>
+        <ul>
+          <li class="fragment">we learned how to create an nodejs app, and link it to a mongodb</li>
+          <li class="fragment">we've seen how to add basic REST routes, with parameters</li>
+          <li class="fragment">and we saw how to connect our angular app to these using the HttpModule</li>
+          <li class="fragment">we have absolutely no user authentication though, be wary if you put an app like this online, all routes are wide
+            open
+          </li>
+          <li class="fragment">but next week first: forms</li>
+        </ul>
+      </section>
+
+
+      <script src="lib/js/head.min.js"></script>
+      <script src="js/reveal.js"></script>
+      <script>
+        // More info about config & dependencies:
+        // - https://github.com/hakimel/reveal.js#configuration
+        // - https://github.com/hakimel/reveal.js#dependencies
+        Reveal.initialize({
+          controls: false,
+          slideNumber: true,
+          dependencies: [
+            {
+              src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+                hljs.initHighlightingOnLoad();
+
+                // during development, always start at last slide
+                var indices = Reveal.getIndices(document.getElementById('sectionID'));
+                // Reveal.slide(51); //Reveal.getTotalSlides());
+              }
+            },
+            { src: 'plugin/codestepper/codestepper.js' }
+
+          ],
+        });
+      </script>
+</body>
+
+</html>

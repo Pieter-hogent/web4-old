@@ -1,0 +1,481 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>3 - Services</title>
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/sky.css">
+
+	<!-- pieter overrides -->
+	<link rel="stylesheet" href="webapps.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+</head>
+
+<body>
+
+	<div class="reveal">
+
+		<div class="slides">
+			<section>
+				<h3>today</h3>
+				<ul>
+					<li class="fragment">respond to simple actions originating in the html</li>
+					<li class="fragment">pass data between components, using @Input and @Output</li>
+					<li class="fragment">encapsulate our data in a model</li>
+					<li class="fragment">use services and dependency injection to share data access between components</li>
+				</ul>
+			</section>
+			<section>
+				<h3>recap</h3>
+				<ul>
+					<li class="fragment">Use components to show something, class decorated with @Component</li>
+					<li class="fragment">components have a .html (scoped) .css and .ts code</li>
+					<li class="fragment">use {{property}} to show a ts property in your html</li>
+					<li class="fragment">use [property]='' in you html to pass data to a @Input property of your .ts</li>
+					<li class="fragment">*ngFor lets you loop over a ts collection property in your html</li>
+				</ul>
+			</section>
+			<section>
+				<h3>intermezzo: styles</h3>
+				<p class="fragment" data-fragment-index="1">First, let's work on the looks a bit, this is not a CSS class so we'll simply use one of the many frameworks to make
+					our life easier, I've chosen <a href="https://semantic-ui.com/">Semantic UI</a></p>
+				<p class="fragment" data-fragment-index="2">greatest advantage: you can more or less understand it if you've never seen it, an example</p>
+				<pre class="fragment" data-fragment-index="3"><code data-noescape data-trim>
+&lt;form class=&quot;<span class="fragment highlight-current-red" data-fragment-index="4">ui large form segment</span>&quot;&gt; 
+  &lt;h3 class=&quot;<span class="fragment highlight-current-red" data-fragment-index="4">ui header</span>&quot;&gt;Add a Recipe&lt;/h3&gt;
+  &lt;div class=&quot;<span class="fragment highlight-current-red" data-fragment-index="4">field</span>&quot;&gt;
+	&lt;label for=&quot;name&quot;&gt;Name:&lt;/label&gt; 
+	&lt;input name=&quot;name&quot;&gt;
+  &lt;/div&gt;
+&lt;/form&gt;
+			</code></pre>
+			</section>
+			<section>
+				<div class='fragment' code-step>
+					<pre>src/styles.css<code data-noescape data-trim>
+@import './3rdParty/semantic.min.css';
+					</code></pre>
+					<div class='samespot'>
+						<p show-steps='1'>'global' css files should be imported in styles.css</p>
+					</div>
+				</div>
+			</section>
+			<section>
+				<h3>input and output</h3>
+				<h5>linking components</h5>
+				<ul>
+					<li class="fragment">we learned how to pass data between our components and their html (with <i>{{ }}</i> and <i>[ ]</i>)</li>
+					<li class="fragment">now we also need a way to pass info from one component to another, which will allow us to compartmentalize everything
+						in small components</li>
+					<li class="fragment">and we want to be able to respond to actions from the user (clicks etc.)</li>
+				</ul>
+
+			</section>
+			<section>
+				<h3>add recipe component</h3>
+				create a new AddRecipe component with the following html, for now we'll show it at the top of the main page
+				<pre class="fragment">src/app/add-recipe/add-recipe.component.html<code data-noescape data-trim>
+&lt;form class=&quot;ui large form segment&quot;&gt; 
+  &lt;h3 class=&quot;ui header&quot;&gt;Add recipe&lt;/h3&gt;
+  &lt;div class=&quot;field&quot;&gt;
+	&lt;label for=&quot;name&quot;&gt;Name:&lt;/label&gt; 
+	&lt;input id=&quot;name&quot; name=&quot;name&quot;&gt;
+  &lt;/div&gt;
+&lt;/form&gt;						
+			</code></pre>
+				<a class="fragment" href="http://localhost:4200/">let's try it</a>
+			</section>
+			<section>
+				<h3>make the form do something</h3>
+				<pre>src/app/add-recipe/add-recipe.component.html<code data-noescape data-trim>
+&lt;form class=&quot;ui large form segment&quot;&gt;
+  &lt;h3 class=&quot;ui header&quot;&gt;Add recipe&lt;/h3&gt;
+  &lt;div class=&quot;field&quot;&gt;
+    &lt;label for=&quot;name&quot;&gt;Name:&lt;/label&gt; 
+    &lt;input id=&quot;name&quot; name=&quot;name&quot; <span class="fragment highlight-current-red" data-fragment-index="3">#newrecipename</span>&gt;
+  &lt;/div&gt;
+  &lt;button <span class="fragment highlight-current-red" data-fragment-index="1">(click)</span>=<span class="fragment highlight-current-red" data-fragment-index="2">&quot;addRecipe(<span class="fragment highlight-current-red" data-fragment-index="4">newrecipename</span>)&quot;</span>
+  	    class=&quot;ui positive right floated button&quot;&gt;
+    add recipe 
+  &lt;/button&gt;
+&lt;/form&gt;
+	</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">an event, between '()'</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">is linked to an action, note that once again the contents of the string will be interpreted</p>
+
+					<p class="fragment current-visible current-replace" data-fragment-index="3">we use this 'hashtag' syntax to populate a template variable of our input field</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4">and then pass that variable to our function</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="5">the #newrecipe is a <i>local</i> variable</p>
+				</div>
+			</section>
+			<section>
+				we're referencing the <i>addRecipe</i> function, so we need to add it to our code
+				<pre>src/app/add-recipe.component.ts<code data-noescape data-trim>
+  addRecipe(newRecipeName: <span class="fragment highlight-current-red" data-fragment-index="1">HTMLInputElement</span>) : <span class="fragment highlight-current-red" data-fragment-index="3">boolean</span> {
+    console.log(newRecipeName<span class="fragment highlight-current-red" data-fragment-index="2">.value</span>);
+    <span class="fragment highlight-current-red" data-fragment-index="3">return false;</span>
+  }
+				</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">"hashtag fields" are basic DOM HTMLInputElements</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">use .value to access the contents</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">event handlers return a boolean, true if you want to propagate the event to other handlers, false to "eat" the event</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4"> <a href="http://localhost:4200/">let's try this out</a> </p>
+					<p class="fragment current-visible current-replace" data-fragment-index="5">to make this addRecipe functional, we need a way to represent a recipe, using some strings won't suffice </p>
+				</div>
+			</section>
+			<section>
+				<h3>model</h3>
+				<!-- <span class="fragment" data-fragment-index="1">we need a way to represent a recipe: a model</span> -->
+				<pre class="fragment" data-fragment-index="1">src/app/recipe/recipe.model.ts<code data-noescape data-trim>
+export class Recipe {
+  private _name: string;
+  <span class="fragment highlight-current-red" data-fragment-index="4">private _ingredients = new Array&lt;string&gt;();
+  private _directions = new Array&lt;string&gt;();</span>
+
+  constructor(name: string) {
+    this._name = name;
+  }
+  get name() : string {
+    return this._name;
+  }	
+  addIngredient(name: string, amount<span class="fragment highlight-current-red" data-fragment-index="3">?</span>: number, unit<span class="fragment highlight-current-red" data-fragment-index="3">?</span>: string) {
+    this._ingredients.push(`${amount || 1} ${unit || ""} ${name}`);
+  }
+}
+	</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="2">pretty basic private members, with setters and getters (not everything shown here)</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">you can specify optional arguments explicitly in typescript, with a '?'</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4">note that you can initalize properties immediately, don't explictly add a type if you do</p>
+				</div>
+			</section>
+			<section>
+				<h3>model</h3>
+				<span class="fragment" data-fragment-index="1">then we adapt the component to show this model i.s.o. some strings</span>
+				<pre class="fragment" data-fragment-index="2">src/add/recipe/recipe.component.ts<code data-noescape data-trim>
+<span class="fragment highlight-current-red" data-fragment-index="3">import { Recipe } from './recipe.model';</span>
+
+export class RecipeComponent implements OnInit {
+  <span class="fragment highlight-current-red" data-fragment-index="4">private _recipe: Recipe;</span>
+
+  constructor() { 
+    <span class="fragment highlight-current-red" data-fragment-index="4">this._recipe = new Recipe("spaghetti");</span>
+    <span class="fragment highlight-current-red" data-fragment-index="4">this._recipe.addIngredient("tomato", 0.75, "liter");</span>
+    <span class="fragment highlight-current-red" data-fragment-index="4">this._recipe.addIngredient("onion", 2);</span>
+    <span class="fragment highlight-current-red" data-fragment-index="4">this._recipe.addIngredient("minced meat", 500, "grams");</span>
+  }			
+				</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="3">first we need to import the model class into our component</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4">then remove the string properties and replace them with the model</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="5">if you'd try this, nothing would show, the html still references 'name' and 'ingredients'</p>
+				</div>
+			</section>
+			<section>
+				<h3>model</h3>
+				two options to show the model contents in the html
+				<pre class="fragment" data-fragment-index="1">src/add/recipe/recipe.component.html<code data-noescape data-trim>
+&lt;p&gt;
+  recipe for <span class="fragment highlight-current-red" data-fragment-index="1">{{recipe.name}}</span>
+&lt;/p&gt;		
+				</code></pre>
+				<pre class="fragment" data-fragment-index="2">src/add/recipe/recipe.component.ts<code data-noescape data-trim>
+export class RecipeComponent implements OnInit {
+  <span class="fragment highlight-current-red" data-fragment-index="2">get name() : string</span> {
+    return this._recipe.name;
+  }		
+
+				</code></pre>
+
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">adapt the html to use properties of the model</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">add accessors to our component</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">we will go with 1, adapting the html</p>
+				</div>
+			</section>
+			<section>
+				obviously we want the recipe as a parameter for our Component, not hard coded
+				<pre class="fragment" data-fragment-index="1">src/app/recipe/recipe.component.ts<code data-noescape data-trim>
+export class RecipeComponent implements OnInit {
+  <span class="fragment highlight-current-red" data-fragment-index="2">@Input()</span> <span class="fragment highlight-current-red" data-fragment-index="4">public</span> recipe: Recipe;
+
+  <span class="fragment highlight-current-red" data-fragment-index="3">constructor() { 
+  }</span>
+}	
+				</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="2">so we need an input</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">and empty our constructor</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4">@Input() properties should be public (semantically correct, dynamic creation of components, AOT compiling)</p>
+				</div>
+			</section>
+			<section>
+				(for now) we'll pass some recipes from app component to the recipe component
+				<pre class="fragment" data-fragment-index="1">src/app/app.component.ts<code data-noescape data-trim>
+<span class="fragment highlight-current-red" data-fragment-index="2">import { Recipe } from './recipe/recipe.model';</span>
+
+export class AppComponent {
+  <span class="fragment highlight-current-red" data-fragment-index="3">private _recipes = new Array&lt;Recipe&gt;();</span>
+
+  constructor() {
+    let recipe1 = ... 
+    let recipe2 = ...
+	
+    <span class="fragment highlight-current-red" data-fragment-index="4">this._recipes.push(recipe1);
+    this._recipes.push(recipe2);</span>
+	
+  }
+}			
+				</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">nothing new really</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">make sure you got the correct include for the model class</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">declare and define a private array property to the component</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4">and finally add some data</p>
+				</div>
+			</section>
+			<section>
+				update the html to use these
+				<pre>src/add/app.component.html<code data-noescape data-trim>
+&lt;div <span class="fragment highlight-current-red" data-fragment-index="3">class=&quot;ui container&quot;&gt;</span>
+  &lt;app-add-recipe&gt;&lt;/app-add-recipe&gt;
+  &lt;div <span class="fragment highlight-current-red" data-fragment-index="3">class=&quot;ui grid segment&quot;&gt;</span>
+	&lt;app-recipe <span class="fragment highlight-current-red" data-fragment-index="1">*ngFor=&quot;let localRecipe of recipes&quot;</span> 
+		<span class="fragment highlight-current-red" data-fragment-index="2">[recipe]=&quot;localRecipe&quot;&gt;</span>
+    &lt;/app-recipe&gt;
+  &lt;/div&gt;
+&lt;/div&gt;	
+				</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">*ngFor over our recipes, storing each iteration in the <i>localRecipe</i> loop variable</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">use that variable and assign it to the @Input recipe property of recipe component (using [])</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">and throw some semantic ui css classes in there too</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4"> <a href="http://localhost:4200/">let's try this out</a> </p>
+				</div>
+			</section>
+			<section>
+				make add recipe component add to the recipe list
+				<pre class="fragment" data-fragment-index="1">src/app/add-recipe.component.ts<code data-noescape data-trim>
+import { Component, <span class="fragment highlight-current-red" data-fragment-index="6">Output, EventEmitter</span> } from '@angular/core';
+import { <span class="fragment highlight-current-red" data-fragment-index="6">Recipe</span> } from '../recipe/recipe.model';
+
+export class AddRecipeComponent {
+  <span class="fragment highlight-current-red" data-fragment-index="2">@Output()</span> public newRecipe = new <span class="fragment highlight-current-red" data-fragment-index="3">EventEmitter&lt;Recipe&gt;();</span>
+
+  addRecipe(newRecipeName: HTMLInputElement) : boolean {
+    <span class="fragment highlight-current-red" data-fragment-index="5">let recipe = new Recipe(newRecipeName.value);</span>
+    <span class="fragment highlight-current-red" data-fragment-index="4">this.newRecipe.emit(recipe);</span>
+    return false;
+  }
+}
+				</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="2">this time we don't want to receive something from another component, but send something to one: @Output property</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">@Output's are of type EventEmitter, we add the generic specification of &lt;Recipe&gt;, we're sending Recipe objects</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4">sending such data is done by calling the <i>emit</i> method on the emitter</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="5">with a recipe we created from the HTMLInputElement we passed earlier</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="6">don't forget to include everything you need</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="7">add-recipe.component.html doesn't change (it was already calling this addRecipe function, nothing changed)</p>
+				</div>
+			</section>
+			<section>
+				we still need to receive this output
+				<pre>src/app/app.component.html<code data-noescape data-trim>
+&lt;div class=&quot;ui container&quot;&gt;
+  &lt;app-add-recipe <span class="fragment highlight-current-red" data-fragment-index="1">(newRecipe)</span>=<span class="fragment highlight-current-red" data-fragment-index="2">&quot;newRecipeAdded($event)&quot;</span>&gt;&lt;/app-add-recipe&gt;
+  &lt;div class=&quot;ui grid segment&quot;&gt;
+    &lt;app-recipe *ngFor=&quot;let recipe of recipes&quot; [recipe]=&quot;recipe&quot;&gt;
+    &lt;/app-recipe&gt;
+  &lt;/div&gt;
+&lt;/div&gt;
+</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">you should see the creation of a new recipe as an event (it comes from an EventEmitter after all), similar to a click
+						happening, so ()</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">and then add a handler to it, a function on app.component.ts that will be called when the event happens</p>
+				</div>
+			</section>
+			<section>
+				the event handler
+				<pre>src/app/app.component.ts<code data-noescape data-trim>
+newRecipeAdded(recipe) {
+    this._recipes.push(recipe);
+}
+				</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">we simply push the parameter to the list, the event parameter is a Recipe object</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">remember, we created the EventEmitter as EventEmitter&lt;Recipe&gt;, so it emits recipes</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3"> <a href="http://localhost:4200/">let's try this out</a> </p>
+				</div>
+			</section>
+			<section>
+				<h3>status</h3>
+				<ul>
+					<li class="fragment">we can add recipes now, through a simple form</li>
+					<li class="fragment">we did this to show how @Input / @Output works, performing some 'low level' event handling</li>
+					<li class="fragment">if you simply want to create functional forms, there are other (better) ways to do that! (later...)</li>
+					<li class="fragment">still, while we can add recipes now, data is stored in the app component, it shouldn't be in a component at all</li>
+					<li class="fragment">we need a new concept, a class which performs functionality across components</li>
+				</ul>
+			</section>
+			<section>
+				<h3>services</h3>
+				<ul>
+					<li class="fragment">services typically serve one of these goals</li>
+						<ul>
+							<li class="fragment">encapsulate business logic needed throughout your app</li>
+							<li class="fragment">providing data access to different components</li>
+						</ul>
+					<li class="fragment">you use services to share code / data across components, so obviously you don't want to simply instantiate local copies
+						in each component</li>
+					<li class="fragment">you use injection to add them to components, and 'share' your copy</li>
+				</ul>
+			</section>
+			<section>
+				<h3>services</h3>
+				we'll use angular-cli to generate our service
+				<pre><code data-noescape data-trim>
+ng generate service RecipeData				
+				</code></pre>
+				<pre data-trim class="console fragment" data-fragment-index="1">
+installing service
+  <span class="cli-green">create</span> src/app/recipe-data.service.spec.ts
+  <span class="cli-green">create</span> src/app/recipe-data.service.ts
+  <span class="cli-yellow">WARNING</span> Service is generated but not provided, it must be provided to be used
+				</pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="2">note that no html nor css is created, a service is not something that will be shown</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">components were automatically added to the module, and useable immediately, the warning tells you this isn't the case
+						for services</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4">services are typically only needed in a few components, and the cli can't know which ones, so you have to add it yourself</p>
+				</div>
+			</section>
+			<section>
+				<h3>service</h3>
+				<pre>src/app/recipe-data.service.ts<code data-noescape data-trim>
+import { <span class="fragment highlight-current-red" data-fragment-index="2">Injectable</span> } from '@angular/core';
+
+<span class="fragment highlight-current-red" data-fragment-index="2">@Injectable()</span>
+export class RecipeDataService {
+  constructor() { }
+
+}
+				</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">not much here, once again a class with a decorator</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">now we decorate with @Injectable, this prepares the class to use it with Angular's own DI</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">let's move the recipe data from the app component to this class</p>
+				</div>
+			</section>
+			<section>
+				<h3>Recipe Data Service</h3>
+				<pre>src/app/recipe-data-service.ts<code data-noescape data-trim>
+export class RecipeDataService {
+  private _recipes = new Array&lt;Recipe&gt;();
+
+  constructor() {
+    let recipe1 = ...
+    this._recipes.push(recipe1);
+  }
+  
+  get recipes() : Recipe[] {
+    return this._recipes;
+  }
+
+  addNewRecipe(recipe) {
+    this._recipes.push(recipe);
+  }
+}	</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">simple cut and paste, for now</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">don't forget to import the Recipe declaration</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">now let's replace the property in the app component with references to this service</p>
+				</div>
+			</section>
+			<section>
+				<h3>using the service</h3>
+				<pre>src/app/app.component<code data-noescape data-trim>
+@Component({
+  <span class="fragment highlight-current-red" data-fragment-index="1">providers: [RecipeDataService]</span>
+})
+export class AppComponent {
+  private _recipes: Recipe[];
+  constructor(<span class="fragment highlight-current-red" data-fragment-index="2"><span class="fragment highlight-current-red" data-fragment-index="4">private</span> _recipeDataService : RecipeDataService</span>) {
+    this._recipes = <span class="fragment highlight-current-red" data-fragment-index="5">this._recipeDataService</span>.recipes;
+  }
+  newRecipeAdded(recipe) {
+    <span class="fragment highlight-current-red" data-fragment-index="5">this._recipeDataService</span>.addNewRecipe(recipe);
+  }
+}	
+	</code></pre>
+				<div style="position:relative">
+					<p class="fragment current-visible current-replace" data-fragment-index="1">add your injectable service to the providers list in the component decorator</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="2">add a parameter of this type to the constructor of your component</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">that's it, that will create and inject the service</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="4">remember, by adding private to the constructor argument, you also declare the property immediately</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="5">then simply use the public functions from your service i.s.o. defining everything inside the app component</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="6">note that if you use this service in many components, only one will be created and shared by the DI system</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="7"> <a href="http://localhost:4200/">let's try this out</a> </p>
+				</div>
+			</section>
+			<section>
+				<h3>service</h3>
+				<ul>
+					<li class="fragment">we succesfully moved our data to a shared service, ready to be used throughout the app</li>
+					<li class="fragment">still, we lose everything after a refresh... we need a backend with a database and the whole shebang</li>
+					<li class="fragment">but that's for next week</li>
+				</ul>
+			</section>
+			<section>
+				<h3>summary</h3>
+				<ul>
+					<li class="fragment">basic actions are handled by enclosing them in parentheses <i>(click)="myClickFunction()"</i></li>
+					<li class="fragment">forms can easily store input variables using hashtag syntax <i>#inputfield</i>, and pass those to event handlers</li>
+					<li class="fragment">creating data from one component, to be used by another, is achieved using <i>@Output</i> and <i>EventEmitter</i></li>
+					<li class="fragment">use a service to encapsulate data or logic used by several components using <i>@Injectable</i> and <i>providers</i></li>
+				</ul>
+			</section>
+
+			<script src="lib/js/head.min.js"></script>
+			<script src="js/reveal.js"></script>
+			<script>
+				// More info about config & dependencies:
+				// - https://github.com/hakimel/reveal.js#configuration
+				// - https://github.com/hakimel/reveal.js#dependencies
+				Reveal.initialize({
+					controls: false,
+					slideNumber: true,
+					dependencies: [
+						{
+							src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+								hljs.initHighlightingOnLoad();
+
+								// during development, always start at last slide
+								var indices = Reveal.getIndices(document.getElementById('sectionID'));
+								// Reveal.slide(Reveal.getTotalSlides());
+							}
+						},
+
+					],
+				});
+			</script>
+</body>
+
+</html>

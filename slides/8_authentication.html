@@ -1,0 +1,750 @@
+<!doctype html>
+<html>
+
+<head>
+	<meta charset="utf-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+	<title>8. authentication</title>
+
+	<!-- Theme used for syntax highlighting of code -->
+	<link rel="stylesheet" href="lib/css/zenburn.css">
+
+	<link rel="stylesheet" href="css/reveal.css">
+	<link rel="stylesheet" href="css/theme/sky.css">
+
+	<!-- pieter overrides -->
+	<link rel="stylesheet" href="webapps.css">
+	<link rel="stylesheet" href="plugin/codestepper/codestepper.css">
+
+	<!-- Printing and PDF exports -->
+	<script>
+		var link = document.createElement('link');
+		link.rel = 'stylesheet';
+		link.type = 'text/css';
+		link.href = window.location.search.match(/print-pdf/gi) ? 'css/print/pdf.css' : 'css/print/paper.css';
+		document.getElementsByTagName('head')[0].appendChild(link);
+	</script>
+</head>
+
+<body>
+
+	<div class="reveal">
+
+		<div class="slides">
+			<section>
+				<h2>authentication</h2>
+			</section>
+			<section>
+				<h3>authentication</h3>
+				<ul>
+					<li class="fragment">many sites want to provide personalized content, and hence need a system to register and identify users</li>
+					<li class="fragment">user data is considered sensitive, and many (sometimes strict) laws apply to how you handle user data (GDPR)</li>
+					<li class="fragment">users (rightfully) expect you to store their data securely and with care; storing 6 letter passwords in a cleartext file won't cut it anymore </li>
+				</ul>
+			</section>
+			<section>
+				<h3>authentication</h3>
+				<ul>
+					<li class="fragment">implementing all steps correctly is far from trivial, as few things involving encryption tend to be</li>
+					<li class="fragment">luckily, we're also far from the first ones to attempt this, by now it's pretty well known how to tackle these problems</li>
+					<li class="fragment">still, caution and diligence are advised; data breaches happen, users re-use their same passwords, exposing user info is always bad, even on seemingly 'unimportant' sites</li>
+				</ul>
+			</section>
+			<section>
+				<h3>authentication steps</h3>
+				<ul>
+					<li class="fragment">create a database table (collection), PROPERLY store username and password</li>
+					<li class="fragment">provide routes to login / register new users in your backend</li>
+					<li class="fragment">choose a secure way to communicate who's logged in between front and backend (e.g. jwt)</li>
+					<li class="fragment">protect all backend routes which shouldn't be accessible by everyone</li>
+					<li class="fragment">properly store and send your token (or cookie) in the frontend so you DO get access where you should</li>
+				</ul>
+			</section>
+			<section>
+				<h3>authentication DON'T's</h3>
+				<ul>
+					<li class="fragment">NEVER trust the frontend, sanitize everything in your backend</li>
+					<li class="fragment">DO NOT rely on 'secrets' or urls only you know to secure something</li>
+					<li class="fragment">DO NOT invent your own encryption mechanism, that is really, really (really) hard</li>
+					<li class="fragment">NEVER trust the frontend</li>
+				</ul>
+			</section>
+		
+			<section>
+				<h3>passwords & hashes</h3>
+				<ul>
+					<li class="fragment">you store a password as a (secure) hash, this works because computing the hash is (relatively) slow, so brute forcing becomes hard</li>
+					<li class="fragment">unfortunately, the 'world of hashes' changed the last years, and changed a lot</li>
+					<li class="fragment">GPU's happen to be <i>very</i> good at hashing and people started to use GPU power for general computing</li>
+				</ul>
+      </section>
+      <section>
+        <h3>passwords & hashes</h3>
+        <ul>
+          <li class="fragment">how long do you think it takes to brute force a truly random (lowercase, uppercase, number) 8 character password?</li>
+          <li class="fragment">think again <a href="https://www.grc.com/haystack.htm">https://www.grc.com/haystack.htm</a></li>
+				 	<li class="fragment"><a href="https://blog.codinghorror.com/password-rules-are-bullshit/">password rules are bullshit</a>, the only thing you achieve is annoy your regular users (and show you don't know anything about password safety to your knowledgeable users)</li>
+        </ul>
+      </section>
+			<section>
+				<h3>password rules</h3>
+				<ul>
+          <li class="fragment">size is the only thing that matters <span style='font-size:0.4em'>that's what she said</span></li>
+					<li class="fragment">your password is probably to short, use passphrases</li>
+          <li class="fragment">better yet, use a decent password manager, many of you will have (root) access to large and important computers during your careers, start good habits now</li>
+				</ul>
+			</section>
+			<section>
+					<h3>database</h3>
+					<div class='fragment' code-step>
+					  <pre class='typescript'><code data-noescape data-trim>
+	let UserSchema = new mongoose.Schema({
+		username: { type: String, lowercase: true, 
+			<span highlight-steps='2'>unique: true</span> }<span show-steps='3-4'>,
+		hash: String</span><span show-steps='4'>,
+		salt: String</span>
+	});
+					  </code></pre>
+					  <div class='samespot'>
+						<p show-steps='1'>we'll need a User table to identify our users</p>
+						<p show-steps='2'>usernames should be unique, so we'll enforce that (if someone lost his password, how would you know which one to reset?)</p>
+						<p show-steps='3'>obviously we won't store the password in cleartext, in case of a data breach we don't want user's passwords exposed, so we'll properly hash the password and compare the hashes</p>
+						<p show-steps='4'>but even storing a simple hash is not enough, this exposes us to rainbow table attacks, so we'll add a salt too</p>
+					  </div>
+					</div>
+				</section>
+				<section>
+					<h3>database</h3>
+					<div class='fragment' code-step>
+					  <pre class='typescript'><code data-noescape data-trim>
+UserSchema.methods.setPassword = function (password) {<span show-steps='2-6'>
+	this.salt = crypto.randomBytes(32).toString('hex');
+	this.hash = crypto.<span highlight-steps='3'>pbkdf2Sync</span>(password, this.salt, 
+	  <span highlight-steps='5'>10000</span>, 64, 'sha512').toString('hex');</span>
+}<span show-steps='6'>
+UserSchema.methods.validPassword = function (password) {
+	let hash = crypto.pbkdf2Sync(password, this.salt, 
+	  10000, 64, 'sha512').toString('hex');
+    return this.hash === hash;
+};</span>
+					  </code></pre>
+					  <div class='samespot'>
+						<p show-steps='1'>the user types in a username and password, but we only always store (and compare) the salted hash, so add some helper functions for this</p>
+						<p show-steps='2'>use a library to generate salts and hashes (generating secure random strings is surprisinly hard)</p>
+						<p show-steps='3'>using the correct hash function is very important, how do you know a hashfunction is a good one? google it</p>
+						<p show-steps='4'>(what is considered good changes over time, if you start a new project in 2027, don't rely on what you learned in these slides)</p>
+						<p show-steps='5'>these days pbkdf2 with sha512 is considered good, if you use enough iterations</p>
+						<p show-steps='6'>the function to check if the password is valid should obviously do the exact same hashing (with the same salt) </p>
+					  </div>
+					</div>
+				</section>
+				<section>
+					<h3>json web token</h3>
+					<ul>
+						<li class="fragment">we need a way to store login status on the frontend, so users don't have to re-login on every single requests</li>
+						<li class="fragment">we'll use json web tokens for this (jwt) and store them in the browser's localstorage</li>
+						<li class="fragment">since this a common use case for nodejs, there are many libraries available, we'll use passport.js</li>
+					</ul>
+				</section>
+				<section>
+					<h3>nodejs</h3>
+					<pre data-trim class='console'>
+<span class='prompt'>~$</span> npm install jsonwebtoken --save
+<span class='prompt'>~$</span> npm install express-jwt --save
+<span class='prompt'>~$</span> npm install passport passport-local --save
+          </pre>
+          we'll use the passport-local part (since we store passwords ourselves), passport makes it rather easy to to facebook-login etc. too
+        </section>
+        <section>
+          <h3>json web token</h3>
+          <ul>
+            <li class="fragment">a <a href="https://jwt.io">jwt</a> has a header, some payload and a verification signature</li>
+            <li class="fragment">(localstorage only stores strings, so it's typically base64 encoded)</li>
+            <li class="fragment">you encrypt the signature on the server using a secret only you know</li>
+            <li class="fragment">then when the token is sent back to you, you check the signature using that secret, and you know the user is who she claims to be</li>
+          </ul>
+        </section>
+        <section>
+          <h3>jwt for User</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+UserSchema.methods.generateJWT = function () {<span show-steps='3-4'>
+  var today = new Date();
+  var exp = new Date(today);
+  exp.setDate(today.getDate() + 60);</span><span show-steps='2-4'>
+  return jwt.sign({
+      _id: this._id,
+      username: this.username<span show-steps='3-4'>,
+      exp: parseInt(exp.getTime() / 1000)</span>
+  }, <span highlight-steps='4'>SECRET</span>);</span>
+};
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>so when our user is succesfully logged in, we want to create a jwt that identifies him securely, we'll add another function to generate the jwt</p>
+              <p show-steps='2'>we'll securely sign the id and username, so when it gets back to us we can confirm the identity, often roles are stored here too (admin or not)</p>
+              <p show-steps='3'>you want tokens to expire (people shouldn't be able to use a token that's years and years old), so add an expiration date and sign it too</p>
+              <p show-steps='4'>you need a secret only the server knows to encrypt/decrypt this signature, but where should you store this secret? a variable exposed in github is obviously a bad idea</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>server secret</h3>
+          <div class='fragment' code-step>
+            <pre class='bash' ><code data-noescape data-trim style='font-size:0.9em'>
+app-env
+  export RECIPE_BACKEND_SECRET="IfThisEndsUpInGithubYouFailTheClass"<span show-steps='2-4'>
+
+<span class='prompt'>~$</span> source app-env # unix, no idea about windows, 
+                  # tell me so I can update this slide</span><span show-steps='3-4'>
+
+package.json
+  "start" : "source app-env && node ./bin/www"</span><span show-steps='4'>
+
+.gitignore
+  app-env</span>
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>we'll store the secret as an environment variable on the server</p>
+              <p show-steps='2'>to add this to the current environment use the source command on unix/macos</p>
+              <p show-steps='3'>we'll simply add this to our npm start script, so it's always loaded when we start the node server</p>
+              <p show-steps='4'>don't forget to update your .gitignore to include the app-env file!</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>server secret in node</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+UserSchema.methods.generateJWT = function () {
+  // ...
+  return jwt.sign({
+      _id: this._id,
+      username: this.username,
+      exp: parseInt(exp.getTime() / 1000),
+  }, <span highlight-steps='1'>process.env.RECIPE_BACKEND_SECRET</span>);
+}
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>then you can access the server secret using process.env</p>
+              <p show-steps='2'>this allows us to securely register, log in, store passwords and generate a token</p>
+              <p show-steps='3'>all our routes are still wide open though, that's where passport comes in</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>passport</h3>
+          <ul>
+            <li class="fragment">we want to 'guard' certain routes of our server, only allow them to be called if a user is logged in (and has sufficient rights)</li>
+            <li class="fragment">we do this by adding a middleware function that is called before we reach the callback of our request (just like the bodyParser or cookieParser) authentication should run first, and only call 'next' if we have the proper rights</li>
+            <li class="fragment">the middleware function is provided by the passport library, we just to need to configure it to use our User functions</li>
+          </ul>
+        </section>
+        <section>
+          <h3>passport</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+var passport = require('passport');
+var LocalStrategy = require('passport-local').Strategy;
+var mongoose = require('mongoose');
+var User = mongoose.model('User');
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>we start by including all the necessary import, both for passport and for our User</p>
+              <p show-steps='2'>we'll use the local strategy, since we'll verify locally if a user is properly logged in</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>passport</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim style='font-size:0.8em'>
+passport.use(new LocalStrategy(
+  <span highlight-steps='1'>function (username, password, done)</span> {
+      <span highlight-steps='2'>User.findOne({ username: username },</span> function (err, user) {
+          if (err) { return done(err); }
+          if (!user) {
+              return done(null, false, { message: 'Incorrect username.' });
+          }
+          if (!user.validPassword(password)) {
+              return done(null, false, { message: 'Incorrect password.' });
+          }
+          return done(null, user);
+      });
+  }));
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>then we'll provide a function as parameter to the LocalStrategy constructor, this function has three parameters, the username and password, and a 'done' function we should call again</p>
+              <p show-steps='2'>if we find the user in our collection, we need to check if the password matches, and either signal everything is ok or if login failed</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>app.js</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+<span highlight-steps='1'>let passport = require('passport');</span>
+
+require('./models/User');
+require('./models/Recipe');
+require('./models/Ingredient');
+
+<span highlight-steps='1'>require('./config/passport');</span>
+
+mongoose.connect('mongodb://localhost/recipedb2', {  useMongoClient: true });
+...
+app.use(bodyParser.urlencoded({ extended: false }));
+app.use(cookieParser());
+app.use(express.static(path.join(__dirname, 'public')));
+<span highlight-steps='1'>app.use(passport.initialize());</span>
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>in app.js we have to include our passport and initialize it and insert it</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>express-jwt</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'>routes/index.js<code data-noescape data-trim>
+let jwt = require('express-jwt');
+
+let auth = jwt({secret: process.env.RECIPE_BACKEND_SECRET, userProperty: 'payload'});
+<span show-steps='2'>
+router.post('/API/recipes/', auth, function (req, res, next) {
+}</span>
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>to easily create the jwt checking middleware function we'll use the express-jwt library</p>
+              <p show-steps='2'>then we simply insert this 'auth' everywhere we want to protect a route</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>register route</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'>routes/users.js<code data-noescape data-trim>
+router.post('/register', function(req, res, next){
+  if(!req.body.username || !req.body.password){
+      return res.status(400).json(
+        {message: 'Please fill out all fields'});
+  }
+  var user = new User();
+  user.username = req.body.username;
+  user.setPassword(req.body.password)
+  user.save(function (err){
+      if(err){ return next(err); }
+      return res.json({token: user.generateJWT()})
+  });
+});
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>that's (almost) it, we still need to add backend routes to register / login and actually add users to this database / generate jwt's</p>
+              <p show-steps='2'>this is nothing new, use the request body in your post request, create and object with it and save it, the result will be our generated jwt for this user</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>login route</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+router.post('/login', function(req, res, next){
+  if(!req.body.username || !req.body.password){
+      return res.status(400).json(
+        {message: 'Please fill out all fields'});
+  }
+  passport.authenticate('local', function(err, user, info){
+    if(err){ return next(err); }
+    if(user){
+      return res.json({token: user.generateJWT()});
+    } else {
+      return res.status(401).json(info);
+    }
+  })(req, res, next);
+});
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>login is very similar, also a post but now we use passport to see if the username / password matches the one we already have stored</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>angular</h3>
+          <ul>
+            <li class="fragment">that's it for our backend, you could test these routes with postman if you want</li>
+            <li class="fragment">on the angular side, we need a few things: a login and register form, a way to log out</li>
+            <li class="fragment">and we need to add authorization headers for all our routes</li>
+          </ul>
+        </section>
+        <section>
+          <h3>user module</h3>
+          <div class='fragment' code-step>
+              <pre data-trim class='console'>
+<span class='prompt'>~/webapps/$</span> ng g m User<span show-steps='2-3'>
+<span class='prompt'>~/webapps/$</span> cd src/app/user/
+<span class='prompt'>~/webapps/src/app/user/$</span> ng g s Authentication</span><span show-steps='3'>
+<span class='prompt'>~/webapps/src/app/user/$</span> ng g c Login
+<span class='prompt'>~/webapps/src/app/user/$</span> ng g c Register</span>
+                </pre>
+            <div class='samespot'>
+              <p show-steps='1'>since last week we all love modules, so lets put everything concerning users and authentication in its own module</p>
+              <p show-steps='2'>just like we put all our recipe http calls in a separate service, we'll add an authentication service to do all our user http calls</p>
+              <p show-steps='3'>let's add a login and register component already too, we'll need them shortly</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>authentication service</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'>src/app/user/authentication.service.ts<code data-noescape data-trim style='font-size:0.8em'>
+
+@Injectable()
+export class AuthenticationService {
+  private _url = <span highlight-steps='1'>'/API/users'</span>;
+  <span highlight-steps='2'>private _user$: <span highlight-steps='3'>BehaviorSubject</span>&lt;string&gt;;</span>
+  
+  constructor(private http: Http) {
+   <span highlight-steps='4'> const currentUser = JSON.parse(localStorage.getItem('currentUser'));</span>
+    this._user$ = new BehaviorSubject&lt;string&gt;(
+      currentUser && currentUser.username);
+  }
+
+  get user$(): BehaviorSubject<string> {
+    return this._user$;
+  }            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>all our calls will be to a urls in the /API/users/ subdomain</p>
+              <p show-steps='2'>we'll provide access to the current user using an observable (adding $ to the end of the variable name is a convention often used when dealing with Observables or streams)</p>
+              <p show-steps='3'>BehaviorSubject are like regular Subject's, but they 'remember' the last value (so if someone subscribes after a login happened, username is available)</p>
+              <p show-steps='4'>in the constructor we check if the token is already set, if it is we are logged in already, signal this to the observable too</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>login method</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+login(username: string, password: string): Observable&lt;boolean&gt; {
+  return <span highlight-steps='1'>this.http.post(`${this._url}/login`, 
+    { username: username, password: password }</span>)
+    .map(res => res.json()).map(res => {
+      const token = res.token;
+      <span highlight-steps='2'>if (token) {
+        localStorage.setItem('currentUser', 
+          JSON.stringify({ username: username, token: token }));</span>
+        <span highlight-steps='3'>this._user$.next(username);</span>
+        return true;
+      } else {
+        return false;
+      }
+    });
+}         
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>we'll post to the /API/users/login route with a body containing the username and password keys</p>
+              <p show-steps='2'>if the login is succesfull, our backend returns the jwt token as a json response, so we'll extract it and save it to our localstorage</p>
+              <p show-steps='3'>we'll also signal through our BehaviorSubject that a new user is logged in</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>register method</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+register(username: string, password: string): Observable&lt;boolean&gt; {
+    return this.http.post(`${this._url}/register`, 
+      { username: username, password: password })
+      .map(res => res.json()).map(res => {
+        const token = res.token;
+        if (token) {
+          localStorage.setItem('currentUser', 
+            JSON.stringify({ username: username, token: res.token }));
+          this._user$.next(username);
+          return true;
+        } else {
+          return false;
+        }
+      });
+  }
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>the register method is very similar, but now we post the username and body to the register url</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>logout method</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+logout() {
+  if (this.user$.getValue()) {
+    localStorage.removeItem('currentUser');
+    setTimeout(() => this._user$.next(null));
+  }
+}
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>logging out is achieved by removing the token, and signaling we have no user anymore</p>
+              <p show-steps='2'>the setTimeout is done to change the value on the next job queue tick, otherwise we're updating values while processing changes in the change detection chain (it would give weird browser errors)</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>register form</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim style='font-size:0.8em'>
+export class RegisterComponent implements OnInit {
+  public user: FormGroup;
+
+  ngOnInit() {
+    this.user = this.fb.group({
+      username: ['', [Validators.required, Validators.minLength(4)], 
+        <span highlight-steps='3'>this.serverSideValidateUsername()</span>],
+      <span highlight-steps='2'>passwordGroup</span>: this.fb.group({
+        password: ['', [Validators.required, <span highlight-steps='4'>passwordValidator(12)</span>]],
+        confirmPassword: ['', Validators.required]
+      }, <span highlight-steps='2'>{ validator: comparePasswords }</span>)
+    });
+  }
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>next up, the register form, we'll create a standard register form, three input fields, one username, one password, and one to confirm the password</p>
+              <p show-steps='2'>there's some new stuff here though, we put both passwords in a group, so that we can add a custom validator to that group, which will check that both passwords are the same</p>
+              <p show-steps='3'>we're also using server side validation for the first time, this async validator function will be called if the other validators succeeded, we'll check for uniqueness of our username</p>
+              <p show-steps='4'>and we'll use another custom validator to check for decent passwords</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>custom validators</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim style='font-size:0.8em'>
+<span highlight-steps='3'>function passwordValidator(length: number): ValidatorFn {
+  return</span> (<span highlight-steps='1'>control: AbstractControl</span>): <span highlight-steps='1'>{ [key: string]: any }</span> => {
+    return control.value.length < length ? <span highlight-steps='2 '>{ 'passwordTooShort': 
+      { requiredLength: length, actualLength: control.value.length } }</span> : <span highlight-steps='1'>null</span>;
+  };
+}
+
+<span highlight-steps='1'>function</span> comparePasswords(<span highlight-steps='1'>control: AbstractControl)</span>: <span highlight-steps='1'>{ [key: string]: any }</span> {
+  const password = control.get('password');
+  const confirmPassword = control.get('confirmPassword');
+  return password.value === confirmPassword.value ? <span highlight-steps='1'>null</span> : <span highlight-steps='2'>{ 'passwordsDiffer': true }</span>;
+}
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>custom validators are simply functions which take a control as parameter and return null if the validation succeeded</p>
+              <p show-steps='2'>or they return a key:value object if there's an error (remember our {required: true} error from last week) </p>
+              <p show-steps='3'>if you want to parameterize your validator itself, you create a function which returns a function, you know this by now</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>server side validation</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+serverSideValidateUsername(): ValidatorFn {
+  return (control: AbstractControl): <span highlight-steps='2'>
+    Observable<{ [key: string]: any }> </span>=> {
+    return this.authenticationService.<span highlight-steps='3'>
+      checkUserNameAvailability</span>(control.value).map(available => {
+      if (available) {
+        return null;
+      }
+      return { userAlreadyExists: true };
+    })
+  };
+}
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>our server side validation must be a member function, we need access to the server (via authentication service)</p>
+              <p show-steps='2'>the signature is the same of a regular validator, but now we're async, so we return an Observable of such a key:value object</p>
+              <p show-steps='3'>we'll add a function to our service to check for user name availability</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>user name availability in nodejs</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+router.post('<span highlight-steps='1'>/checkusername</span>', function(req, res, next) {
+  User.find({username: req.body.username}, 
+    function(err, result) {
+      if (result.length) {
+        res.json(<span highlight-steps='2'>{'username': 'alreadyexists'}</span>)
+      } else {
+        res.json(<span highlight-steps='2'>{'username': 'ok'}</span>)
+      }
+  });
+});
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>before we can add it to the service, we need a route on our server, so let's add a checkusername route</p>
+              <p show-steps='2'>we'll simply return a json object saying if the user exists already or not</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>user name availability in service</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+checkUserNameAvailability(username: string): Observable<boolean> {
+    return this.http.post(`${this._url}/checkusername`, { username: username }).map(res => res.json())
+    .map(item => {
+      if (item.username === 'alreadyexists') {
+        return false;
+      } else {
+        return true;
+      }
+    });
+  }
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>our service then, simply needs to call this route with a username and check the response</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>register html</h3>
+          <div class='fragment' code-step>
+            <pre class='html'><code data-noescape data-trim>
+&lt;label for=&quot;username&quot;&gt;username:&lt;/label&gt;
+&lt;input type=&quot;text&quot; id=&quot;username&quot; formControlName='username'&gt;
+&lt;div class='ui pointing red basic label' 
+  *ngIf='user.get(&quot;username&quot;).errors?.userAlreadyExists 
+  &amp;&amp; user.get(&quot;username&quot;).touched'&gt;
+    a user with that name already exists
+&lt;/div&gt;
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>in our html we simply need to link the three input fields to their controls and add a whole lot of error divs</p>
+              <p show-steps='2'><a href="http://localhost:4200/register">let's check this out</a></p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>authentication headers</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+@Injectable()
+export class RecipeDataService {
+  get recipes(): Observable<Recipe[]> {
+      return this.http.get(`${this._appUrl}/recipes`<span show-steps='2'>, 
+        { headers: new Headers({Authorization: `Bearer ${this.auth.token}`}) }</span>)
+        .map(response => response.json().map(item => Recipe.fromJSON(item)));
+  }
+}
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>our recipe calls whom had a guard added need to pass our authentication token before they can work</p>
+              <p show-steps='2'>this is done by passing a Headers option to a request, with the authentication token as a Bearer</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>auth guard</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'>src/app/app-routing/app-routing.module.ts<code data-noescape data-trim>
+const appRoutes: Routes = [
+  {
+    path: 'recipe',<span show-steps='2'>
+    canActivate: [ AuthGuardService ],</span>
+    loadChildren: '../recipe/recipe.module#RecipeModule'
+  },
+  { path: '', redirectTo: 'recipe/list', pathMatch: 'full'},
+  { path: '**', component: PageNotFoundComponent}
+];
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>one thing we still want is to 'lock' parts of our frontend, only show them to authorized users</p>
+              <p show-steps='2'>you do this by adding guards, we'll put our full recipe module behind a guard (so only logged in users can access anything)</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>AuthGuardService</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+import { CanActivate } from '@angular/router';
+
+@Injectable()
+export class AuthGuardService implements CanActivate {
+  canActivate(route: ActivatedRouteSnapshot, 
+        state: RouterStateSnapshot): boolean {
+    if (this.authService.user$.getValue()) {
+      return true;
+    }<span show-steps='4'>
+    this.authService.redirectUrl = state.url;</span><span show-steps='3-4'>
+    this.router.navigate(['/login']);</span>
+    return false;
+  }
+}
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>we added a CanActivate guard, so we implement the CanActivate interface</p>
+              <p show-steps='2'>guards return a boolean, now we simply need to return true or false if we're logged in or not</p>
+              <p show-steps='3'>if we're not logged in we'll redirect to the login page</p>
+              <p show-steps='4'>we'll do one more thing though, we remember which url we were trying to access, after a successfull login we'll "continue" to the page</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>login component</h3>
+          <div class='fragment' code-step>
+            <pre class='typescript'><code data-noescape data-trim>
+onSubmit() {
+  this.authService.login(this.user.value.username, 
+          this.user.value.password).subscribe(val => {
+    if (val) {
+     <span highlight-steps='1'> if (this.authService.redirectUrl) {
+        this.router.navigateByUrl(this.authService.redirectUrl);
+        this.authService.redirectUrl = undefined;
+      }</span> else {
+        this.router.navigate(['/recipe/list']);
+      }
+    }
+  }<span highlight-steps='2'>, err => this.errorMsg = err.json().message)</span>;
+}
+            </code></pre>
+            <div class='samespot'>
+              <p show-steps='1'>the login component then, needs to redirect to this url if login succeeds</p>
+              <p show-steps='2'>in this component I'll also show how to deal with backend errors</p>
+            </div>
+          </div>
+        </section>
+        <section>
+          <h3>last words</h3>
+          <ul>
+            <li class="fragment">we're not doctors, people's lifes (rarely) depend on what a software developer does, but the one place where we do have a responsability is with a user's personal data</li>
+            <li class="fragment">users deserve privacy, and proper handling and protection of their personal data</li>
+            <li class="fragment">you can half-ass and 'hack' a lot of things in our profession, but take security and privacy seriously, take your time and plan to do it properly</li>
+          </ul>
+        </section>
+
+	
+	<script src="lib/js/head.min.js"></script>
+	<script src="js/reveal.js"></script>
+	<script>
+		// More info about config & dependencies:
+		// - https://github.com/hakimel/reveal.js#configuration
+		// - https://github.com/hakimel/reveal.js#dependencies
+		Reveal.initialize({
+			controls: false,
+			slideNumber: true,
+			dependencies: [
+				{
+					src: 'plugin/highlight/highlight.js', async: true, callback: function () {
+						hljs.initHighlightingOnLoad();
+
+						// during development, always start at last slide
+						var indices = Reveal.getIndices(document.getElementById('sectionID'));
+						//Reveal.slide(Reveal.getTotalSlides());
+					}
+				},
+				{ src: 'plugin/codestepper/codestepper.js' }
+			],
+		});
+	</script>
+</body>
+
+</html>
