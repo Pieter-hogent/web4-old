@@ -213,48 +213,57 @@ var CodeStepper =
         svgElements = new Set();
         maxIndex = 2; // set it to something > 1, will be overriden by either codestep, or the ASYNC loading of svg
         // (if there's nothing but a svg, we try to show index 1, while max is still -1, and we move to the next slide)
-        toArray(event.fragment.getElementsByTagName('svg')).forEach(el => {
-          if (false && snap) {
-            console.error(
-              `I can only cope with one svg element inside a svg-step div (for now)`
-            );
-          }
-          snap = new Snap(`#${el.getAttribute('id')}`);
-          // the read file gets appended, so if we go back / fwd we would end up
-          // with multiple svg's drawn on top of each other, so remove previous one (if any)
-          if (snap.children()) {
-            snap.children().forEach(x => x.remove());
-          }
-          Snap.load(`${el.getAttribute('snapfile')}`, data => {
-            // console.log(data);
-            let defs = data.select('defs');
-            snap.append(defs);
-            let g = data.select('#maincanvas');
-            if (!g) {
+        toArray(event.fragment.getElementsByTagName('svg'))
+          .filter(el => el.classList.contains('svg-section'))
+          .forEach(el => {
+            if (false && snap) {
               console.error(
-                "Codestepper needs a 'g' canvas with the id maincanvas"
+                `I can only cope with one svg element inside a svg-step div (for now)`
               );
             }
-            snap.append(g);
-            // set viewBox to the same one it was in the file
-            el.setAttribute('viewBox', snap.getBBox().vb);
-            console.log(`viewBox set to ${snap.getBBox().vb}`);
+            snap = new Snap(`#${el.getAttribute('id')}`);
 
-            // now loop over child elements which have the step attribute, and remember them
-            let x = g.selectAll('.svgstep');
-            x.forEach(item => {
-              item.node.setAttribute('opacity', 0.0); // start hidden, or the screen 'flashes'
-              let showStepRange = new Range('');
-              if (item.node.hasAttribute('show-steps')) {
-                showStepRange = new Range(item.node.getAttribute('show-steps'));
+            // setTimeout(() => {
+            Snap.load(`${el.getAttribute('snapfile')}`, data => {
+              // the read file gets appended, so if we go back / fwd we would end up
+              // with multiple svg's drawn on top of each other, so remove previous one (if any)
+              if (snap.children()) {
+                snap.children().forEach(x => {
+                  x.remove();
+                });
               }
+              // console.log(data);
+              let defs = data.select('defs');
+              snap.append(defs);
+              let g = data.select('#maincanvas');
+              if (!g) {
+                console.error(
+                  "Codestepper needs a 'g' canvas with the id maincanvas"
+                );
+              }
+              snap.append(g);
+              // set viewBox to the same one it was in the file
+              el.setAttribute('viewBox', snap.getBBox().vb);
+              console.log(`viewBox set to ${snap.getBBox().vb}`);
 
-              svgElements.add(new SvgElement(item, showStepRange));
-              maxIndex = Math.max(maxIndex, showStepRange.max());
+              // now loop over child elements which have the step attribute, and remember them
+              let x = g.selectAll('.svgstep');
+              x.forEach(item => {
+                item.node.setAttribute('opacity', 0.0); // start hidden, or the screen 'flashes'
+                let showStepRange = new Range('');
+                if (item.node.hasAttribute('show-steps')) {
+                  showStepRange = new Range(
+                    item.node.getAttribute('show-steps')
+                  );
+                }
+
+                svgElements.add(new SvgElement(item, showStepRange));
+                maxIndex = Math.max(maxIndex, showStepRange.max());
+              });
+              showHighlightCurrentIndex(); // loading is async, so make sure our svg is loaded according to current index
             });
-            showHighlightCurrentIndex(); // loading is async, so make sure our svg is loaded according to current index
+            //}, 2000);
           });
-        });
       }
 
       if (event.fragment.hasAttribute('code-step')) {
