@@ -4587,8 +4587,9 @@
   }
 
   function applyTouch(type) {
+    let triggered = false;
     if (typeof config.touches === 'object') {
-      for (key in config.touches) {
+      for (let key in config.touches) {
         // Check if this binding matches the pressed key
         if (type === key) {
           var value = config.touches[key];
