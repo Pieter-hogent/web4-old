@@ -15,6 +15,7 @@
 
 	<!-- pieter overrides -->
 	<link rel="stylesheet" href="webapps.css">
+	<link rel="stylesheet" href="plugin/codestepper/codestepper.css">
 
 	<!-- Printing and PDF exports -->
 	<script>
@@ -31,6 +32,34 @@
 	<div class="reveal">
 
 		<div class="slides">
+			<section>
+				<h2>angular basics</h2>
+			</section>
+			<section>
+				<h3>what is an SPA?</h3>
+				<ul>
+					<li class="fragment">exactly one html file (SINGLE page application), which is only used as an entry point for your application</li>
+					<li class="fragment">and a lot of javascript, which builds the page through DOM manipulation</li>
+					<li class="fragment">requesting JSON data from the server as it's needed to build the page</li>
+					<li class="fragment">think JQuery / Ajax, but every single letter on your page is created this way, nothing is inside html pages</li>
+				</ul>
+			</section>
+			<section>
+				<h3>static site</h3>
+				<div class='fragment' code-step svg-step>
+					<svg id="svg3" class="svg-section" width='100%' height='100%' preserveAspectRatio="xMaxYMax" snapfile='img/staticsite.svg'>
+						<use xlink:href='plugin/codestepper/loaders.svg#myloader'></use>
+					</svg>
+				</div>
+			</section>
+			<section>
+				<h3>SPA site</h3>
+				<div class='fragment' code-step svg-step>
+					<svg id="svg4" class="svg-section" width='100%' height='100%' preserveAspectRatio="xMaxYMax" snapfile='img/spasite.svg'>
+						<use xlink:href='plugin/codestepper/loaders.svg#myloader'></use>
+					</svg>
+				</div>
+			</section>
 			<section>
 				<h3>our first app</h3>
 				<ul>
@@ -52,7 +81,7 @@
 
 			</section>
 			<section>
-				<img src="img/1_filelist.png" alt="filelist" width='500px' height='600px'/>
+				<img src="img/1_filelist.png" alt="filelist" width='500px' height='600px' />
 			</section>
 			<section>
 				<h3>Now we can run this</h3>
@@ -64,7 +93,9 @@
 				</pre>
 				<ul>
 					<li class="fragment">first run will take a while (everything needs to be compiled)</li>
-					<li class="fragment">app is available @ <a href="http://localhost:4200/">http://localhost:4200/</a></li>
+					<li class="fragment">app is available @
+						<a href="http://localhost:4200/">http://localhost:4200/</a>
+					</li>
 					<li class="fragment">changes are tracked and app updates automatically (Webpack)</li>
 					<li class="fragment">everything is done in memory (by default no files are written)</li>
 				</ul>
@@ -98,8 +129,7 @@
 					<svg id="svg" class="svg-section" width='100%' height='100%' preserveAspectRatio="xMaxYMax" snapfile='img/component_structure.svg'>
 						<use xlink:href='loaders.svg#myloader'></use>
 					</svg>
-					
-				</svg>
+
 				</div>
 			</section>
 			<section>
@@ -140,7 +170,8 @@ export <span class="fragment highlight-current-red" data-fragment-index="2">clas
 					<p class="fragment current-visible current-replace" data-fragment-index="2">components are defined in a decorator of a class</p>
 					<p class="fragment current-visible current-replace" data-fragment-index="3">selector is the name of the tag you'll use in the html, so &ltapp-recipe&gt&lt/app-recipe&gt will show this component</p>
 					<p class="fragment current-visible current-replace" data-fragment-index="4">templateUrl and styleUrls contain the html (one) and css (multiple) of this component</p>
-					<p class="fragment current-visible current-replace" data-fragment-index="5">styles defined in this css are scoped!<br/> they will only apply on the html of this template (styles never 'leak')</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="5">styles defined in this css are scoped!
+						<br/> they will only apply on the html of this template (styles never 'leak')</p>
 				</div>
 			</section>
 			<section>
@@ -184,7 +215,9 @@ export class RecipeComponent implements OnInit {
 &lt;p&gt;
 	</code></pre>
 				<div class="fragment" data-fragment-index="1">the property can be bound by enclosing it in {{ }} inside the html</div>
-				<span class="fragment" data-fragment-index="2"><a href="http://localhost:4200/">let's try it</a></span>
+				<span class="fragment" data-fragment-index="2">
+					<a href="http://localhost:4200/">let's try it</a>
+				</span>
 			</section>
 			<section>
 				<h3>using a collection of data</h3>
@@ -223,11 +256,78 @@ Ingredients:
 					<p class="fragment current-visible current-replace" data-fragment-index="2">declare a new loopvariable (let is like var but in ES6, next week!) </p>
 					<p class="fragment current-visible current-replace" data-fragment-index="3">then simply use this new loop variable as you would any other component property</p>
 				</div>
-				<span class="fragment" data-fragment-index="4"><a href="http://localhost:4200/">let's try it</a></span>
+				<span class="fragment" data-fragment-index="4">
+					<a href="http://localhost:4200/">let's try it</a>
+				</span>
+			</section>
+			<section>
+				<h3>formatting data</h3>
+				<ul>
+					<li class='fragment'>sometimes you don't want to show a property as it's stored, but formatted (dates, currency, floating point numbers,
+						...)
+					</li>
+					<li class='fragment'>you could add a separate (display) property for each property you want to format (date, dateStr), but this is cumbersome
+						and error prone</li>
+					<li class='fragment'>and what if you want to format differently, based on the locale? (US dates vs EU dates)</li>
+					<li class='fragment'>the Angular solution is to use Pipes, when a property is shown it is 'piped' through a function first</li>
+				</ul>
+			</section>
+			<section>
+				<h3>pipe</h3>
+				<div class='fragment' code-step>
+					<pre class='typescript'>src/app/recipe/recipe.component.ts<code data-noescape data-trim>
+export class RecipeComponent implements OnInit {
+  name: string;
+  ingredients: string[];<span show-steps='2+'>
+  dateAdded: Date;</span>
+
+  constructor() {
+    this.name = 'spaghetti';
+    this.ingredients = ['tomato', 'minced meat'];<span show-steps='2+'>
+    this.dateAdded = new Date();</span>
+  }
+}
+				  </code></pre>
+					<div class='samespot'>
+						<p show-steps='1'>to illustrate this, let's look at the built in date pipe, imagine we want to show the date a recipe is added</p>
+						<p show-steps='2'>first we need to add a date property to our typescript class, and initialize it in our constructor</p>
+					</div>
+				</div>
+			</section>
+			<section>
+				<h3>pipe</h3>
+				<div class='fragment' code-step>
+					<pre class='typescript'>src/app/recipe/recipe.component.html<code data-noescape data-trim>
+&lt;p&gt;
+  recipe for {{name}}, 
+    added on {{dateAdded<span show-steps='3+'> | date<span show-steps='4'>: 'dd/MM/yyyy'</span><span show-steps='5+'>: 'longDate'</span></span>}} <span show-steps='2'>
+    // Wed Jan 03 2018 21:46:00 GMT+0100 (CET)</span><span show-steps='3'>
+    // Jan 3, 2018</span><span show-steps='4'>
+    // 03/01/2018</span><span show-steps='5+'>
+    // January 3, 2018</span>
+&lt;/p&gt;
+          </code></pre>
+					<div class='samespot'>
+						<p show-steps='1,2'>simply outputting this date object in our html would result in a not very friendly user output</p>
+						<p show-steps='3'>by adding the default built in date pipe, the date gets formatted in a more user friendly way</p>
+						<p show-steps='4'>but you can specify how the formatting needs to happen, using typical date format strings</p>
+						<p show-steps='5'>or you can use one of the predefined formatters, which take the current locale into account</p>
+						<p show-steps='6'>next to date pipes, there are many other built in pipes (currency, numbers, lowercase, json, ...) </p>
+						<p show-steps='7'>or you can (rather easily) write your own custom pipes (we'll do that later)</p>
+					</div>
+				</div>
+			</section>
+			<section>
+				<h3>pass data between components</h3>
+				<ul>
+					<li class="fragment">when creating more complex components, you want to (re)use other embedded components</li>
+					<li class="fragment">for this to be useful, you need to be able to pass data to these embedded components, which they'll render</li>
+					<li class="fragment">this is done using the @Input() decorator on properties</li>
+				</ul>
 			</section>
 			<section>
 				<h3>ingredient component</h3>
-				<div>ingredients need more than a name, lets create a separate component</div>
+				<div>as an example, take our recipe's ingredients. ingredients need more than a name, so lets create a separate component</div>
 				<div style="position:relative">
 					<pre class="fragment current-visible current-replace" data-fragment-index="1"><code data-trim>
 	ng generate component ingredient	
@@ -269,7 +369,7 @@ export class IngredientComponent implements OnInit {
   ingredient works!
 &lt;/p&gt;
 	</code></pre>
-<span class="fragment">should become</span> 
+				<span class="fragment">should become</span>
 				<pre class="fragment">src/app/ingredient/ingredient.html<code data-noescape data-trim>
 {{name}}
 	</code></pre>
@@ -290,17 +390,21 @@ Ingredients:
 				<div style="position:relative">
 					<p class="fragment current-visible current-replace" data-fragment-index="1">we add the component with its tag</p>
 					<p class="fragment current-visible current-replace" data-fragment-index="2">and we set a property using square brackets [ ]</p>
-					<p class="fragment current-visible current-replace" data-fragment-index="3">note that the <i>content</i> of the loop variable ingredient is passed, not the string 'ingredient'</p>
+					<p class="fragment current-visible current-replace" data-fragment-index="3">note that the
+						<i>content</i> of the loop variable ingredient is passed, not the string 'ingredient'</p>
 				</div>
-				<span class="fragment" data-fragment-index="4"><a href="http://localhost:4200/">let's try it out</a></span>
+				<span class="fragment" data-fragment-index="4">
+					<a href="http://localhost:4200/">let's try it out</a>
+				</span>
 			</section>
 			<section>
-					<div class='fragment' code-step svg-step>
-						<svg id="svg2" class="svg-section" width='100%' height='100%' preserveAspectRatio="xMaxYMax" snapfile='img/ingredient_input.svg'>
-							<use xlink:href='loaders.svg#myloader'></use>
-						</svg>
-					</div>
-				</section>
+				<div class='fragment' code-step svg-step>
+					<svg id="svg2" class="svg-section" width='100%' height='100%' preserveAspectRatio="xMaxYMax" snapfile='img/ingredient_input.svg'>
+						<use xlink:href='loaders.svg#myloader'></use>
+					</svg>
+				</div>
+			</section>
+
 			<section>
 				<h3>summary</h3>
 				<ul>
@@ -346,7 +450,7 @@ Ingredients:
 			],
 		});
 	</script>
-		<script src="js/snap.svg.js"></script>
+	<script src="js/snap.svg.js"></script>
 </body>
 
 </html>

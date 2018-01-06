@@ -175,12 +175,14 @@ var CodeStepper =
         // at the end of our inner navigation, remove all keyboard overrides
         // (and hence, give control back to Reveal)
         Reveal.configure({
-          keyboard: {}
+          keyboard: {},
+          touches: {}
         });
         Reveal.navigateNext();
       } else if (currentIndex <= 0) {
         Reveal.configure({
-          keyboard: {}
+          keyboard: {},
+          touches: {}
         });
         Reveal.navigatePrev();
       } else {
@@ -332,6 +334,10 @@ var CodeStepper =
             72: innerNavigatePrevious,
             37: innerNavigatePrevious,
             38: innerNavigatePrevious
+          },
+          touches: {
+            swipeLeft: innerNavigatePrevious,
+            swipeRight: innerNavigateNext
           }
         });
       }
