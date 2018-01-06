@@ -550,25 +550,26 @@ retrieveUserInfo( <span show-steps='1'><span highlight-steps='1'>???</span></spa
               let course = {
                 name: 'web3',
                 teacher: 'pieter'
-              }<span show-steps='3'>
+              }<span show-steps='3-4'>
               let otherCourse = {
                 name: 'web4',
                 hours: '3'
               }</span><span show-steps='1-2'>
               let clone = { ...course }
               console.log(clone) // { name: 'web3', teacher: 'pieter'}</span>
-             <span show-steps='3'> clone = { ...course, ...otherCourse }
-              console.log(clone) 
-              // { name: 'web4', teacher: 'pieter', hours: '3' }</span>
-              <span show-steps='4-5'>clone = { ...course, name: 'webapps'}
-              consle.log(clone) // { name: 'webapps', teacher: 'pieter' }</span>
+             <span show-steps='3-4'> clone = { ...course, ...otherCourse }
+              console.log(clone)<span show-steps='4'> 
+              // { name: 'web4', teacher: 'pieter', hours: '3' }</span></span>
+              <span show-steps='5+'>clone = { ...course, name: 'webapps'}<span show-steps='6+'>
+              consle.log(clone) // { name: 'webapps', teacher: 'pieter' }</span></span>
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>you can spread objects too, which will generate all key-value pairs</p>
-            <p show-steps='2'>this makes it a lot easer to clone objects ( Object.assign...)</p>
-            <p show-steps='3'>but you can even use this to merge objects, when a key appears in both objects, the last value is used</p>
-            <p show-steps='4'>or simply override one (or more) keys from an object, while cloning it</p>
-            <p show-steps='5'>remember this syntax, it makes working with immutable objects a lot easier</p>
+            <p show-steps='2'>this makes it a lot easer to clone objects (vs Object.assign...)</p>
+            <p show-steps='3'>but you can even use this to merge objects</p>
+            <p show-steps='4'>when a key appears in both objects, the last value is used</p>
+            <p show-steps='5'>or simply override one (or more) keys from an object, while cloning it</p>
+            <p show-steps='6'>remember this syntax, it makes working with immutable objects a lot easier</p>
           </div>
         </div>
       </section>
