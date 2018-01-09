@@ -11,7 +11,7 @@ export class RecipeComponent implements OnInit {
   dateAdded: Date;
 
   constructor() {
-    this.name = 'spaghetti';
+    this.name = 'transforms text to titlecase title case';
     this.ingredients = ['tomato', 'minced meat', 'onion', 'celery', 'carrot'];
     this.dateAdded = new Date();
   }
