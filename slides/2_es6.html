@@ -849,16 +849,14 @@ function age(year) {
       <section>
         <h3>summary</h3>
         <ul>
-          <li class="fragment">use let and const to declare variables, not var</li>
-          <li class="fragment">
+          <li class="fragment">use let and const to declare variables, not var
             <pre><code data-noescape data-trim>
 let canBeChanged : string = "original";
 const staysTheSame = "fixed";
 canBeChanged = "change!";
             </code></pre>
           </li>
-          <li class="fragment">there is a real class now, behaves much more like classes in e.g. Java than the old .prototype shenanigans</li>
-          <li class="fragment">
+          <li class="fragment">there is a real class now, behaves much more like classes in e.g. Java than the old .prototype shenanigans
             <pre><code data-noescape data-trim>
 class ARealClass {
   aProperty: string;
@@ -872,14 +870,12 @@ class ARealClass {
       <section>
         <h3>summary</h3>
         <ul>
-          <li class="fragment">arrow functions are a more convenient way of writing small functions (beware of this binding!)</li>
-          <li class="fragment">
+          <li class="fragment">arrow functions are a more convenient way of writing small functions (beware of this binding!)
             <pre><code data-noescape data-trim>
 let calcAge = (birthdate, year) => year - birthdate;
             </code></pre>
           </li>
-          <li class="fragment">backtick strings allow for easier multiline strings and variable replacement</li>
-          <li class="fragment">
+          <li class="fragment">backtick strings allow for easier multiline strings and variable replacement
             <pre><code data-noescape data-trim>
 let text = `some text
   different line ${variable}
@@ -891,14 +887,12 @@ let text = `some text
       <section>
         <h3>summary</h3>
         <ul>
-          <li class="fragment">destructuring makes it easier to access parts of an object</li>
-          <li class="fragment">
+          <li class="fragment">destructuring makes it easier to access parts of an object
             <pre><code data-noescape data-trim>
 let {name, year} = {"name":"rudy", "year" : 2017};
             </code></pre>
           </li>
-          <li class="fragment">the ... collapses multiple arguments in an array, or spreads out an array into arguments</li>
-          <li class="fragment">
+          <li class="fragment">the ... collapses multiple arguments in an array, or spreads out an array into arguments
             <pre><code data-noescape data-trim>
 function manyArguments(...argumentArray) {
 }
@@ -911,8 +905,7 @@ manyArguments(...manyNames);
       <section>
         <h3>summary</h3>
         <ul>
-          <li class="fragment">Set and Map became native types and behave correctly for all kinds of keys</li>
-          <li class="fragment">
+          <li class="fragment">Set and Map became native types and behave correctly for all kinds of keys
             <pre><code data-noescape data-trim>
 let aMap = new Map([['key', 'initalValue']]);
 aMap.set('otherKey', 'someVaue');
