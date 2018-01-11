@@ -26,4 +26,8 @@ export class AppComponent {
   get recipes() {
     return this._recipes;
   }
+
+  newRecipeAdded(recipe) {
+    this._recipes.push(recipe);
+  }
 }

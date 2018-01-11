@@ -1,6 +1,6 @@
 <div class="ui container">
   <div class="ui vertical segment">
-    <app-add-recipe></app-add-recipe>
+    <app-add-recipe (newRecipe)='newRecipeAdded($event)'></app-add-recipe>
   </div>
   <div class="ui vertical segment">
     <div class="ui cards">
