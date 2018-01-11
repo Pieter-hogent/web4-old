@@ -1,5 +1,10 @@
-<!--The content below is only a placeholder and can be replaced.-->
 <div class="ui container">
-  <app-add-recipe></app-add-recipe>
-  <app-recipe></app-recipe>
+  <div class="ui vertical segment">
+    <app-add-recipe></app-add-recipe>
+  </div>
+  <div class="ui vertical segment">
+    <div class="ui cards">
+      <app-recipe *ngFor='let localRecipe of recipes' [recipe]='localRecipe'></app-recipe>
+    </div>
+  </div>
 </div>
