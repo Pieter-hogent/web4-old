@@ -1,10 +1,20 @@
 <div class="ui container">
-  <div class="ui vertical segment">
+  <div class="ui basic segment">
     <app-add-recipe (newRecipe)='newRecipeAdded($event)'></app-add-recipe>
   </div>
-  <div class="ui vertical segment">
-    <div class="ui cards">
-      <app-recipe *ngFor='let localRecipe of recipes' [recipe]='localRecipe'></app-recipe>
+  <div class="ui segment">
+    <div class="ui basic segment">
+      <div class="ui two fields">
+        <div class="ui input">
+          <input type='text' id='filter' name='filter' placeholder='filter recipe name...' #filter>
+        </div>
+        <button (click)="applyFilter(filter.value)" class='ui basic button'>filter</button>
+      </div>
+    </div>
+    <div class="ui basic segment">
+      <div class="ui cards">
+        <app-recipe *ngFor='let localRecipe of recipes | recipeFilter: filterRecipeName' [recipe]='localRecipe'></app-recipe>
+      </div>
     </div>
   </div>
 </div>

@@ -6,6 +6,7 @@ import { AppComponent } from './app.component';
 import { RecipeComponent } from './recipe/recipe.component';
 import { IngredientComponent } from './ingredient/ingredient.component';
 import { AddRecipeComponent } from './add-recipe/add-recipe.component';
+import { RecipeFilterPipe } from './recipe-filter.pipe';
 
 
 @NgModule({
@@ -13,7 +14,8 @@ import { AddRecipeComponent } from './add-recipe/add-recipe.component';
     AppComponent,
     RecipeComponent,
     IngredientComponent,
-    AddRecipeComponent
+    AddRecipeComponent,
+    RecipeFilterPipe
   ],
   imports: [
     BrowserModule

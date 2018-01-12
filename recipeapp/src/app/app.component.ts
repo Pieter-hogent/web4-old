@@ -9,17 +9,19 @@ import { RecipeDataService } from './recipe-data.service';
   providers: [RecipeDataService]
 })
 export class AppComponent {
-  private _recipes: Recipe[];
+  public filterRecipeName: string;
 
-  constructor(private _recipeDataService: RecipeDataService) {
-    this._recipes = this._recipeDataService.recipes;
-  }
+  constructor(private _recipeDataService: RecipeDataService) {}
 
   get recipes() {
-    return this._recipes;
+    return this._recipeDataService.recipes;
   }
 
   newRecipeAdded(recipe) {
     this._recipeDataService.addNewRecipe(recipe);
+  }
+
+  applyFilter(filter: string) {
+    this.filterRecipeName = filter;
   }
 }

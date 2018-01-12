@@ -156,7 +156,7 @@
   }
 				</code></pre>
         <div style="position:relative">
-          <p class="fragment current-visible current-replace" data-fragment-index="1">"hashtag fields" are basic DOM HTMLInputElements</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="1">"hashtag fields" are basic DOM HTMLElements (HTMlInputElement here, since it's an &lt;input&gt; tag</p>
           <p class="fragment current-visible current-replace" data-fragment-index="2">use .value to access the contents</p>
           <p class="fragment current-visible current-replace" data-fragment-index="3">event handlers return a boolean, true if you want to propagate the event to other handlers, false to "eat" the
             event
@@ -283,10 +283,10 @@ export class AppComponent {
         <div class='fragment' code-step>
           <pre class='html'>src/add/app.component.html<code data-noescape data-trim>
 &lt;div <span highlight-steps='3'>class=&quot;ui container&quot;</span>&gt;
-  &lt;div <span highlight-steps='3'>class=&quot;ui vertical segment&quot;</span>&gt;
+  &lt;div <span highlight-steps='3'>class=&quot;ui basic segment&quot;</span>&gt;
     &lt;app-add-recipe&gt;&lt;/app-add-recipe&gt;
   &lt;/div&gt;
-  &lt;div <span highlight-steps='3'>class=&quot;ui vertical segment&quot;</span>&gt;
+  &lt;div <span highlight-steps='3'>class=&quot;ui segment&quot;</span>&gt;
     &lt;div <span highlight-steps='3'>class=&quot;ui cards&quot;</span>&gt;
       &lt;app-recipe <span highlight-steps='1'>*ngFor='let localRecipe of recipes'</span> 
         <span highlight-steps='2'>[recipe]='localRecipe'</span>&gt;&lt;/app-recipe&gt;
@@ -333,19 +333,26 @@ export class AddRecipeComponent {
       </section>
       <section>
         we still need to receive this output
-        <pre>src/app/app.component.html<code data-noescape data-trim>
-&lt;div class=&quot;ui container&quot;&gt;
-  &lt;app-add-recipe <span class="fragment highlight-current-red" data-fragment-index="1">(newRecipe)</span>=<span class="fragment highlight-current-red" data-fragment-index="2">&quot;newRecipeAdded($event)&quot;</span>&gt;&lt;/app-add-recipe&gt;
-  &lt;div class=&quot;ui grid segment&quot;&gt;
-    &lt;app-recipe *ngFor=&quot;let recipe of recipes&quot; [recipe]=&quot;recipe&quot;&gt;
-    &lt;/app-recipe&gt;
+        <div class='fragment' code-step>
+          <pre class='html'>src/add/app.component.html<code data-noescape data-trim>
+  &lt;div class=&quot;ui container&quot;&gt;
+    &lt;div class=&quot;ui basic segment&quot;&gt;
+      &lt;app-add-recipe <span highlight-steps='1'>(newRecipe)</span>=&quot;<span highlight-steps='2'>newRecipeAdded($event)</span>&quot;&gt;
+      &lt;/app-add-recipe&gt;
+    &lt;/div&gt;
+    &lt;div class=&quot;ui segment&quot;&gt;
+      &lt;div class=&quot;ui cards&quot;&gt;
+        &lt;app-recipe *ngFor='let localRecipe of recipes' 
+          [recipe]='localRecipe'&gt;&lt;/app-recipe&gt;
+      &lt;/div&gt;
+    &lt;/div&gt;
   &lt;/div&gt;
-&lt;/div&gt;
-</code></pre>
-        <div style="position:relative">
-          <p class="fragment current-visible current-replace" data-fragment-index="1">you should see the creation of a new recipe as an event (it comes from an EventEmitter after all), similar to a
-            click happening, so ()</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="2">and then add a handler to it, a function on app.component.ts that will be called when the event happens</p>
+      </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>you should see the creation of a new recipe as an event (it comes from an EventEmitter after all), similar to
+              a click happening, so ()</p>
+            <p show-steps='2'>and then add a handler to it, a function on app.component.ts that will be called when the event happens</p>
+          </div>
         </div>
       </section>
       <section>
@@ -455,9 +462,10 @@ export class RecipeDataService {
   <span class="fragment highlight-current-red" data-fragment-index="1">providers: [RecipeDataService]</span>
 })
 export class AppComponent {
-  private _recipes: Recipe[];
   constructor(<span class="fragment highlight-current-red" data-fragment-index="2"><span class="fragment highlight-current-red" data-fragment-index="4">private</span> _recipeDataService : RecipeDataService</span>) {
-    this._recipes = <span class="fragment highlight-current-red" data-fragment-index="5">this._recipeDataService</span>.recipes;
+  }
+  get recipes() {
+    return <span class="fragment highlight-current-red" data-fragment-index="5">this._recipeDataService.recipes;</span>
   }
   newRecipeAdded(recipe) {
     <span class="fragment highlight-current-red" data-fragment-index="5">this._recipeDataService</span>.addNewRecipe(recipe);
@@ -470,7 +478,7 @@ export class AppComponent {
           <p class="fragment current-visible current-replace" data-fragment-index="3">that's it, that will create and inject the service</p>
           <p class="fragment current-visible current-replace" data-fragment-index="4">remember, by adding private to the constructor argument, you also declare the property immediately</p>
           <p class="fragment current-visible current-replace" data-fragment-index="5">then simply use the public functions from your service i.s.o. defining everything inside the app component</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="6">note that if you use this service in many components, only one will be created and shared by the DI system</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="6">note that a service can be shared by many components by the DI system, depending on where it's provided</p>
           <p class="fragment current-visible current-replace" data-fragment-index="7">
             <a href="http://localhost:4200/">let's try this out</a>
           </p>
@@ -479,19 +487,178 @@ export class AppComponent {
       <section>
         <h3>service</h3>
         <ul>
-          <li class="fragment">we succesfully moved our data to a shared service, ready to be used throughout the app</li>
-          <li class="fragment">still, we lose everything after a refresh... we need a backend with a database and the whole shebang, we'll tackle
+          <li class='fragment'>we succesfully moved our data to a shared service, ready to be used throughout the app</li>
+          <li class='fragment'>still, we lose everything after a refresh... we need a backend with a database and the whole shebang, we'll tackle
             that in week 5</li>
         </ul>
       </section>
+      <section>
+        <h3>custom pipe</h3>
+        <ul>
+          <li class='fragment'>last week we talked about pipes to transform how data is displayed</li>
+          <li class='fragment'>but you can also use pipes to filter data (in a way this is transforming your array)</li>
+          <li class='fragment'>since we can have many recipes now, let's illustrate this by adding a filter to only show recipes matching a certain
+            string
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h3>recipe filter</h3>
+        just like components and services, we can use the angular-cli to generate pipes
+        <pre><code data-noescape data-trim>
+ng generate pipe RecipeFilter				
+				</code></pre>
+        <pre data-trim class="console fragment" data-fragment-index="1">
+installing service
+  <span class="cli-green">create</span> src/app/recipe-filter.pipe.spec.ts
+  <span class="cli-green">create</span> src/app/recipe-filter.pipe.ts
+  <span class="cli-yellow">update</span> src/app/app.module.ts
+				</pre>
+        <div style="position:relative">
+          <p class="fragment current-visible current-replace" data-fragment-index="2">just like a service, there's no css or html here, pipes are to be used inside other components</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">unlike services (but like components) pipes get added to the module automatically</p>
+        </div>
+      </section>
+      <section>
+        <h3>RecipeFilterPipe</h3>
+        <div class='fragment' code-step>
+          <pre class='typescript'>src/app/recipe-filter.pipe.ts<code data-noescape data-trim>
+import { Pipe, <span highlight-steps='3'>PipeTransform</span> } from '@angular/core';
+
+<span highlight-steps='1'>@Pipe</span>({
+  <span highlight-steps='2'>name: 'recipeFilter'</span>
+})
+export class RecipeFilterPipe implements <span highlight-steps='3'>PipeTransform</span> {
+  <span highlight-steps='3'>transform</span>(<span show-steps='7+'>recipes: Recipe[]</span><span show-steps='1-6'><span highlight-steps='4'>value: <span highlight-steps='6'>any</span></span></span>, <span show-steps='7+'>name: string</span><span show-steps='1-6'><span highlight-steps='5'>args?: <span highlight-steps='6'>any</span></span></span>): <span show-steps='7+'>Recipe[]</span><span show-steps='1-6'><span highlight-steps='6'>any</span></span> {<span show-steps='1-7'>
+    return null;</span><span show-steps='8+'>
+    if (!name || name.length === 0) {
+      return recipes;
+    }
+    return recipes.filter(rec =>
+      rec.name.toLowerCase().startsWith(name.toLowerCase())
+    );</span>
+  }
+}</code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>pipes are configured using the @Pipe decorator</p>
+            <p show-steps='2'>they have a name, that's how you call them using the pipe character
+              <i>| recipeFilter</i>
+            </p>
+            <p show-steps='3'>you must implement the PipeTransform interface, which contains one function: transform, with two parameters</p>
+            <p show-steps='4'>the first parameter is the value to the left of the pipe |, on which the pipe is applied </p>
+            <p show-steps='5'>the second parameter is optional, an extra parameter for your pipe (e.g. | date: "longDate")</p>
+            <p show-steps='6'>by default parameters are of type 'any', you should change these to the real types and take advantage of static
+              typechecking
+            </p>
+            <p show-steps='7'>in our case we will filter a Recipe[], based on a string</p>
+            <p show-steps='8'>as an example we'll simply check if the name of the recipe starts with the string we filter on</p>
+            <p show-steps='9'>so return the full list if no filter is passed, and filter the array on the name if there is a filter</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>recipe filter</h3>
+        <div class='fragment' code-step>
+          <pre class='html'>src/app/app.component.html<code data-noescape data-trim>
+<span show-steps='4+'>&lt;div&gt;
+  &lt;input type='text' placeholder='filter recipe...' <span highlight-steps='5'>#filter</span>&gt;
+  &lt;button (click)=&quot;applyFilter(<span highlight-steps='5'>filter.value</span>)&quot;&gt;filter&lt;/button&gt;
+&lt;/div&gt;</span>
+&lt;div&gt;
+  &lt;app-recipe *ngFor='let localRecipe of recipes<span show-steps='2+'> | recipeFilter<span show-steps='3'>: filterRecipeName</span></span>' 
+    [recipe]='localRecipe'&gt;&lt;/app-recipe&gt;
+&lt;/div&gt;
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>we loop over the recipe list in the AppComponent, so that's where we'll apply the filter (for clarity, all css
+              is removed)</p>
+            <p show-steps='2'>so we want to apply the (filter) pipe to the recipes list here</p>
+            <p show-steps='3'>the name on which we'll filter will be a property from the typescript class, let's name it filterRecipeName</p>
+            <p show-steps='4'>this property will be set using a input field and filter button</p>
+            <p show-steps='5'>once more, we'll create a local 'hashtag' variable to store this input field, and pass it's value to the function</p>
+            <p show-steps='6'>now we only need to add this function and the property to the typescript code</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>recipe filter</h3>
+        <div class='fragment' code-step>
+          <pre class='typescript'>src/app/app.component.ts<code data-noescape data-trim>
+export class AppComponent {
+  public <span highlight-steps='1'>filterRecipeName</span>: string;
+
+  <span highlight-steps='2'>applyFilter(filter: <span highlight-steps='3'>string</span>) {
+    this.filterRecipeName = filter;
+  }</span>
+}</code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>the typescript class is pretty straightforward, we simply add a new property for the filter</p>
+            <p show-steps='2'>and then create the function which will set this property if the button is clicked</p>
+            <p show-steps='3'>notice that we pass a string now, not a HTMLInputElement, since I passed the .value in the html)</p>
+            <p show-steps='4'>that's it,
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>change detection</h3>
+        <ul>
+          <li class="fragment">so this mostly works, but the filter doesn't get reapplied, what's going on?</li>
+          <li class="fragment">the problem is related to change detection, angular tries to update the DOM as little as possible there's a whole
+            mechanism in place, change detection, to 'know' which parts changed and which didn't</li>
+        </ul>
+      </section>
+      <section>
+        <h3>change detection</h3>
+        <ul>
+          <li class="fragment">Pipe's transform function is considered 'pure', given the same inputs, the exact same output is expected</li>
+          <li class="fragment">while the contents of the recipe[] changed, the variable itself didn't; angular is very conservative when deciding
+            a pipe triggers a change, pipes are potentially called a lot of times</li>
+        </ul>
+      </section>
+      <section>
+        <h3>change detection</h3>
+        <ul>
+          <li class="fragment">so how do you solve this? there are two ways, declare the pipe as not being pure in the properties
+            <pre class='typescript'>src/app/recipe-filter.pipe.ts<code data-noescape data-trim>
+                @Pipe({
+                  name: 'recipeFilter',
+                  pure: false
+                })
+            </code></pre>
+          </li>
+          <li class="fragment">or make sure the variable really changes, clone it and add the new recipe to the clone
+            <pre class='typescript'>src/app/recipe-data.service.ts<code data-noescape data-trim>
+              addNewRecipe(recipe: Recipe) {
+                this._recipes = [...this._recipes, recipe];
+              }
+          </code></pre>
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h3>immutable</h3>
+        <ul>
+          <li class="fragment">we'll go with the second option, taking a more functional approach (immutable objects / pure functions) is the
+            way to go</li>
+          <li class="fragment">it makes for code that is a lot easier to test and understand; in a way, if you can avoid tracking state, you should,
+            but we'll have a LOT more to say about state later</li>
+          <li class="fragment">a filter like this should really be a live-filter though, but we'll fix that next week using observables</li>
+          <li class="fragment">anyway,
+            <a href="http://localhost:4200">let's try this out</a>
+          </li>
+        </ul>
+      </section>
+
       <section>
         <h3>summary</h3>
         <ul>
           <li class="fragment">basic actions are handled by enclosing them in parentheses
             <i>(click)="myClickFunction()"</i>
           </li>
-          <li class="fragment">forms can easily store input variables using hashtag syntax
-            <i>#inputfield</i>, and pass those to event handlers</li>
+          <li class="fragment">you can easily capture data in your html hashtag syntax
+            <i>#inputfield</i>, and pass it to event handlers</li>
           <li class="fragment">creating data from one component, to be used by another, is achieved using
             <i>@Output</i> and
             <i>EventEmitter</i>
@@ -520,7 +687,7 @@ export class AppComponent {
                 // during development, always start at last slide
                 var indices = Reveal.getIndices(document.getElementById('sectionID'));
                 // Reveal.slide(Reveal.getTotalSlides());
-                // Reveal.slide(14); //Reveal.getTotalSlides());
+                // Reveal.slide(30); //Reveal.getTotalSlides());
               }
             },
             { src: 'plugin/codestepper/codestepper.js' }
