@@ -228,7 +228,8 @@ export class RecipeComponent implements OnInit {
 
   constructor() { 
     this.name = "spaghetti";
-    this.ingredients = <span class="fragment highlight-current-red" data-fragment-index="2">["tomato", "onion", "celery", "carrot", "minced meat"];</span>
+    this.ingredients = <span class="fragment highlight-current-red" data-fragment-index="2">["tomato", "onion", "celery", 
+      "carrot", "minced meat"];</span>
   }
 
   ngOnInit() {
@@ -248,7 +249,9 @@ export class RecipeComponent implements OnInit {
 &lt;/p&gt;
 Ingredients:
 &lt;ul&gt;
-  &lt;li <span class="fragment highlight-current-red" data-fragment-index="1">*ngFor</span>=&quot;<span class="fragment highlight-current-red" data-fragment-index="2">let ingredient</span> of ingredients&quot;&gt;<span class="fragment highlight-current-red" data-fragment-index="3">{{ingredient}}</span>&lt;/li&gt;
+  &lt;li <span class="fragment highlight-current-red" data-fragment-index="1">*ngFor</span>=&quot;<span class="fragment highlight-current-red" data-fragment-index="2">let ingredient</span> of ingredients&quot;&gt;
+    <span class="fragment highlight-current-red" data-fragment-index="3">{{ingredient}}</span>
+  &lt;/li&gt;
 &lt;/ul&gt;
 	</code></pre>
         <div style="position:relative">
