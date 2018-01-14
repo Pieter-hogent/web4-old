@@ -464,7 +464,7 @@ export class RecipeDataService {
 export class AppComponent {
   constructor(<span class="fragment highlight-current-red" data-fragment-index="2"><span class="fragment highlight-current-red" data-fragment-index="4">private</span> _recipeDataService : RecipeDataService</span>) {
   }
-  get recipes() {
+  get recipes(): Recipe[] {
     return <span class="fragment highlight-current-red" data-fragment-index="5">this._recipeDataService.recipes;</span>
   }
   newRecipeAdded(recipe) {
@@ -482,6 +482,13 @@ export class AppComponent {
           <p class="fragment current-visible current-replace" data-fragment-index="7">
             <a href="http://localhost:4200/">let's try this out</a>
           </p>
+        </div>
+      </section>
+      <section>
+        <div class='fragment' code-step svg-step>
+          <svg id="svg1" class="svg-section" width='100%' height='100%' preserveAspectRatio="xMaxYMax" snapfile='img/output_eventemitter.svg'>
+            <use xlink:href='plugin/codestepper/loaders.svg#myloader'></use>
+          </svg>
         </div>
       </section>
       <section>
@@ -687,13 +694,14 @@ export class AppComponent {
                 // during development, always start at last slide
                 var indices = Reveal.getIndices(document.getElementById('sectionID'));
                 // Reveal.slide(Reveal.getTotalSlides());
-                // Reveal.slide(30); //Reveal.getTotalSlides());
+                Reveal.slide(24); //Reveal.getTotalSlides());
               }
             },
             { src: 'plugin/codestepper/codestepper.js' }
           ],
         });
       </script>
+      <script src="js/snap.svg.js"></script>
 </body>
 
 </html>

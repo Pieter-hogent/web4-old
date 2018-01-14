@@ -1,6 +1,6 @@
 var CodeStepper =
   window.CodeStepper ||
-  (function() {
+  (function () {
     // if I'd ever feel the need, these could become options somehow
     const highlightFirstAppearanceInCodeBlocks = true;
 
@@ -157,13 +157,24 @@ var CodeStepper =
     }
 
     class SvgElement {
-      constructor(el, showRange) {
+      constructor(el, showRange, highlightRange, highlightColor) {
         this.svgElement = el;
         this.showRange = showRange;
+        this.highlightRange = highlightRange;
+        this.highlightColor = highlightColor;
       }
       update(index) {
-        if (this.showRange.includes(index)) {
+        if (!this.showRange || this.showRange.includes(index)) {
           this.svgElement.animate({ opacity: 1.0 }, 250, mina.easeinout);
+
+          if (this.highlightRange) {
+            if (this.highlightRange.includes(index)) {
+              this.svgElement.node.setAttribute('fill', this.highlightColor);
+            } else {
+              this.svgElement.node.removeAttribute('fill');
+            }
+          }
+
         } else {
           this.svgElement.animate({ opacity: 0.0 }, 0);
         }
@@ -204,7 +215,7 @@ var CodeStepper =
 
     // constructs the lists and sets up inner navigation
     // when a fragment with the correct attribute is encountered
-    Reveal.addEventListener('fragmentshown', function(event) {
+    Reveal.addEventListener('fragmentshown', function (event) {
       currentSection = event.fragment; // not correct, but using it the first time will adjust this
       let needsInnerNavigation = false;
       currentIndex = 1;
@@ -248,7 +259,6 @@ var CodeStepper =
               el.setAttribute('viewBox', snap.getBBox().vb);
               console.log(`viewBox set to ${snap.getBBox().vb}`);
 
-              // now loop over child elements which have the step attribute, and remember them
               let x = g.selectAll('.svgstep');
               x.forEach(item => {
                 item.node.setAttribute('opacity', 0.0); // start hidden, or the screen 'flashes'
@@ -262,6 +272,29 @@ var CodeStepper =
                 svgElements.add(new SvgElement(item, showStepRange));
                 maxIndex = Math.max(maxIndex, showStepRange.max());
               });
+
+              let h = g.selectAll('.svghighlight');
+              h.forEach(item => {
+                let highlightRange = new Range('');
+                if (item.node.hasAttribute('highlight-steps')) {
+                  highlightRange = new Range(
+                    item.node.getAttribute('highlight-steps')
+                  );
+                }
+                let highlightColor = '#ff7e79'; // orange
+                if (item.node.hasAttribute('highlight-color')) {
+                  let theColor = item.node.getAttribute('highlight-color');
+                  switch (theColor) {
+                    case 'orange': highlightColor = '#ff7e79'; break;
+                    case 'green': highlightColor = '#929000'; break;
+                    case 'blue': highlightColor = '#0096ff'; break;
+                    case 'purple': highlightColor = '#9437ff'; break;
+                    default: highlightColor = theColor;
+                  }
+                }
+                svgElements.add(new SvgElement(item, null, highlightRange, highlightColor));
+              });
+
               showHighlightCurrentIndex(); // loading is async, so make sure our svg is loaded according to current index
             });
             //}, 2000);
@@ -276,7 +309,7 @@ var CodeStepper =
         // and add css to the inner span's
         toArray(event.fragment.getElementsByTagName('*')).forEach(el => {
           if (el.classList.contains('samespot')) {
-            for (let i = 0; i < el.childNodes.length; ) {
+            for (let i = 0; i < el.childNodes.length;) {
               if (el.childNodes[i].nodeType == 3) {
                 // TEXT
                 // remove all the newlines that were used to add the different <span> childnodes

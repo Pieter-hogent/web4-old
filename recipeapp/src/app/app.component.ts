@@ -11,9 +11,9 @@ import { RecipeDataService } from './recipe-data.service';
 export class AppComponent {
   public filterRecipeName: string;
 
-  constructor(private _recipeDataService: RecipeDataService) {}
+  constructor(private _recipeDataService: RecipeDataService) { }
 
-  get recipes() {
+  get recipes(): Recipe[] {
     return this._recipeDataService.recipes;
   }
 
