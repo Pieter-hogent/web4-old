@@ -6,14 +6,14 @@
     <div class="ui basic segment">
       <div class="ui two fields">
         <div class="ui input">
-          <input type='text' id='filter' name='filter' placeholder='filter recipe name...' #filter>
+          <input (keyup)='filterRecipeName$.next($event.target.value)' type='text' id='filter' name='filter' placeholder='filter recipe name...'
+            #filter>
         </div>
-        <button (click)="applyFilter(filter.value)" class='ui basic button'>filter</button>
       </div>
     </div>
     <div class="ui basic segment">
       <div class="ui cards">
-        <app-recipe *ngFor='let localRecipe of recipes | recipeFilter: filterRecipeName' [recipe]='localRecipe'></app-recipe>
+        <app-recipe *ngFor='let localRecipe of recipes | recipeFilter: filterRecipeName$.getValue()' [recipe]='localRecipe'></app-recipe>
       </div>
     </div>
   </div>
