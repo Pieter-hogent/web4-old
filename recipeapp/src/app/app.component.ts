@@ -2,11 +2,12 @@ import { Recipe } from './recipe/recipe.model';
 import { Component } from '@angular/core';
 import { RecipeDataService } from './recipe-data.service';
 import { BehaviorSubject } from 'rxjs/BehaviorSubject';
-import { distinctUntilChanged } from 'rxjs/operators';
-import 'rxjs/add/operator/distinctUntilChanged';
-import 'rxjs/add/operator/debounceTime';
-import 'rxjs/add/operator/filter';
-import 'rxjs/add/operator/map';
+import {
+  distinctUntilChanged,
+  debounceTime,
+  map,
+  filter
+} from 'rxjs/operators';
 
 @Component({
   selector: 'app-root',
@@ -20,10 +21,12 @@ export class AppComponent {
 
   constructor(private _recipeDataService: RecipeDataService) {
     this.filterRecipeName$
-      .debounceTime(400)
-      .distinctUntilChanged()
-      .map(val => val.toLowerCase())
-      // .filter(val => !val.startsWith('s'))
+      .pipe(
+        distinctUntilChanged(),
+        debounceTime(400),
+        map(val => val.toLowerCase())
+        // , filter(val => !val.startsWith('s'))
+      )
       .subscribe(val => this.filterRecipe$.next(val));
   }
 
