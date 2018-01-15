@@ -1,7 +1,7 @@
 import { Recipe } from './recipe/recipe.model';
 import { Component } from '@angular/core';
 import { RecipeDataService } from './recipe-data.service';
-import { BehaviorSubject } from 'rxjs/BehaviorSubject';
+import { Subject } from 'rxjs/Subject';
 import {
   distinctUntilChanged,
   debounceTime,
@@ -16,18 +16,18 @@ import {
   providers: [RecipeDataService]
 })
 export class AppComponent {
-  public filterRecipeName$ = new BehaviorSubject<string>('');
-  public filterRecipe$ = new BehaviorSubject<string>('');
+  public filterRecipeName: string;
+  public filterRecipe$ = new Subject<string>();
 
   constructor(private _recipeDataService: RecipeDataService) {
-    this.filterRecipeName$
+    this.filterRecipe$
       .pipe(
         distinctUntilChanged(),
         debounceTime(400),
         map(val => val.toLowerCase())
         // , filter(val => !val.startsWith('s'))
       )
-      .subscribe(val => this.filterRecipe$.next(val));
+      .subscribe(val => (this.filterRecipeName = val));
   }
 
   get recipes(): Recipe[] {
