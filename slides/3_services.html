@@ -572,7 +572,7 @@ export class RecipeFilterPipe implements <span highlight-steps='3'>PipeTransform
   &lt;button (click)=&quot;applyFilter(<span highlight-steps='5'>filter.value</span>)&quot;&gt;filter&lt;/button&gt;
 &lt;/div&gt;</span>
 &lt;div&gt;
-  &lt;app-recipe *ngFor='let localRecipe of recipes<span show-steps='2+'> | recipeFilter<span show-steps='3'>: filterRecipeName</span></span>' 
+  &lt;app-recipe *ngFor='let localRecipe of recipes<span show-steps='2+'> | recipeFilter<span show-steps='3+'>: filterRecipeName</span></span>' 
     [recipe]='localRecipe'&gt;&lt;/app-recipe&gt;
 &lt;/div&gt;
           </code></pre>
@@ -583,7 +583,7 @@ export class RecipeFilterPipe implements <span highlight-steps='3'>PipeTransform
             <p show-steps='3'>the name on which we'll filter will be a property from the typescript class, let's name it filterRecipeName</p>
             <p show-steps='4'>this property will be set using a input field and filter button</p>
             <p show-steps='5'>once more, we'll create a local 'hashtag' variable to store this input field, and pass it's value to the function</p>
-            <p show-steps='6'>now we only need to add this function and the property to the typescript code</p>
+            <p show-steps='6'>all that's left is adding this function and the property to the typescript code</p>
           </div>
         </div>
       </section>
