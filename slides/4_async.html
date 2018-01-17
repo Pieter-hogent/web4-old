@@ -73,7 +73,8 @@ let bobbaFett = createACloneArmyAsync();
           <p class="fragment current-visible current-replace" data-fragment-index="1">but sometimes, completing a function takes a long time, and the next function is not dependent on the result of
             the previous one</span>
             <p class="fragment current-visible current-replace" data-fragment-index="2">we'd like to start creating the clone army while the death star is still being built</p>
-            <p class="fragment current-visible current-replace" data-fragment-index="3">that's what asynchronous programming is (in a nutshell), not waiting for a function to finish before you start the next one</p>
+            <p class="fragment current-visible current-replace" data-fragment-index="3">that's what asynchronous programming is (in a nutshell), not waiting for a function to finish before you start
+              the next one</p>
             <p class="fragment current-visible current-replace" data-fragment-index="4">this leads to a couple of difficulties...</p>
         </div>
       </section>
@@ -151,7 +152,8 @@ buildADeathStar(function (notAMoon) {
           <li class="fragment">this is in and on itself not inherently an asynchronous mechanism</li>
           <li class="fragment">synchronous callbacks exist, and are often used</li>
           <li class="fragment">basically, a callback says "when X happens, call Y"</li>
-          <li class="fragment">but while the callbacks themselves are not necessarily asynchronous, the invocation of the callbacks often is (think event handlers, no way to know the order in which user events will happen) </li>
+          <li class="fragment">but while the callbacks themselves are not necessarily asynchronous, the invocation of the callbacks often is (think
+            event handlers, no way to know the order in which user events will happen) </li>
         </ul>
       </section>
       <section>
@@ -196,7 +198,8 @@ function <span highlight-steps='2'>buildADeathStar</span>( <span highlight-steps
       <section>
         <h3>callbacks - problems</h3>
         <div class="replace" style="height: 300px">
-          <span class="fragment current-visible current-replace" data-fragment-index="1">the main problem with callbacks is that once you're inside a callback, you're "stuck", leading to "callback hell" or "the pyramid of doom"</span>
+          <span class="fragment current-visible current-replace" data-fragment-index="1">the main problem with callbacks is that once you're inside a callback, you're "stuck", leading to "callback hell"
+            or "the pyramid of doom"</span>
           <div class='fragment current-replace' data-fragment-index="2" code-step>
             <pre><code data-noescape data-trim>
 createGalacticEmpire(function (empire) {
@@ -211,8 +214,11 @@ createGalacticEmpire(function (empire) {
               </code></pre>
             <div class='samespot'>
               <p show-steps='2'>even without any error handling or real code, you can already tell this will quickly become a mess</p>
-              <p show-steps='3'>and what if at later point you want to do more than simply <i>eliminateRebels</i>?</p>
-              <p show-steps='4'>you either end up with code duplication, or you start parameterizing a set of nested callbacks, neither is desirable</p>
+              <p show-steps='3'>and what if at later point you want to do more than simply
+                <i>eliminateRebels</i>?</p>
+              <p show-steps='4'>you either end up with code duplication, or you start parameterizing a set of nested callbacks, neither is
+                desirable
+              </p>
             </div>
           </div>
       </section>
@@ -243,8 +249,9 @@ createGalacticEmpire(function (empire) {
           <pre class="fragment"><code data-noescape data-trim>
 let buildPromise = buildADeathStarAsync();	
 					</code></pre>
-          <li class="fragment">the <i>buildADeathStarAsync</i> will in the future be completed (either with an error or with a proper result),
-            the <i>buildPromise</i> variable lets you interact with that future result</li>
+          <li class="fragment">the
+            <i>buildADeathStarAsync</i> will in the future be completed (either with an error or with a proper result), the
+            <i>buildPromise</i> variable lets you interact with that future result</li>
           <li class="fragment">so it's not a regular variable that holds a value, it's an object on which you call functions to interact with
             a future value</li>
         </ul>
@@ -260,16 +267,20 @@ let buildPromise = buildADeathStar();
 <span show-steps='6-9'>buildPromise.catch(error => console.log(error));</span>
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>so buildADeathStar is an async function, the promise is IMMEDIATELY returned, but it doesn't hold the final value yet, it's a placeholder</p>
-            <p show-steps='2'>so if other function calls follow the buildADeathStar, they are immediately started, there's no waiting for the (async) buildADeathStar to finish</p>
+            <p show-steps='1'>so buildADeathStar is an async function, the promise is IMMEDIATELY returned, but it doesn't hold the final value
+              yet, it's a placeholder</p>
+            <p show-steps='2'>so if other function calls follow the buildADeathStar, they are immediately started, there's no waiting for the
+              (async) buildADeathStar to finish</p>
             <p show-steps='3'>how do you interact with this placeholder? with this future value?</p>
-            <p show-steps='4'>by calling a then function with a callback, this callback will be called as soon as the async buildADeathStar is finished</p>
-            <p show-steps='5'>so a then() is not blocking either, processing continues until the async buildADeathStar is completed, and then the callback is called</p>
+            <p show-steps='4'>by calling a then function with a callback, this callback will be called as soon as the async buildADeathStar
+              is finished</p>
+            <p show-steps='5'>so a then() is not blocking either, processing continues until the async buildADeathStar is completed, and then
+              the callback is called</p>
             <p show-steps='6'>you can also provide a catch() function, which will be called if an error occurred during buildADeathStar</p>
             <p show-steps='7'>this looks a lot like callbacks (you pass a function that gets called when the async function is finished), the
               difference might look subtle, but is important</p>
-            <p show-steps='8'>by adding an extra level of indirection, you can 'capture' any point in the chain (by keeping the result in a variable),
-              and diverge in multiple directions from that point</p>
+            <p show-steps='8'>by adding an extra level of indirection, you can 'capture' any point in the chain (by keeping the result in a
+              variable), and diverge in multiple directions from that point</p>
             <p show-steps='9'>let's look at an example</p>
           </div>
         </div>
@@ -288,7 +299,10 @@ createGalacticEmpire(function (empire) {
 })				
 				</code></pre>
         <div style="position:relative">
-          <p class="fragment current-visible current-replace" data-fragment-index="1">remember this? what if we at a later point in the code want the same callback sequence, but we don't want to <i>eliminateRebels</i>            once we destroyed the planet, but <i>killAllJedi</i></p>
+          <p class="fragment current-visible current-replace" data-fragment-index="1">remember this? what if we at a later point in the code want the same callback sequence, but we don't want to
+            <i>eliminateRebels</i> once we destroyed the planet, but
+            <i>killAllJedi</i>
+          </p>
           <p class="fragment current-visible current-replace" data-fragment-index="2">with callbacks this leads to code duplication, or weirdly parameterized functions</p>
         </div>
       </section>
@@ -304,7 +318,8 @@ createGalacticEmpire(function (empire) {
 				</code></pre>
         <div style="position:relative">
           <p class="fragment current-visible current-replace" data-fragment-index="1">doing the same thing with promises can be done without much trouble</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="2">you chain <i>then</i>'s until you're at the point in the sequence where you want to perform multiple operations</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="2">you chain
+            <i>then</i>'s until you're at the point in the sequence where you want to perform multiple operations</p>
           <p class="fragment current-visible current-replace" data-fragment-index="3">you assign this 'point' to a (promise) variable</p>
           <p class="fragment current-visible current-replace" data-fragment-index="4">and then you can divert into multiple operations from this starting point</p>
           <p class="fragment current-visible current-replace" data-fragment-index="5">it's obvious but still important to note that the whole chain is only calculated once, empirePromise will hold
@@ -315,9 +330,16 @@ createGalacticEmpire(function (empire) {
         <h3>promises</h3>
         <ul>
           <li class="fragment">internally promises are like little state machines, who go through a certain lifecycle</li>
-          <li class="fragment">when created, they are in the <i>pending</i> state, the async operation is running, no <i>then</i> nor <i>catch</i>            functions are started yet</li>
-          <li class="fragment">once the async operation is finished, the promise either ends up in the <i>fulfilled</i> state or the <i>rejected</i>            state</li>
-          <li class="fragment">then either the <i>then</i> or <i>catch</i> function will be called respectively</li>
+          <li class="fragment">when created, they are in the
+            <i>pending</i> state, the async operation is running, no
+            <i>then</i> nor
+            <i>catch</i> functions are started yet</li>
+          <li class="fragment">once the async operation is finished, the promise either ends up in the
+            <i>fulfilled</i> state or the
+            <i>rejected</i> state</li>
+          <li class="fragment">then either the
+            <i>then</i> or
+            <i>catch</i> function will be called respectively</li>
         </ul>
       </section>
       <section>
@@ -348,15 +370,17 @@ let fs = require("fs");
             <p show-steps="2">we're reading a file, once the read operation is completed we use a callback to either deal with the errors or
               process the contents</p>
             <p show-steps="3">we create a new function that returns a promise object, the Promise constructor expects a function as parameter</p>
-            <p show-steps="4">this promise class will take care of supplying the correct <i>then</i> and <i>catch</i> methods as resolve /
-              reject parameters to your promise function</p>
+            <p show-steps="4">this promise class will take care of supplying the correct
+              <i>then</i> and
+              <i>catch</i> methods as resolve / reject parameters to your promise function</p>
             <p show-steps="5">you must take care to call these resolve/reject methods at the appropriate times</p>
             <p show-steps="6">whatever you pass as parameter(s) in the resolve/reject methods, will be passed to the then/catch function as
-              parameter</p>
+              parameter
+            </p>
           </div>
         </div>
       </section>
-    
+
       <section>
         <h3>promises</h3>
         <div class='fragment' code-step>
@@ -430,10 +454,12 @@ ret2.catch(val => console.log('rejected ' + val));
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>things get slightly different when you start returning promises from inside then (or catch) handlers</p>
-            <p show-steps='2'>now the promise returned by the then gets put in the same state as the one you return (resolved or rejected), with that promises value as its value</p>
+            <p show-steps='2'>now the promise returned by the then gets put in the same state as the one you return (resolved or rejected),
+              with that promises value as its value</p>
             <p show-steps='3'>so 'resolved prom2' will be logged here</p>
             <p show-steps='4'>it's still true that the value returned by the then function is not the value returned in the callback</p>
-            <p show-steps='5'>but the then will return a promise and it will be in the same state as the promise returned from the callback and it will have the same value</p>
+            <p show-steps='5'>but the then will return a promise and it will be in the same state as the promise returned from the callback
+              and it will have the same value</p>
             <p show-steps='6'>so it's not the same object, but in a way that's a technicality, it's an exact copy</p>
             <p show-steps='7'>so now these are related, somehow</p>
           </div>
@@ -445,14 +471,16 @@ ret2.catch(val => console.log('rejected ' + val));
         <ul>
           <li class="fragment">a value is returned, the promise returned by then gets resolved with this value</li>
           <li class="fragment">an error is thrown, the promise returned by then gets rejected with this thrown error as value</li>
-          <li class="fragment">an already resolved/rejected promise is returned, the promise returned by then gets resolved/rejected with that promise's value as its value</li>
+          <li class="fragment">an already resolved/rejected promise is returned, the promise returned by then gets resolved/rejected with that
+            promise's value as its value</li>
           <li class="fragment">a pending promise is returned, the promise returned by then will also be pending</li>
         </ul>
       </section>
       <section>
         <h3>promises</h3>
         <ul>
-          <li class='fragment'>as one of the problems with callbacks I mentioned it's a hard problem to only continue after several unrelated callbacks are finished</li>
+          <li class='fragment'>as one of the problems with callbacks I mentioned it's a hard problem to only continue after several unrelated
+            callbacks are finished</li>
           <li class='fragment'>or after any one out of several unrelated callbacks is finished</li>
           <li class='fragment'>promises have a construct to solve each of these problems</li>
         </ul>
@@ -471,7 +499,8 @@ Promise.all([prom1, prom2, prom3]).then( values => {
 </span>
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>the problem is this: I have several, unrelated, promises, I want to start them all simultaneously, and perform an operation after ALL of them are finished</p>
+            <p show-steps='1'>the problem is this: I have several, unrelated, promises, I want to start them all simultaneously, and perform
+              an operation after ALL of them are finished</p>
             <p show-steps='2'>Promise.all does just this, simply pass an array of promises, and it will resolve with an array of values</p>
             <p show-steps='3'>so the resolve value will be an array with all the values in it</p>
             <p show-steps='4'>any non promises in there, will simply be passed if all the others resolve</p>
@@ -512,7 +541,9 @@ Promise.race([car1, car2, car3]).then(console.log).catch(console.log);
           <li class="fragment">promises solve async handling pretty well</li>
           <li class="fragment">nothing is ever perfect though, there is room for some improvement</li>
           <ul>
-            <li class="fragment">once a promise is created it will complete and call the resolve or reject callback, there's no easy way to cancel it</li>
+            <li class="fragment">once a promise is created it will complete and call the resolve or reject callback, there's no easy way to cancel
+              it
+            </li>
             <li class="fragment">if a promise failed, given only the promise object there's no easy way to 'retry' the promise</li>
           </ul>
         </ul>
@@ -528,7 +559,8 @@ Promise.race([car1, car2, car3]).then(console.log).catch(console.log);
       <section>
         <h3>observables</h3>
         <ul>
-          <li class="fragment">it's not just javascript, reactive extension exist for pretty much every language you'd want to use (java, .net, c++, kotlin, swift, python, ...)</li>
+          <li class="fragment">it's not just javascript, reactive extension exist for pretty much every language you'd want to use (java, .net,
+            c++, kotlin, swift, python, ...)</li>
           <li class="fragment">put simply: reactive programming is programming with asynchronous data streams</li>
           <li class="fragment">in a way this is nothing new: click events are an async event stream, which you observe and respond to</li>
           <li class="fragment">it's like that, but on steroids</li>
@@ -539,16 +571,21 @@ Promise.race([car1, car2, car3]).then(console.log).catch(console.log);
         <ul>
           <li class="fragment">we said a Promise is the future result of an operation</li>
           <li class="fragment">well, an observable are ALL future results of an operation, and an immense toolbox to work with them</li>
-          <li class="fragment">imperative code 'pulls' data where reactive code 'pushes' data, you subscribe to get notified of changes, and those changes are pushed to you</li>
+          <li class="fragment">imperative code 'pulls' data where reactive code 'pushes' data, you subscribe to get notified of changes, and those
+            changes are pushed to you</li>
           <li class="fragment">RxJS is functional, the functional programming exercises from two weeks ago? preparing you for today</li>
         </ul>
       </section>
       <section>
         <h3>observables</h3>
         <ul>
-          <li class="fragment">the streams are composable, think of streams as a pipeline of operations over your data, you can subscribe to any part of the stream or combine them to make new streams</li>
-          <li class="fragment">working with observables requires a different way of thinking, you subscribe to streams, and update your app based on these changes. There is very little imperative thinking left</li>
-          <li class="fragment">more reading about what this is all about? <a href="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754">"the introduction to reactive programming you've been missing"</a></li>
+          <li class="fragment">the streams are composable, think of streams as a pipeline of operations over your data, you can subscribe to any
+            part of the stream or combine them to make new streams</li>
+          <li class="fragment">working with observables requires a different way of thinking, you subscribe to streams, and update your app based
+            on these changes. There is very little imperative thinking left</li>
+          <li class="fragment">more reading about what this is all about?
+            <a href="https://gist.github.com/staltz/868e7e9bc2a7b8c1f754">"the introduction to reactive programming you've been missing"</a>
+          </li>
         </ul>
       </section>
       <section>
@@ -566,9 +603,11 @@ Promise.race([car1, car2, car3]).then(console.log).catch(console.log);
           <div class='samespot'>
             <p show-steps='1'>observables can be created from many different sources in many different ways</p>
             <p show-steps='2'>for this simple example, we'll create a stream from an array</p>
-            <p show-steps='3'>how should you interpret this? conceptually four different values are added to our stream, so if we subscribe to changes, we will be called four times</p>
+            <p show-steps='3'>how should you interpret this? conceptually four different values are added to our stream, so if we subscribe
+              to changes, we will be called four times</p>
             <p show-steps='4-5'>you can simply subscribe with a function, which means that function is called for each value on our stream</p>
-            <p show-steps='6'>so it's like a promise, but instead of being called once when the async function is done, you get called everytime a new value is available, forever (= until you unsubscribe or the stream is completed)</p>
+            <p show-steps='6'>so it's like a promise, but instead of being called once when the async function is done, you get called everytime
+              a new value is available, forever (= until you unsubscribe or the stream is completed)</p>
           </div>
         </div>
       </section>
@@ -595,46 +634,125 @@ Rx.Observable.from([1, 2, 3]).subscribe(
       <section>
         <h3>observables</h3>
         <ul>
-          <li class="fragment">as said before the real power comes from the immense toolbox available to work with and manipulate streams, let's look at a few examples</li>
-          <li class="fragment">I'll simply show a more complex example so you'll hopefully realize these are powerfull things, there are many resources available online to dive into the details if you're so inclined</li>
+          <li class="fragment">as said before the real power comes from the immense toolbox available to work with and manipulate streams</li>
+          <li class="fragment">as an example, let's update the filter from last week to a 'live' filter, that filters as you type, using observables</li>
         </ul>
       </section>
       <section>
-        <h3>observables</h3>
+        <h3>recipe filter</h3>
         <div class='fragment' code-step>
-          <pre class='javascript'><code data-noescape data-trim>
-<span class="samespot"><span show-steps='1-3'>getEmployees()<span show-steps='2-3'>
-    .filter( emp => emp.department === department)
-    .map( emp => emp.name )
-</span></span>
-<span show-steps='4-8'>getDepartments()
-  <span show-steps='5-8'>.debounce(1000)
-  </span>.map(department => {
-    </span><span show-steps='4-8' no-highlight-first>getEmployees()
-      <span show-steps='6-8'>.retry(3)
-      </span>.filter( emp => emp.department === department)
-      .map( emp => emp.name )
-  </span><span show-steps='4-8'>})<span show-steps='7-8'>
-  .distinctUntilChanged()</span></span>
-</span>
-          </code></pre>
+          <pre class='typescript'>src/app/app.component.ts<code data-noescape data-trim>
+<span show-steps='2+'>import { Subject } from 'rxjs/Subject';
+
+</span>export class AppComponent {
+  public filterRecipeName: string;<span show-steps='2+'>
+  public filterRecipe<span highlight-steps='4'>$</span> = new Subject&lt;string&gt;();</span>
+
+  constructor(private _recipeDataService: RecipeDataService) {<span show-steps='5+'>
+    this.filterRecipe$.subscribe(
+      val => this.filterRecipeName = val);
+    }</span>
+  }
+}</code></pre>
           <div class='samespot'>
-            <p show-steps='1'>assume we have a function that gives us a 'stream' of all employees</p>
-            <p show-steps='2'>we could filter them to only show the employees of a certain department, and then only show their names</p>
-            <p show-steps='3'>so far, we're not really doing anything we can't achieve with arrays and functional programming either</p>
-            <p show-steps='4'>now the departments on which we'll filter also come from a stream, which is generated by a selection from the user</p>
-            <p show-steps='5'>we only want to respond to the last selection made each second, so we don't unnecessarily update constantly</p>
-            <p show-steps='6'>if the requests fails, we want to retry up to three times</p>
-            <p show-steps='7'>and we only want to pay attention if the result is different then it was last time</p>
-            <p show-steps='8'>and so on, reactive programming can be very powerfull, but requires some getting used to</p>
+            <p show-steps='1'>instead of setting the filterRecipeName each time the filter button is pressed, we want it to be set each time
+              the input field changes</p>
+            <p show-steps='2'>we'll store the input field value in an observable, we use a
+              <a href="http://reactivex.io/documentation/subject.html">Subject</a> for this</p>
+            <p show-steps='3'>Subjects can function both as an observer and as an observable, here we'll only use it to emit new values</p>
+            <p show-steps='4'>by convention, observable variables' names end in a $ (stream), similar to the _ at the start of private properties</p>
+            <p show-steps='5'>so the observable will 'fire' new values in a 'stream', if you want to act on those you have to subscribe</p>
+            <p show-steps='6'>unlike promises, observables only 'start' when someone subscribes (explictly or implicitly)</p>
           </div>
         </div>
+      </section>
+      <section>
+        <h3>recipe list</h3>
+        <div class='fragment' code-step>
+          <pre class='html'>src/app/app.component.html<code data-noescape data-trim>
+&lt;div&gt;
+  &lt;input <span highlight-steps='2'>(keyup)</span>='<span highlight-steps='3'>filterRecipe$.next</span>($event.target.value)' 
+    type='text' id='filter' name='filter' 
+    placeholder='filter recipe name...'&gt;
+&lt;/div&gt;
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1-2'>on the html side, we'll remove the button and add a keyup event listener</p>
+            <p show-steps='3'>everytime a keyup happens, we 'next' a new value in our stream, triggering all subscribers their subscribe functions</p>
+            <p show-steps='4'>that's it,
+              <a href="http://localhost:4200/">let's try this out</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>recipe list</h3>
+        <div class='fragment' code-step>
+          <pre class='typescript'>src/app/app.component.ts<code data-noescape data-trim>
+<span show-steps='8+'>import { distinctUntilChanged, debounceTime,
+  map, filter } from 'rxjs/operators';
+
+</span>constructor(private _recipeDataService: RecipeDataService) {
+  this.filterRecipe$<span show-steps='2+'>
+    .pipe(<span show-steps='3+'>
+      distinctUntilChanged()</span><span show-steps='4+'>,
+      debounceTime(400)</span><span show-steps='5+'>,
+      map(val => val.toLowerCase())</span><span show-steps='6+'>,
+      filter(val => !val.startsWith('s'))</span>
+    )</span>
+    .subscribe(val => (this.filterRecipeName = val));
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>this works, but as said before, the real power comes from applying the immense toolbox Rx offers</p>
+            <p show-steps='2'>you do this by passing one or more function to the pipe function on an observable</p>
+            <p show-steps='3'>let's say you only want to get called when the input changes</p>
+            <p show-steps='4'>and then only once every 400 milliseconds</p>
+            <p show-steps='5'>and you want to convert the filter to lowercase before passing it</p>
+            <p show-steps='6'>and then only pass those not starting with an 's'</p>
+            <p show-steps='7'>and so on, and so on, these are really powerful things</p>
+            <p show-steps='8'>they can all be found in 'rxjs/operators'</p>
+            <p show-steps='9'>
+              <a href="http://localhost:4200">let's try this</a>
+            </p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>pipeable operators</h3>
+        <ul>
+          <li class="fragment">these are called
+            <a href="https://github.com/ReactiveX/rxjs/blob/master/doc/pipeable-operators.md">pipeable operators</a>
+          </li>
+          <li class="fragment">(until 12 januari 2018 they were called 'lettable operators', if you google)</li>
+          <li class="fragment">while the idea and functionality existed in observables since the very beginning, passing free functions to the
+            pipe() function is new with RxJS 5.5 (oct 17)</li>
+          <li class="fragment">these function used to be defined on the Observable prototype, and simply called in succession</li>
+        </ul>
+      </section>
+      <section>
+        <h3>pipeable operators</h3>
+        <ul>
+          <li class="fragment">so on google, stackoverflow... you'll often find code with the following syntax
+            <pre class='typescript'><code data-noescape data-trim>
+import 'rxjs/add/operator/map'
+import 'rxjs/add/operator/distinctUntilChanged'
+
+this.filterRecipe$
+  .distinctUntilChanged()
+  .debounceTime(400)
+  .map(val => val.toLowerCase());
+            </code></pre>
+          </li>
+          <li class="fragment">DON'T DO THAT ANYMORE, it's always easily converted to the new syntax</li>
+        </ul>
       </section>
       <section>
         <h3>observables</h3>
         <ul>
           <li class="fragment">in Angular, http request will always return an observable</li>
-          <li class="fragment">this is done so you can easily cancel and retry requests (http responses are not real 'streams' of data, there is always just one result)</li>
+          <li class="fragment">this is done so you can easily cancel and retry requests (http responses are not real 'streams' of data, there
+            is always just one result)</li>
           <li class="fragment">next week, when we have a backend and something to call, we'll go into some examples</li>
         </ul>
       </section>
@@ -642,7 +760,9 @@ Rx.Observable.from([1, 2, 3]).subscribe(
         <h3>promises - exercises</h3>
         <ul>
           <li class="fragment">I was creating exercises but then bumped into a great online workshop</li>
-          <li class="fragment"><a href="https://github.com/stevekane/promise-it-wont-hurt">promise-it-wont-hurt</a></li>
+          <li class="fragment">
+            <a href="https://github.com/stevekane/promise-it-wont-hurt">promise-it-wont-hurt</a>
+          </li>
           <li class="fragment">you can easily find the solutions online, if you'd want to</li>
 
         </ul>
