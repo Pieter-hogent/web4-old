@@ -233,6 +233,7 @@ class Animal {
 
   constructor(name: string) {
     this._name = name;
+  }
 }
   </code></pre>
           <pre class="fragment current-visible  current-replace" data-fragment-index="2"><code data-noescape data-trim>
@@ -561,7 +562,7 @@ retrieveUserInfo( <span show-steps='1'><span highlight-steps='1'>???</span></spa
               console.log(clone)<span show-steps='4'> 
               // { name: 'web4', teacher: 'pieter', hours: '3' }</span></span>
               <span show-steps='5+'>clone = { ...course, name: 'webapps'}<span show-steps='6+'>
-              consle.log(clone) // { name: 'webapps', teacher: 'pieter' }</span></span>
+              console.log(clone) // { name: 'webapps', teacher: 'pieter' }</span></span>
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>you can spread objects too, which will generate all key-value pairs</p>
@@ -603,7 +604,7 @@ console.log("key2: " + key2);  // key2: [object Object]</span></span></span>
 </span>
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>talking about sets and maps, they both became built in datastructures in ES6</p>
+            <p show-steps='1'>sets and maps both became built in datastructures in ES6</p>
             <p show-steps='2'>since every object is in essence a key-value store in javascript, a map can be 'faked' using regular objects</p>
             <p show-steps='3'>sets can similarly be emulated, by using a value of 'true' for each key that exists in your set</p>
             <p show-steps='4'>while this mostly works, there are problems with this approach: keys are ALWAYS strings</p>
