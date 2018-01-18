@@ -50,67 +50,157 @@
         <h3>Express & MongoDB</h3>
         <ul>
           <li class="fragment">we'll use Express and MongoDB (the E and M in MEAN)</li>
-          <li class="fragment">you should have MongoDB installed already (DB3 class)</li>
+          <li class="fragment">MongoDB is a NoSQL database, you'll learn them in greater detail in DB3, for this class just see them as simple
+            key-value stores (
+            <a href="https://www.mongodb.com/download-center#community">install community edition</a>)</li>
+          <li class="fragment">express can be installed using npm
+            <pre data-trim class='console'>
+<span class='prompt'>~$</span> npm install -g express-generator
+            </pre> this added the 'express' command, test with "express --version"
+          </li>
         </ul>
-        <pre class="fragment console">npm install -g express-generator</pre>
-        <p class="fragment">this added the 'express' command, test with "express -v"</p>
+
       </section>
       <section>
         <h3>frontend + backend</h3>
         <ul>
           <li class="fragment">in the end we want everything to be served, somewhere on the internet</li>
-          <li class="fragment">so everything will be build into one big app, with the backend API's, serving the html etc.</li>
-          <li class="fragment">while developing however, it's much easier to keep them separate, using live reloading for the frontend</li>
-          <li class="fragment">when building two separate apps, be aware of CORS / XSS problems</li>
+          <li class="fragment">so everything will be build into one big app, with the backend API's, all the html and angular, served from one
+            place
+          </li>
+          <li class="fragment">while learning however, I think it's much better to keep them separate, so for now we'll create two apps (when
+            building two separate apps, be aware of CORS / XSS problems)</li>
+        </ul>
+      </section>
+      <section>
+        <h3>prepare frontend</h3>
+        <ul>
+          <li class="fragment">in the end, we want the recipeapp/ folder to contain two folders, frontend/ and backend/ containing angular and
+            node respectively</li>
+          <li class="fragment">first we'll create a frontend subfolder and move the current contents there (unix commands, note the backticks
+            `)
+            <div class='fragment' code-step>
+              <pre data-trim class='console'>
+<span class='prompt'>~/recipeapp$</span> mkdir frontend
+<span class='prompt'>~/recipeapp$</span> for i in `<span highlight-steps='1'>ls -d -A *</span> <span highlight-steps='2'>| grep -v frontend</span>`; 
+  do <span highlight-steps='3'>git mv $i frontend/</span>; done 
+<span class='prompt'>~/recipeapp$</span> <span highlight-steps='4'>git mv .angular-cli.json frontend/</span>
+            </pre>
+              <div class='samespot'>
+                <p show-steps='1'>list all entries, but not . and .. (-A) and don't output directories recursively (-d)</p>
+                <p show-steps='2'>exclude the frontend/ folder itself (we don't want to move frontend into frontend)</p>
+                <p show-steps='3'>then for each of those entries do a GIT mv to the frontend folder</p>
+                <p show-steps='4'>also git mv the (hidden) .angular-cli.json file (it contains relative paths)</p>
+              </div>
+            </div>
+          </li>
         </ul>
       </section>
       <section>
         <h3>express backend</h3>
-        now let's create our backend app, using the express generator
-        <pre class="fragment console" data-fragment-index="1">
-<span class="prompt">~$</span> <span class="fragment highlight-current-red" data-fragment-index="2">express recipebackend</span>
-<span class="prompt">~$</span> cd recipebackend
-<span class="prompt">~/recipebackend$</span> <span class="fragment highlight-current-red" data-fragment-index="3">npm install</span>
-<span class="prompt">~/recipebackend$</span> <span class="fragment highlight-current-red" data-fragment-index="4">npm start</span>
-</pre>
-        <div style="position:relative">
-          <p class="fragment current-visible current-replace" data-fragment-index="2">calling express with a name will create a folder with all necessary files for a node - express app in there</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="3">npm install will download and install all dependencies which we need</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="4">the start command will start serving our backend, accessible at
-            <a href="http://localhost:3000/">http://localhost:3000/</a>
-          </p>
-
+        we'll create our backend app using express
+        <pre data-trim class='console'>
+<span class='prompt'>~/recipeapp$</span> express backend</pre>
+        <div class='fragment' code-step>
+          let's look at what gets created
+          <pre class='console' data-trim>
+<span highlight-steps='3'>app.js</span>
+<span class="cli-cyan">bin</span>	
+package-lock.json
+<span highlight-steps='1-2'>package.json</span>
+<span class="cli-cyan"><span highlight-steps='4'>public</span></span>
+<span class="cli-cyan"><span highlight-steps='6'>routes</span></span>
+<span class="cli-cyan"><span highlight-steps='5'>views</span></span></pre>
+          <div class='samespot'>
+            <p show-steps='1'>package.json contains the node.js configuration, containing all dependencies we'll use</p>
+            <p show-steps='2'>using this info 'npm install' will create a node_modules/ folder and put all the dependencies there </p>
+            <p show-steps='3'>app.js is our main file, entry point of our app</p>
+            <p show-steps='4'>public/ will contain the frontend, so our angular should end up here if we deploy our app (not while developing)</p>
+            <p show-steps='5'>views/ contains files in a templating engine that get converted to html, we use angular so we won't use this</p>
+            <p show-steps='6'>routes/ contains the meat of our (backend) app, all our API routes are defined here</p>
+          </div>
         </div>
       </section>
       <section>
+        <h3>express cleanup</h3>
+        <ul>
+          <li class="fragment"> before we start, let's remove the stuff we won't use, delete the views folder
+            <pre data-trim class='console'>
+<span class='prompt'>~recipeapp/backend/$</span> rm -Rf views/</pre>
+          </li>
+          <li class="fragment">then remove the jade view engine dependency from the package.json
+            <div class='fragment' code-step>
+              <pre class='json'>backend/package.json<code data-noescape data-trim>
+"dependencies": {
+  "body-parser": "~1.18.2",
+  "cookie-parser": "~1.4.3",
+  "debug": "~2.6.9",
+  "express": "~4.15.5"<span show-steps='1'>,
+  "jade": "~1.11.0"</span>,
+  "morgan": "~1.9.0",
+  "serve-favicon": "~2.4.5"
+}</code></pre>
+              <div class='samespot'>
+                <p show-steps='1-2'></p>
+              </div>
+            </div>
+          </li>
+        </ul>
+      </section>
+      <section>
+        <h3>express cleanup</h3>
+
+        <div class='fragment' code-step>
+          <pre class='typescript'>backend/routes/index.js<code data-noescape data-trim>
+/* GET home page. */
+router.get('/', function(req, res, next) {<span show-steps='1'> 
+  res.render('index', { title: 'Express' });</span><span show-steps='2' no-highlight-first>
+  res.send('server works');</span>
+});
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>adapt the default GET so it no longer tries to render the index template</p>
+            <p show-steps='2'>send simply responds with the string</p>
+          </div>
+        </div>
+
+        <div class='fragment' code-step>
+          <pre class='javascript'>backend/app.js<code data-noescape data-trim>
+  var index = require('./routes/index');
+  var users = require('./routes/users');
+  
+  var app = express();
+  <span show-steps='1'>
+  // view engine setup
+  app.set('views', path.join(__dirname, 'views'));
+  app.set('view engine', 'jade');</span>
+            </code></pre>
+          <div class='samespot'>
+            <p show-steps='1-2'>remove the view engine setup from the main app.js file</p>
+          </div>
+        </div>
+
+      </section>
+      <section>
         <h3>express backend</h3>
-        let's have a look at what is created
+        now we're ready to install everything and try to run our server for the first time
         <pre class="fragment console" data-fragment-index="1">
-<span class="fragment highlight-current-red" data-fragment-index="4">app.js</span>
-<span class="cli-cyan">bin</span>	
-<span class="cli-cyan"><span class="fragment highlight-current-red" data-fragment-index="3">node_modules</span></span>
-package-lock.json
-<span class="fragment highlight-current-red" data-fragment-index="2">package.json</span>
-<span class="cli-cyan"><span class="fragment highlight-current-red" data-fragment-index="5">public</span></span>
-<span class="cli-cyan"><span class="fragment highlight-current-red" data-fragment-index="7">routes</span></span>
-<span class="cli-cyan"><span class="fragment highlight-current-red" data-fragment-index="6">views</span></span>
+<span class="prompt">~/recipeapp$</span> cd backend
+<span class="prompt">~/recipeapp/backend$</span> <span class="fragment highlight-current-red" data-fragment-index="2">npm install</span>
+<span class="prompt">~/recipeapp/backend$</span> <span class="fragment highlight-current-red" data-fragment-index="3">npm start</span>
 </pre>
         <div style="position:relative">
-          <p class="fragment current-visible current-replace" data-fragment-index="2">package.json contains the node.js configuration, containing all dependencies we'll use</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="3">using this info 'npm install' will create a node_modules/ folder and put all the dependencies there </p>
-          <p class="fragment current-visible current-replace" data-fragment-index="4">app.js is our main file, entry point of our app</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="5">public/ will contain the frontend, so our angular should end up here if we deploy our app (not while developing)</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="6">views/ contains files in a templating engine that get converted to html, if you use angular you typically won't
-            use this
+          <p class="fragment current-visible current-replace" data-fragment-index="2">npm install will download and install all dependencies which we need</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">the start command will start serving our backend, accessible at
+            <a href="http://localhost:3000/">http://localhost:3000/</a>
           </p>
-          <p class="fragment current-visible current-replace" data-fragment-index="7">routes/ contains the meat of our (backend) app, all our API routes are defined here</p>
         </div>
       </section>
       <section>
         <h3>express backend</h3>
         while running, the console provides valuable output
         <pre class="console fragment" data-fragment-index="1">
-> recipebackend@0.0.0 start /recipeapp/recipebackend
+> recipebackend@0.0.0 start /recipeapp/backend
 > node ./bin/www
 
 GET / <span class="cli-green">200</span> 342.739 ms - 170
@@ -128,6 +218,27 @@ GET /stylesheets/style.css <span class="cli-cyan">304</span> 57.931 ms - -
           <p class="fragment current-visible current-replace" data-fragment-index="6">this is a very valuable debug tool, always check here first if you don't get the expected response</p>
           <p class="fragment current-visible current-replace" data-fragment-index="7">IMPORTANT: note that our express server is not live reloading! ctrl-c / restart if you made changes</p>
         </div>
+      </section>
+      <section>
+        <h3>node live reloading</h3>
+        <ul>
+          <li class="fragment">for our purposes, the easiest way to get live reloading is to use the
+            <a href="https://nodemon.io">nodemon</a> tool
+            <pre data-trim class='console'>
+<span class='prompt'>~recipeapp/backend/$</span> sudo npm install -g nodemon</pre>
+          </li>
+          <li class="fragment">nodemon is a drop in replacement, update the package.json to use nodemon i.s.o. node</li>
+          <div class='fragment' code-step>
+            <pre class='typescript'>backend/package.json<code data-noescape data-trim>
+"scripts": {
+  "start": "<span show-steps='1'>node</span><span show-steps='2'>nodemon</span> ./bin/www"
+},              
+            </code></pre>
+          </div>
+          <li class="fragment">
+            <a href="http://localhost:3000">let's try this out</a>
+          </li>
+        </ul>
       </section>
       <section>
         <h3>app.js</h3>
@@ -182,7 +293,8 @@ app.use('/users', users);</span>
           <li class="fragment">when an url hits our server, one or more of these middleware functions are called to process the url</li>
           <li class="fragment">first, the grunt work is done: parsing this url, parsing cookies and everything else that needs to be done when
             a request hits your server (this is done by middleware functions defined in the framework, you don't write this
-            code yourself)</li>
+            code yourself)
+          </li>
 
           <li class="fragment">then, node.js goes looking for a middleware function which handles this specific url</li>
         </ul>
@@ -241,17 +353,17 @@ router.<span class="fragment highlight-current-red" data-fragment-index="2">get<
             <a href="http://mongoosejs.com">mongoose</a> makes it easy to model MongoDB objects in Node.js</li>
         </ul>
         <pre data-trim class="console fragment">
-<span class="prompt">~$recipebackend/</span> npm install mongoose --save
+<span class="prompt">~$recipeapp/backend/</span> npm install mongoose --save
 	</pre>
 
       </section>
       <section>
         <h3>mongoose</h3>
         first, we need to connect to our database
-        <pre>app.js<code data-noescape data-trim>
+        <pre>backend/app.js<code data-noescape data-trim>
 <span class="fragment highlight-current-red" data-fragment-index="1">var mongoose = require('mongoose');</span>
 
-<span class="fragment highlight-current-red" data-fragment-index="2">mongoose.connect('mongodb://localhost/recipedb', {  useMongoClient: true });</span>
+<span class="fragment highlight-current-red" data-fragment-index="2">mongoose.connect('mongodb://localhost/recipedb');</span>
 			</code></pre>
         <div style="position:relative">
           <p class="fragment current-visible current-replace" data-fragment-index="1">import the mongoose library</p>
@@ -277,13 +389,13 @@ router.<span class="fragment highlight-current-red" data-fragment-index="2">get<
       <section>
         <h3>mongoose</h3>
         <div class='fragment' code-step>
-          <pre>~/recipebackend/models/Recipe.js<code data-noescape data-trim>
+          <pre>backend/models/Recipe.js<code data-noescape data-trim>
 var mongoose = require('mongoose');
 
 var RecipeSchema = new mongoose.Schema({
   <span show-steps='2-3'>name: String,
   ingredients: <span highlight-steps='3'>[</span>String<span highlight-steps='3'>]</span>,
-  directions: <span highlight-steps='3'>[</span>String<span highlight-steps='3'>]</span>,</span>
+  created: Date,</span>
 });	
 mongoose.model('Recipe', RecipeSchema);
 				  </code></pre>
@@ -297,7 +409,7 @@ mongoose.model('Recipe', RecipeSchema);
       <section>
         <h3>nodejs</h3>
         <div class='fragment' code-step>
-          <pre>~/recipebackend/app.js<code data-noescape data-trim>
+          <pre>backend/app.js<code data-noescape data-trim>
 var mongoose = require('mongoose');
 // ...
 require('./models/Recipe');
@@ -305,14 +417,15 @@ require('./models/Recipe');
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>we first need to register these schema's, we do this by importing the definitions in our app.js file, making
-              them accessible</p>
+              them accessible
+            </p>
           </div>
         </div>
       </section>
       <section>
         <h3>nodejs</h3>
         <div class='fragment' code-step>
-          <pre>~/recipebackend/routes/index.js<code data-noescape data-trim>
+          <pre>backend/routes/index.js<code data-noescape data-trim>
 let mongoose = require('mongoose');
 let Recipe = mongoose.model('Recipe');
 
@@ -364,23 +477,23 @@ router.<span highlight-steps='2'>post</span>('/API/recipes/', function (req, res
         <h3>nodejs</h3>
         <ul>
           <li class="fragment">testing this is harder, we can't easily fabricate POST requests in our browser, certainly not with json bodies</li>
-          veranderen naar insomnia?
           <li class="fragment">we'll use
-            <a href="https://www.getpostman.com">postman</a> to test our API</li>
-          <li class="fragment">postman makes it easy to test all our REST routes, it's certainly a lot easier then finishing your frontend first</li>
+            <a href="https://insomnia.rest">insomnia</a> to test our API</li>
+          <li class="fragment">insomnia makes it easy to test all our REST routes, it's certainly a lot easier then finishing your frontend first
+            (if you rather use postman that's fine too of course)</li>
         </ul>
       </section>
       <section>
-        <h3>postman</h3>
-        <img src="img/postman_1.png" alt="postman explanation screenshot 1">
+        <h3>insomnia</h3>
+        <img src="img/insomnia_1.png" alt="insomnia explanation screenshot 1">
       </section>
       <section>
-        <h3>postman</h3>
-        <img src="img/postman_2.png" alt="postman explanation screenshot 1">
+        <h3>insomnia</h3>
+        <img src="img/insomnia_2.png" alt="insomnia explanation screenshot 2">
       </section>
       <section>
-        <h3>postman</h3>
-        <img src="img/postman_3.png" alt="postman explanation screenshot 1">
+        <h3>insomnia</h3>
+        <img src="img/insomnia_3.png" alt="insomnia explanation screenshot 3">
       </section>
       <section>
         <h3>status</h3>
@@ -689,7 +802,8 @@ this.http.post('http://myincredibleapi/'<span show-steps='2-10'>, recipe</span>)
             <p show-steps='8'>you don't use an underscore in the names for the private variables (meh)</p>
             <p show-steps='9'>create a separate class for communicating (depends, can be a good idea)</p>
             <p show-steps='10'>or you override the default json conversion function (usually best balance between cumbersome boilerplate and
-              ugly code)</p>
+              ugly code)
+            </p>
 
           </div>
         </div>
@@ -969,7 +1083,7 @@ router.<span highlight-steps='1'>delete</span>('/API/recipe/:recipe', function(r
 
                 // during development, always start at last slide
                 var indices = Reveal.getIndices(document.getElementById('sectionID'));
-                // Reveal.slide(51); //Reveal.getTotalSlides());
+                // Reveal.slide(25); //Reveal.getTotalSlides());
               }
             },
             { src: 'plugin/codestepper/codestepper.js' }
