@@ -11,4 +11,15 @@ router.get('/API/recipes/', function(req, res, next) {
     res.json(recipes);
   });
 });
+
+router.post('/API/recipes/', function(req, res, next) {
+  console.log(req.body);
+  let recipe = new Recipe(req.body);
+  recipe.save(function(err, rec) {
+    if (err) {
+      return next(err);
+    }
+    res.json(rec);
+  });
+});
 module.exports = router;
