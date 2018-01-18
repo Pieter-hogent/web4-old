@@ -3,7 +3,7 @@ var router = express.Router();
 
 /* GET home page. */
 router.get('/', function(req, res, next) {
-  res.send('server works');
+  res.send('server works with nodemon');
 });
 
 module.exports = router;
