@@ -158,7 +158,8 @@ export class AddRecipeComponent implements OnInit {<span show-steps='1+'>
             <p show-steps='1'>this is the associated html we had, I removed all the css classes for clarity</p>
             <p show-steps='2'>our html used a DOM element variable and the click event of a button to process data entered in our form</p>
             <p show-steps='3'>getting the contents of the newrecipename variable inside our this.recipe is trivial, but we also want the reverse</p>
-            <p show-steps='4'>we could simply use property binding and use the value attribute of an input tag to display data from a property into our html</p>
+            <p show-steps='4'>we could simply use property binding and use the value attribute of an input tag to display data from a property
+              into our html</p>
             <p show-steps='5'>this works, but it doesn't scale very well, you'd have to add a DOM variable for each form element</p>
             <p show-steps='6'>and then process them in one big function, juggling all those variables</p>
             <p show-steps='7'>making this process transparent and easy, is what the NgForm directive is for</p>
@@ -184,14 +185,22 @@ export class AddRecipeComponent implements OnInit {<span show-steps='1+'>
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>let's start by removing all the stuff we added to get our 'custom' form handler, we start with a basic form</p>
-            <p show-steps='2'>but it isn't a basic form, as I've said, by including the FormsModule the NgForm directive is associated with this form</p>
-            <p show-steps='3'>one of the things this does is allowing is to bind values to a NgModel directive, add it as an attribute to an input with a name</p>
+            <p show-steps='2'>but it isn't a basic form, as I've said, by including the FormsModule the NgForm directive is associated with
+              this form</p>
+            <p show-steps='3'>one of the things this does is allowing is to bind values to a NgModel directive, add it as an attribute to an
+              input with a name</p>
             <p show-steps='4'>now it's available as myName of the form's attribute, we access it by grabbing the form's ngForm variable</p>
             <p show-steps='5'>once more, we'll test this by looking at the contents, ngForm has a LOT of info, for now we'll look at the value</p>
-            <p show-steps='6'>let's add a second input field immediatelly, so we can see this at work, <a href="http://localhost:4200/">let's try it out</a></p>
-            <p show-steps='7'>pretty cool, but this is just 'one way data binding', it would be nice if this immediatelly updated our <i>this._recipe</i>, and if it immediatelly took values from there too</p>
-            <p show-steps='8'>you can do this by two way data binding the ngModel to an existing property, using the banana-in-a-box syntax, <a href="http://localhost:4200/">let's try this</a></p>
-            <p show-steps='9'>before we can process this output, we need to know when <i>add</i> is clicked, so we can process this, using the ngSubmit event</p>
+            <p show-steps='6'>let's add a second input field immediatelly, so we can see this at work,
+              <a href="http://localhost:4200/">let's try it out</a>
+            </p>
+            <p show-steps='7'>pretty cool, but this is just 'one way data binding', it would be nice if this immediatelly updated our
+              <i>this._recipe</i>, and if it immediatelly took values from there too</p>
+            <p show-steps='8'>you can do this by two way data binding the ngModel to an existing property, using the banana-in-a-box syntax,
+              <a href="http://localhost:4200/">let's try this</a>
+            </p>
+            <p show-steps='9'>before we can process this output, we need to know when
+              <i>add</i> is clicked, so we can process this, using the ngSubmit event</p>
           </div>
         </div>
       </section>
@@ -211,7 +220,9 @@ export class AddRecipeComponent implements OnInit {
           <div class='samespot'>
             <p show-steps='1'>back in the typescript, all we need to do is implement this onSubmit() method</p>
             <p show-steps='2'>which is nothing more then emitting the recipe we two way binded to the form ngModel</p>
-            <p show-steps='3'><a href="http://localhost:4200">let's try this out</a></p>
+            <p show-steps='3'>
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
             <p show-steps='4'>this works fine, but in real forms we'll usually want client side validation</p>
           </div>
         </div>
@@ -237,13 +248,20 @@ REMOVE LATER:<span show-steps='3-8'> {{spy.className}}</span> {{ recipe | json }
 </span>
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>angular uses <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation">the native html5 validation attributes</a></p>
+            <p show-steps='1'>angular uses
+              <a href="https://developer.mozilla.org/en-US/docs/Web/Guide/HTML/HTML5/Constraint_validation">the native html5 validation attributes</a>
+            </p>
             <p show-steps='2'>so let's add a few to our input field, required and minlength</p>
-            <p show-steps='3'>to inspect these, we want to capture the input field itself, angular will add classes based on the state, inspecting these makes looking at the state easier</p>
-            <p show-steps='4'><a href="http://localhost:4200">let's try this out</a></p>
+            <p show-steps='3'>to inspect these, we want to capture the input field itself, angular will add classes based on the state, inspecting
+              these makes looking at the state easier</p>
+            <p show-steps='4'>
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
             <p show-steps='5'>based on these classes you can format parts of your form, I 'don't do css', but just this once...</p>
             <p show-steps='6'>add a green border to the left of a valid input field</p>
-            <p show-steps='7'><a href="http://localhost:4200/">let's try this out</a></p>
+            <p show-steps='7'>
+              <a href="http://localhost:4200/">let's try this out</a>
+            </p>
             <p show-steps='8'>in our real forms, we want to show proper error messages, disable the submit button, and so on</p>
           </div>
         </div>
@@ -268,19 +286,33 @@ REMOVE LATER:<span show-steps='3-8'> {{spy.className}}</span> {{ recipe | json }
 <span show-steps='2-3'>REMOVE LATER: {{ f.controls.myName?.errors | json }}</span><span show-steps='5-8'>REMOVE LATER: {{myNameInput?.errors | json}}</span>
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>internally the ngModel directive does a lot of things, amongst which create a FormControl for each control (more on that when we talk about Reactive forms)</p>
-            <p show-steps='2'>you can access these looking at the f.controls, there is an entry for each control, which has an errors object if there are errors</p>
-            <p show-steps='3'><a href="http://localhost:4200">let's try this out</a></p>
-            <p show-steps='4'>you could do everything using these controls, but for more complicated forms, this becomes cumbersome pretty fast</p>
+            <p show-steps='1'>internally the ngModel directive does a lot of things, amongst which create a FormControl for each control (more
+              on that when we talk about Reactive forms)</p>
+            <p show-steps='2'>you can access these looking at the f.controls, there is an entry for each control, which has an errors object
+              if there are errors</p>
+            <p show-steps='3'>
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
+            <p show-steps='4'>you could do everything using these controls, but for more complicated forms, this becomes cumbersome pretty
+              fast</p>
             <p show-steps='5'>it's a lot easier to simply bind the ngModel from each control you want to inspect, and use that one as a variable</p>
             <p show-steps='6'>now let's display a message when this error occurs</p>
-            <p show-steps='7'>*ngIf is another structural directive, when the expression evaluates to true, the tag is present, so in this case if required exists on the errors the div is shown</p>
-            <p show-steps='8'><a href="http://localhost:4200">let's try this out</a></p>
-            <p show-steps='9'>while this works, you don't want to show an error message when the page is first shown, so let's add the touched property, and <a href="http://localhost:4200">try this out</a></p>
+            <p show-steps='7'>*ngIf is another structural directive, when the expression evaluates to true, the tag is present, so in this
+              case if required exists on the errors the div is shown</p>
+            <p show-steps='8'>
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
+            <p show-steps='9'>while this works, you don't want to show an error message when the page is first shown, so let's add the touched
+              property, and
+              <a href="http://localhost:4200">try this out</a>
+            </p>
             <p show-steps='10'>one more thing we'd like is to disable the add button while we're not valid</p>
-            <p show-steps='11'>'validness' is hierarchical, the form is valid if each of it's controls is valid, we already bound our form to 'f', so we can use it's valid property</p>
+            <p show-steps='11'>'validness' is hierarchical, the form is valid if each of it's controls is valid, we already bound our form to
+              'f', so we can use it's valid property</p>
             <p show-steps='12'>so we'll set the disabled attribute based on the valid state of the form variable</p>
-            <p show-steps='13'><a href="http://localhost:4200">let's try this out</a></p>
+            <p show-steps='13'>
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
           </div>
         </div>
       </section>
@@ -296,16 +328,18 @@ REMOVE LATER:<span show-steps='3-8'> {{spy.className}}</span> {{ recipe | json }
       <section>
         <h3>reactive forms</h3>
         <ul>
-          <li class="fragment">reactive forms are not fundamentally different, but instead of automatically generating the underlying formstructure which binds to ngModel, we'll have to do that ourselves </li>
-          <li class="fragment">I already said every element inside a form is a FormControl, there is also a FormGroup and FormArray to structure these</li>
+          <li class="fragment">reactive forms are not fundamentally different, but instead of automatically generating the underlying formstructure
+            which binds to ngModel, we'll have to do that ourselves </li>
+          <li class="fragment">I already said every element inside a form is a FormControl, there is also a FormGroup and FormArray to structure
+            these</li>
           <li class="fragment">a FormControl is a class that tracks the value and the validation status of an individual control of a form</li>
-          
+
         </ul>
       </section>
       <section>
         <h3>reactive forms module</h3>
         <div class='fragment' code-step>
-            <pre>app.module.ts<code data-noescape data-trim>
+          <pre>app.module.ts<code data-noescape data-trim>
 import { <span highlight-steps='1'>ReactiveFormsModule</span> } from '@angular/forms';</span>
 
 import { AppComponent } from './app.component';
@@ -361,9 +395,11 @@ export class AddRecipeComponent implements OnInit {
             <p show-steps='2'>the formGroup is a binding on the form</p>
             <p show-steps='3'>and formControls are linked using the formControlName attribute directive</p>
             <p show-steps='4'>for debugging purposes it's convenient to dump the value in the form itself</p>
-            <p show-steps='5'><a href="http://localhost:4200">let's try this out</a></p>
+            <p show-steps='5'>
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
             <p show-steps='6'>if we want the add button to work, we need respond to the (ngSubmit) event</p>
-            
+
           </div>
         </div>
       </section>
@@ -380,7 +416,9 @@ export class AddRecipeComponent implements OnInit {
           <div class='samespot'>
             <p show-steps='1'>and then we need to add this onSubmit method</p>
             <p show-steps='2'>we'll have to convert the formGroup.value to a recipe object before we can emit it</p>
-            <p show-steps='3'><a href="http://localhost:4200">let's try this out</a></p>
+            <p show-steps='3'>
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
           </div>
         </div>
       </section>
@@ -398,7 +436,8 @@ export class AddRecipeComponent implements OnInit {
 }
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>if you want to add validation, we'll explicitly include and add <a href="https://angular.io/api/forms/Validators">Validators</a> functions</p>
+            <p show-steps='1'>if you want to add validation, we'll explicitly include and add
+              <a href="https://angular.io/api/forms/Validators">Validators</a> functions</p>
             <p show-steps='2'>Validators has many static functions defined which perform the validation</p>
             <p show-steps='3'>if you need multiple, simply pass an array of them</p>
             <p show-steps='4'>you can also add async Validators (server side validation), I'll show an example when we add user authentication</p>
@@ -427,13 +466,21 @@ REMOVE {{ recipe.value | json }} {{ recipe.valid }}
 <span show-steps='4-7'>{{ recipe.get("name").errors | json}}</span>
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>if there are validators the FormControl will automatically add css classes to the control, which you can use to give feedback</p>
-            <p show-steps='2'>let's add a variable and <a href="http://localhost:4200/">see what this does</a></p>
+            <p show-steps='1'>if there are validators the FormControl will automatically add css classes to the control, which you can use
+              to give feedback</p>
+            <p show-steps='2'>let's add a variable and
+              <a href="http://localhost:4200/">see what this does</a>
+            </p>
             <p show-steps='3'>you could add css based on these classes, but often you also need to show a proper error message</p>
-            <p show-steps='4'>whenever a validation error occurs, the FormControl.errors object contains those errors <a href="http://localhost:4200">let's check this out</a></p>
+            <p show-steps='4'>whenever a validation error occurs, the FormControl.errors object contains those errors
+              <a href="http://localhost:4200">let's check this out</a>
+            </p>
             <p show-steps='5'>so you can add div's which are shown based on these properties, using a *ngIf construct</p>
-            <p show-steps='6'>it's better to take touched state into account, you don't want to bombard your user with errors when she opens a page</p>
-            <p show-steps='7'><a href="http://localhost:4200">let's try this out</a></p>
+            <p show-steps='6'>it's better to take touched state into account, you don't want to bombard your user with errors when she opens
+              a page</p>
+            <p show-steps='7'>
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
           </div>
         </div>
       </section>
@@ -457,7 +504,8 @@ export class AddRecipeComponent implements OnInit {<span show-steps='2-4'>
             <p show-steps='1'>there's an easier way to construct these FormGroups and controls, using a formbuilder</p>
             <p show-steps='2'>inject the FormBuilder in the constructor</p>
             <p show-steps='3'>and replace 'new FormGroup' with fb.group and 'new FormControl' with fb.control</p>
-            <p show-steps='4'>you can even remove the fb.control completely, and replace it with an array which holds all the arguments (default value, validators, ...)</p>
+            <p show-steps='4'>you can even remove the fb.control completely, and replace it with an array which holds all the arguments (default
+              value, validators, ...)</p>
           </div>
         </div>
       </section>
@@ -507,7 +555,8 @@ mongoose.model('Recipe', RecipeSchema);
           <div class='samespot'>
             <p show-steps='1'>then we want to use this Ingredient model inside our Recipe</p>
             <p show-steps='2'>instead of storing an array of strings, we'll store an array of these ingredient references</p>
-            <p show-steps='3'>we created some kind of relational model inside our nosql, we're responsible of keeping the relations in sync ourselves</p>
+            <p show-steps='3'>we created some kind of relational model inside our nosql, we're responsible of keeping the relations in sync
+              ourselves</p>
           </div>
         </div>
       </section>
@@ -531,9 +580,11 @@ let IngredientSchema = new mongoose.Schema({
 mongoose.model('Ingredient', IngredientSchema);
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>this means we need a way to remove an Ingredient from the Ingredient list of a Recipe when the Ingredient is removed</p>
+            <p show-steps='1'>this means we need a way to remove an Ingredient from the Ingredient list of a Recipe when the Ingredient is
+              removed</p>
             <p show-steps='2'>mongoose provides 'hooks' to easily do this, let's add a 'pre remove' hook</p>
-            <p show-steps='3'>so whenever remove is called on an Ingredient, we'll remove it from the Recipe's list first, so it doesn't hold a 'dangling reference'</p>
+            <p show-steps='3'>so whenever remove is called on an Ingredient, we'll remove it from the Recipe's list first, so it doesn't hold
+              a 'dangling reference'</p>
           </div>
         </div>
       </section>
@@ -571,8 +622,10 @@ router.post('/API/recipes/', function (req, res, next) {
           <div class='samespot'>
             <p show-steps='1'>we'll separate adding a recipe and its ingredients into different post requests </p>
             <p show-steps='2'>so we'll ignore the ingredients when adding a recipe (since strings won't match the ObjectId type)</p>
-            <p show-steps='3'>you don't want to do this in 'real' code, you'd use mongoose model <a href="http://mongoosejs.com/docs/api.html#model_Model.create">create</a> to add a list of ingredients and then add the recipe and set those ingredients</p>
-            <p show-steps='4'>sometimes you need several REST requests to do something, and I want to show how you handle that at the Angular side, so we'll act as if adding a recipe and its ingredients needs several requests</p>
+            <p show-steps='3'>you don't want to do this in 'real' code, you'd use mongoose model
+              <a href="http://mongoosejs.com/docs/api.html#model_Model.create">create</a> to add a list of ingredients and then add the recipe and set those ingredients</p>
+            <p show-steps='4'>sometimes you need several REST requests to do something, and I want to show how you handle that at the Angular
+              side, so we'll act as if adding a recipe and its ingredients needs several requests</p>
           </div>
         </div>
       </section>
@@ -600,7 +653,8 @@ router.post('/API/recipe/<span highlight-steps='1'>:recipe</span>/ingredients',
             <p show-steps='2'>then it's a two step process, create an ingredient and save it</p>
             <p show-steps='3'>add that ingredient to the recipe's ingredient list, and save the recipe</p>
             <p show-steps='4'>if both succeed return the saved ingredient</p>
-            <p show-steps='5'>as usual our error handling is lacking, if saving the ingredient succeeded, and saving the recipe failed, you probably want to remove it again</p>
+            <p show-steps='5'>as usual our error handling is lacking, if saving the ingredient succeeded, and saving the recipe failed, you
+              probably want to remove it again</p>
           </div>
         </div>
       </section>
@@ -622,7 +676,9 @@ router.delete('/API/recipe/:recipe', function(req, res) {
           <div class='samespot'>
             <p show-steps='1'>when removing a recipe, we want to remove all the ingredients too</p>
             <p show-steps='2'>you can loop and remove one by one, or you can use the $in to remove all matching id's</p>
-            <p show-steps='3'>now we have everything to test our routes in postman, <a href="http://localhost:3000/API/recipes">let's try it out</a></p>
+            <p show-steps='3'>now we have everything to test our routes in postman,
+              <a href="http://localhost:3000/API/recipes">let's try it out</a>
+            </p>
           </div>
         </div>
       </section>
@@ -705,7 +761,8 @@ export class Recipe {
 {{ingredient.amount}} {{ingredient.unit}} {{ingredient.name}}
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>the ingredient component now takes an ingredient as @Input(), and the html should show the three parts of an ingredient</p>
+            <p show-steps='1'>the ingredient component now takes an ingredient as @Input(), and the html should show the three parts of an
+              ingredient</p>
           </div>
         </div>
       </section>
@@ -738,7 +795,8 @@ export class RecipeDataService {
       <section>
         <h3>formarray</h3>
         <ul>
-          <li class="fragment">finally, we're at our form, where we want to add one or more ingredients for a recipe, so we'll dynamically add input fields as we need them</li>
+          <li class="fragment">finally, we're at our form, where we want to add one or more ingredients for a recipe, so we'll dynamically add
+            input fields as we need them</li>
           <li class="fragment">this is done using a formarray</li>
           <li class="fragment">you typically create a function which creates a formgroup with the inputs you want to repeat</li>
           <li class="fragment">and then push such a formgroup into the formarray whenever you want new input controls</li>
@@ -797,8 +855,10 @@ ngOnInit() {
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>the first part of the form stays the same, then we create a new div where we will display the form array</p>
-            <p show-steps='2'>inside the array we'll display all the groups that were added, the groups themselves are nothing special, simply hook up the formControlNames</p>
-            <p show-steps='3'>each group is in its own div, which needs a formGroupName, but now we can't just set a fixed name, we're an index in an array</p>
+            <p show-steps='2'>inside the array we'll display all the groups that were added, the groups themselves are nothing special, simply
+              hook up the formControlNames</p>
+            <p show-steps='3'>each group is in its own div, which needs a formGroupName, but now we can't just set a fixed name, we're an index
+              in an array</p>
             <p show-steps='4'>so we'll add a loop over all 'ingredients' controls in the recipe formgroup</p>
             <p show-steps='5'>note how we also simply loop over a property variable to create an option input field</p>
           </div>
@@ -822,7 +882,9 @@ onSubmit() {
           <div class='samespot'>
             <p show-steps='1'>back in our typescript file we need to adapt our onSubmit method too</p>
             <p show-steps='2'>I explicitly check for a valid ingredientname, I don't want to include empty input fields</p>
-            <p show-steps='3'>we can't add more than one ingredient yet, but <a href="http://localhost:4200">let's try this out</a></p>
+            <p show-steps='3'>we can't add more than one ingredient yet, but
+              <a href="http://localhost:4200">let's try this out</a>
+            </p>
           </div>
         </div>
       </section>
@@ -846,10 +908,13 @@ export class AddRecipeComponent implements OnInit {
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>we could just add a button in the form, and call createIngredients and add a FormGroup to the array as it's clicked</p>
-            <p show-steps='2'>but let's try something else, there is also change tracking available, we'll add a new line of input fields as the previous one is filled</p>
+            <p show-steps='2'>but let's try something else, there is also change tracking available, we'll add a new line of input fields as
+              the previous one is filled</p>
             <p show-steps='3'>first, add a convenience method to access the ingredients array inside the formgroup</p>
-            <p show-steps='4'>then subscribe to the statusChanges, with a debounceTime of 400ms, and add a new set of input fields if the previous one proved 'valid'</p>
-            <p show-steps='5'>you could also use valueChanges for much more fine grained control, statusChanges is pretty blunt, but good enough for this purpose</p>
+            <p show-steps='4'>then subscribe to the statusChanges, with a debounceTime of 400ms, and add a new set of input fields if the previous
+              one proved 'valid'</p>
+            <p show-steps='5'>you could also use valueChanges for much more fine grained control, statusChanges is pretty blunt, but good enough
+              for this purpose</p>
           </div>
         </div>
       </section>
@@ -873,11 +938,13 @@ export class AddRecipeComponent implements OnInit {
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>we still need to adapt the method which responds to the new recipe emit from our ingredient form</p>
-            <p show-steps='2'>remember that our backend needs to be called separately for each ingredient that is added, after we know the id of the recipe itself</p>
+            <p show-steps='2'>remember that our backend needs to be called separately for each ingredient that is added, after we know the
+              id of the recipe itself</p>
             <p show-steps='3'>so we first still subscribe to the recipe (we need the id), but this won't add any ingredients</p>
             <p show-steps='4'>then we'll create a backend call for each ingredient (note that no calls are done yet, nobody subscribed)</p>
             <p show-steps='5'>then we forkJoin the destructured array and subscribe to the results, which will be a list of all added ingredients</p>
-            <p show-steps='6'>after which we add them to the recipe, remember that the original recipe save returned a recipe without ingredients, so that list is empty here</p>
+            <p show-steps='6'>after which we add them to the recipe, remember that the original recipe save returned a recipe without ingredients,
+              so that list is empty here</p>
           </div>
         </div>
       </section>
