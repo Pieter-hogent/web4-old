@@ -12,7 +12,7 @@
     </div>
     <div class="ui basic segment">
       <div class="ui cards">
-        <app-recipe *ngFor='let localRecipe of recipes | recipeFilter:filterRecipeName' [recipe]='localRecipe'></app-recipe>
+        <app-recipe *ngFor='let localRecipe of recipes | async | recipeFilter:filterRecipeName' [recipe]='localRecipe'></app-recipe>
       </div>
     </div>
   </div>

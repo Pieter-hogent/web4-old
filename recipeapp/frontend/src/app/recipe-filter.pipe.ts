@@ -9,8 +9,8 @@ export class RecipeFilterPipe implements PipeTransform {
     if (!name || name.length === 0) {
       return recipes;
     }
-    return recipes.filter(rec =>
-      rec.name.toLowerCase().startsWith(name.toLowerCase())
+    return recipes.filter(
+      rec => rec.name && rec.name.toLowerCase().startsWith(name.toLowerCase())
     );
   }
 }
