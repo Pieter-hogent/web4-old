@@ -22,5 +22,14 @@ export class RecipeDataService {
       );
   }
 
-  addNewRecipe(recipe: Recipe) {}
+  addNewRecipe(recipe: Recipe): Observable<Recipe> {
+    return this.http
+      .post(this._appUrl, recipe)
+      .pipe(
+        map(
+          (item: any): Recipe =>
+            new Recipe(item.name, item.ingredients, item.created)
+        )
+      );
+  }
 }

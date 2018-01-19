@@ -12,6 +12,14 @@ export class Recipe {
     this._ingredients = ingredients;
     this._dateAdded = dateAdded ? dateAdded : new Date();
   }
+
+  toJSON() {
+    return {
+      name: this._name,
+      ingredients: this._ingredients,
+      created: this._dateAdded
+    };
+  }
   get name(): string {
     return this._name;
   }

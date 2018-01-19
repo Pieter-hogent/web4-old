@@ -14,7 +14,7 @@ export class AppComponent implements OnInit {
   public filterRecipeName: string;
   public filterRecipe$ = new Subject<string>();
 
-  private _recipes;
+  private _recipes: Recipe[];
 
   constructor(private _recipeDataService: RecipeDataService) {
     this.filterRecipe$
@@ -27,7 +27,9 @@ export class AppComponent implements OnInit {
   }
 
   ngOnInit(): void {
-    this._recipes = this._recipeDataService.recipes;
+    this._recipeDataService.recipes.subscribe(
+      recipes => (this._recipes = recipes)
+    );
   }
 
   get recipes() {
@@ -35,6 +37,8 @@ export class AppComponent implements OnInit {
   }
 
   newRecipeAdded(recipe) {
-    this._recipeDataService.addNewRecipe(recipe);
+    this._recipeDataService
+      .addNewRecipe(recipe)
+      .subscribe((rec: Recipe) => this._recipes.push(rec));
   }
 }
