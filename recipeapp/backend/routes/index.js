@@ -22,4 +22,13 @@ router.post('/API/recipes/', function(req, res, next) {
     res.json(rec);
   });
 });
+
+router.get('/API/recipe/:id', function(req, res, next) {
+  Recipe.findById(req.params.id, function(err, recipe) {
+    if (err) return next(err);
+    if (!recipe) return next(new Error('not found ' + req.params.id));
+    res.json(recipe);
+  });
+});
+
 module.exports = router;
