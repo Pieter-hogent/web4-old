@@ -23,12 +23,30 @@ router.post('/API/recipes/', function(req, res, next) {
   });
 });
 
-router.get('/API/recipe/:id', function(req, res, next) {
-  Recipe.findById(req.params.id, function(err, recipe) {
-    if (err) return next(err);
-    if (!recipe) return next(new Error('not found ' + req.params.id));
-    res.json(recipe);
+router.param('recipe', function(req, res, next, id) {
+  let query = Recipe.findById(id);
+  query.exec(function(err, recipe) {
+    if (err) {
+      return next(err);
+    }
+    if (!recipe) {
+      return next(new Error('not found ' + id));
+    }
+    req.recipe = recipe;
+    return next();
   });
 });
 
+router.get('/API/recipe/:recipe', function(req, res, next) {
+  res.json(req.recipe);
+});
+
+router.delete('/API/recipe/:recipe', function(req, res, next) {
+  req.recipe.remove(function(err) {
+    if (err) {
+      return next(err);
+    }
+    res.json('removed recipe');
+  });
+});
 module.exports = router;
