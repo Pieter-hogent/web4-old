@@ -246,7 +246,7 @@ GET /stylesheets/style.css <span class="cli-cyan">304</span> 57.931 ms - -
       </section>
       <section>
         <h3>app.js</h3>
-        let's have a look at a few parts of the generated app.js, we won't go in too much detail
+        let's have a look at a few parts of the generated app.js, we won't go into to much detail
         <pre class="fragment" data-fragment-index="1"><code data-noescape data-trim>
 <span class="fragment highlight-current-red" data-fragment-index="2">var express = require('express');
 var path = require('path');
@@ -599,13 +599,13 @@ import { Observable } from 'rxjs/Observable';
 export class RecipeDataService {
   <span show-steps='3-4'>private readonly _appUrl = '/API/recipes/';
   </span>
-  constructor(<span show-steps='3-4'>private http: Http</span>) {
+  constructor(<span show-steps='3-4'>private http: HttpClient</span>) {
   }
 }
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>we'll adapt our RecipeDataService, so it'll get the data from our backend</p>
-            <p show-steps='2'>@angular/http is the part of angular where all the http tools reside</p>
+            <p show-steps='2'>@angular/common/http is the part of angular where all the http tools reside</p>
             <p show-steps='3'>we'll add the backend url, and we inject http in the constructor</p>
             <p show-steps='4'>and now for the real meat, PAY ATTENTION</p>
           </div>
@@ -932,7 +932,8 @@ export class AppComponent implements OnInit {
           <li class="fragment">we manually subscribe to observables in our components init methods, should we unsubscribe to?</li>
           <li class="fragment">yes-and-no, http calls are 'finite' observables, so it's handled automatically by the library</li>
           <li class="fragment">if you've subscribed to infinite observables though, you should always unsubscribe or you'll leak memory!</li>
-          <li class="fragment">doing this correctly requires a bit more knowledge of RxJS then we're covering, so I'll just present the solution</li>
+          <li class="fragment">the 'trick' is to add a kind of 'guard' at the start of each observable, and trigger it when your component is
+            destroyed</li>
         </ul>
       </section>
       <section>
@@ -1075,7 +1076,7 @@ router.<span highlight-steps='1'>delete</span>('/API/recipe/:recipe', function(r
         <ul>
           <li class="fragment">we learned how to create an nodejs app, and link it to a mongodb</li>
           <li class="fragment">we've seen how to add basic REST routes, with parameters</li>
-          <li class="fragment">and we saw how to connect our angular app to these using the HttpModule</li>
+          <li class="fragment">and we saw how to connect our angular app to these using the HttpClientModule</li>
           <li class="fragment">we have absolutely no user authentication though, be wary if you put an app like this online, all routes are wide
             open
           </li>
