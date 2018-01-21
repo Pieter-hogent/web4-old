@@ -6,30 +6,25 @@ import { map } from 'rxjs/operators';
 
 @Injectable()
 export class RecipeDataService {
-  private readonly _appUrl = '/API/recipes/';
+  private readonly _appUrl = '/API/';
 
   constructor(private http: HttpClient) {}
 
   get recipes(): Observable<Recipe[]> {
     return this.http
-      .get(this._appUrl)
-      .pipe(
-        map((list: any[]): Recipe[] =>
-          list.map(
-            item => new Recipe(item.name, item.ingredients, item.created)
-          )
-        )
-      );
+      .get(`${this._appUrl}/recipes/`)
+      .pipe(map((list: any[]): Recipe[] => list.map(Recipe.fromJSON)));
   }
 
   addNewRecipe(recipe: Recipe): Observable<Recipe> {
     return this.http
-      .post(this._appUrl, recipe)
-      .pipe(
-        map(
-          (item: any): Recipe =>
-            new Recipe(item.name, item.ingredients, item.created)
-        )
-      );
+      .post(`${this._appUrl}/recipes/`, recipe)
+      .pipe(map(Recipe.fromJSON));
+  }
+
+  removeRecipe(rec) {
+    return this.http
+      .delete(`${this._appUrl}/recipe/${rec.id}`)
+      .pipe(map(Recipe.fromJSON));
   }
 }

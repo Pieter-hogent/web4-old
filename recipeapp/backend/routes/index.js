@@ -46,7 +46,7 @@ router.delete('/API/recipe/:recipe', function(req, res, next) {
     if (err) {
       return next(err);
     }
-    res.json('removed recipe');
+    res.json(req.recipe);
   });
 });
 module.exports = router;

@@ -41,4 +41,13 @@ export class AppComponent implements OnInit {
       .addNewRecipe(recipe)
       .subscribe((rec: Recipe) => this._recipes.push(rec));
   }
+
+  removeRecipe(recipe: Recipe) {
+    this._recipeDataService
+      .removeRecipe(recipe)
+      .subscribe(
+        item =>
+          (this._recipes = this._recipes.filter(val => item.id !== val.id))
+      );
+  }
 }

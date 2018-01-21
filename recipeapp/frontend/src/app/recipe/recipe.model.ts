@@ -1,4 +1,5 @@
 export class Recipe {
+  private _id: string;
   private _name: string;
   private _dateAdded: Date;
   private _ingredients = new Array<string>();
@@ -13,12 +14,23 @@ export class Recipe {
     this._dateAdded = dateAdded ? dateAdded : new Date();
   }
 
+  static fromJSON(json: any): Recipe {
+    const rec = new Recipe(json.name, json.ingredients, json.created);
+    rec._id = json._id;
+    return rec;
+  }
+
   toJSON() {
     return {
+      _id: this._id,
       name: this._name,
       ingredients: this._ingredients,
       created: this._dateAdded
     };
+  }
+
+  get id(): string {
+    return this._id;
   }
   get name(): string {
     return this._name;
