@@ -3,6 +3,7 @@
     <app-add-recipe (newRecipe)='newRecipeAdded($event)'></app-add-recipe>
   </div>
   <div class="ui segment">
+    <div *ngIf='errorMsg' class="ui error message">{{errorMsg}}</div>
     <div class="ui basic segment">
       <div class="ui two fields">
         <div class="ui input">
