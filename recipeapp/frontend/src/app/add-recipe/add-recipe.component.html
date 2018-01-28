@@ -1,10 +1,11 @@
-<div class="ui form">
+<form class="ui form" [formGroup]='recipe' (ngSubmit)='onSubmit()'>
   <h3 class="ui header">Add recipe</h3>
   <div class="field">
-    <label for="name">Name:</label>
-    <input id="name" name="name" #newrecipename>
+    <label for="name_id">Name:</label>
+    <input id="name" name="name_id" formControlName='name'>
   </div>
-  <button (click)="addRecipe(newrecipename)" class="ui positive right button">
+  <button type='submit' class="ui positive right button">
     add recipe
   </button>
-</div>
+</form>
+REMOVE {{ recipe.value | json }}
