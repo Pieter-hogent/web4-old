@@ -762,7 +762,7 @@ export class AppComponent <span show-steps='3-6'>implements OnInit</span> {
   .subscribe(data => 
     recipe.name = data.name; // data is of type RecipeResponse
   );
-	</span><span show-steps='5-6'>.subscribe( 
+	</span><span show-steps='5+'>.subscribe( 
     data => { ... },
     (err: HttpErrorResponse) => {
       if (err.error instanceof Error) {
@@ -784,6 +784,9 @@ export class AppComponent <span show-steps='3-6'>implements OnInit</span> {
               <a href="https://angular.io/api/common/http/HttpErrorResponse">HttpErrorResponse</a>
             </p>
             <p show-steps='6'>you can handle both client side/network errors and server errors</p>
+            <p show-steps='7'>most of the examples in the slides won't have this error handling added (because it doesn't fit), but it's VERY
+              IMPORTANT you properly show error messages (the example project on github will have the error handling if you
+              need an example)</p>
           </div>
         </div>
       </section>
@@ -933,7 +936,8 @@ export class AppComponent implements OnInit {
           <li class="fragment">yes-and-no, http calls are 'finite' observables, so it's handled automatically by the library</li>
           <li class="fragment">if you've subscribed to infinite observables though, you should always unsubscribe or you'll leak memory!</li>
           <li class="fragment">the 'trick' is to add a kind of 'guard' at the start of each observable, and trigger it when your component is
-            destroyed</li>
+            destroyed
+          </li>
         </ul>
       </section>
       <section>
