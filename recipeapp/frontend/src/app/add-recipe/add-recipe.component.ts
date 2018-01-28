@@ -1,6 +1,11 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
 import { Recipe } from '../recipe/recipe.model';
-import { FormGroup, FormControl } from '@angular/forms';
+import {
+  FormGroup,
+  FormControl,
+  Validators,
+  FormBuilder
+} from '@angular/forms';
 
 @Component({
   selector: 'app-add-recipe',
@@ -11,11 +16,11 @@ export class AddRecipeComponent implements OnInit {
   @Output() public newRecipe = new EventEmitter<Recipe>();
   private recipe: FormGroup;
 
-  constructor() {}
+  constructor(private fb: FormBuilder) {}
 
   ngOnInit() {
-    this.recipe = new FormGroup({
-      name: new FormControl('risotto')
+    this.recipe = this.fb.group({
+      name: ['risotto', [Validators.required, Validators.minLength(2)]]
     });
   }
   onSubmit() {

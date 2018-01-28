@@ -4,8 +4,13 @@
     <label for="name_id">Name:</label>
     <input id="name" name="name_id" formControlName='name'>
   </div>
+  <div *ngIf='recipe.get("name").errors?.required && recipe.get("name").touched' class='ui pointing red basic label'>
+    error! this is required
+  </div>
   <button type='submit' class="ui positive right button">
     add recipe
   </button>
 </form>
 REMOVE {{ recipe.value | json }}
+<br> {{ recipe.get("name").errors | json}}
+<br> {{ recipe.valid }}
