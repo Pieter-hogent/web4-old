@@ -8,6 +8,7 @@ var mongoose = require('mongoose');
 
 mongoose.connect('mongodb://localhost/recipedb');
 require('./models/Recipe');
+require('./models/Ingredient');
 
 var index = require('./routes/index');
 var users = require('./routes/users');
@@ -40,7 +41,7 @@ app.use(function(err, req, res, next) {
 
   // render the error page
   res.status(err.status || 500);
-  res.send(`error ${err.status}`);
+  res.send(`${err.message}`);
 });
 
 module.exports = app;

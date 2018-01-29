@@ -4,7 +4,8 @@ let mongoose = require('mongoose');
 let Recipe = mongoose.model('Recipe');
 
 router.get('/API/recipes/', function(req, res, next) {
-  Recipe.find(function(err, recipes) {
+  let query = Recipe.find().populate('ingredients');
+  query.exec(function(err, recipes) {
     if (err) {
       return next(err);
     }
@@ -13,7 +14,6 @@ router.get('/API/recipes/', function(req, res, next) {
 });
 
 router.post('/API/recipes/', function(req, res, next) {
-  console.log(req.body);
   let recipe = new Recipe(req.body);
   recipe.save(function(err, rec) {
     if (err) {

@@ -35,7 +35,7 @@ export class AppComponent implements OnInit {
       (error: HttpErrorResponse) => {
         this.errorMsg = `Error ${
           error.status
-        } while trying to retrieve recipes`;
+        } while trying to retrieve recipes: ${error.error}`;
       }
     );
   }
@@ -50,7 +50,7 @@ export class AppComponent implements OnInit {
       (error: HttpErrorResponse) => {
         this.errorMsg = `Error ${error.status} while adding recipe for ${
           recipe.name
-        }`;
+        }: ${error.error}`;
       }
     );
   }
@@ -61,7 +61,7 @@ export class AppComponent implements OnInit {
       (error: HttpErrorResponse) => {
         this.errorMsg = `Error ${error.status} while removing recipes for ${
           recipe.name
-        }`;
+        }: ${error.error}`;
       }
     );
   }
