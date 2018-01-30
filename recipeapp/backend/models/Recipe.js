@@ -1,6 +1,6 @@
-var mongoose = require('mongoose');
+let mongoose = require('mongoose');
 
-var RecipeSchema = new mongoose.Schema({
+let RecipeSchema = new mongoose.Schema({
   name: String,
   ingredients: [
     {
@@ -8,6 +8,7 @@ var RecipeSchema = new mongoose.Schema({
       ref: 'Ingredient'
     }
   ],
-  created: Date
+  created: { type: Date, default: Date.now }
 });
+
 mongoose.model('Recipe', RecipeSchema);
