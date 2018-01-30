@@ -1,41 +1,43 @@
-<div *ngIf='errorMsg' class="ui error message">{{errorMsg}}</div>
-<form class="ui segment form" [formGroup]='recipe' (ngSubmit)='onSubmit()'>
-  <h4 class="ui dividing header">add recipe</h4>
-  <div class="field">
-    <label for="name_id">name</label>
-    <input id="name" name="name_id" formControlName='name'>
-    <div *ngIf='recipe.get("name").errors?.required && recipe.get("name").touched' class='ui pointing red basic label'>
-      a recipe must have a name of at least 2 characters long
+<div class="ui segment">
+  <div *ngIf='errorMsg' class="ui error message">{{errorMsg}}</div>
+  <form class="ui form" [formGroup]='recipe' (ngSubmit)='onSubmit()'>
+    <h4 class="ui dividing header">add recipe</h4>
+    <div class="field">
+      <label for="name_id">name</label>
+      <input id="name" name="name_id" formControlName='name'>
+      <div *ngIf='recipe.get("name").errors?.required && recipe.get("name").touched' class='ui pointing red basic label'>
+        a recipe must have a name of at least 2 characters long
+      </div>
     </div>
-  </div>
 
-  <div class="field">
-    <label for="ingredient_name">ingredients</label>
-    <div formArrayName='ingredients' *ngFor='let item of ingredients.controls; 
+    <div class="field">
+      <label for="ingredient_name">ingredients</label>
+      <div formArrayName='ingredients' *ngFor='let item of ingredients.controls; 
           let i = index'>
-      <div [formGroupName]='i'>
-        <div class='three fields'>
-          <div class="field">
-            <input type="text" id="ingredient_amount" formControlName='amount'>
-          </div>
-          <div class="field">
-            <select class='ui fluid dropdown' id="ingredient_unittype" formControlName='unit'>
-              <option *ngFor='let type of unitTypes' [value]='type'>
-                {{type}}
-              </option>
-            </select>
-          </div>
-          <div class="field">
-            <input type="text" id="ingredient_name" formControlName='ingredientname'>
+        <div [formGroupName]='i'>
+          <div class='three fields'>
+            <div class="field">
+              <input type="text" id="ingredient_amount" formControlName='amount'>
+            </div>
+            <div class="field">
+              <select class='ui fluid dropdown' id="ingredient_unittype" formControlName='unit'>
+                <option *ngFor='let type of unitTypes' [value]='type'>
+                  {{type}}
+                </option>
+              </select>
+            </div>
+            <div class="field">
+              <input type="text" id="ingredient_name" formControlName='ingredientname'>
+            </div>
           </div>
         </div>
       </div>
     </div>
-  </div>
-  <button type='submit' class="ui positive right button">
-    add recipe
-  </button>
-</form>
-REMOVE {{ recipe.value | json }}
+    <button type='submit' class="ui positive right button">
+      add recipe
+    </button>
+  </form>
+</div>
+<!-- REMOVE {{ recipe.value | json }}
 <br> {{ recipe.get("name").errors | json}}
-<br> {{ recipe.valid }}
+<br> {{ recipe.valid }} -->

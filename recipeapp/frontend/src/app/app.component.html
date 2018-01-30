@@ -1,8 +1,7 @@
 <div class="ui container">
-  <div class="ui basic segment">
-    <app-add-recipe></app-add-recipe>
+  <div class="ui two item menu">
+    <a class='item' routerLinkActive='active' routerLink="/recipe-list">Recipes</a>
+    <a class='item' routerLinkActive='active' routerLink="/add-recipe">Add Recipe</a>
   </div>
-  <div class="ui segment">
-    <app-recipe-list></app-recipe-list>
-  </div>
+  <router-outlet></router-outlet>
 </div>
