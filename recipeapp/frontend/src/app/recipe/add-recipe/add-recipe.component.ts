@@ -1,5 +1,5 @@
 import { Component, OnInit, Output, EventEmitter } from '@angular/core';
-import { Recipe } from '../recipe/recipe.model';
+import { Recipe } from '../recipe.model';
 import {
   FormGroup,
   FormControl,

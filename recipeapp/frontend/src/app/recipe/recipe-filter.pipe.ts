@@ -1,5 +1,5 @@
 import { Pipe, PipeTransform } from '@angular/core';
-import { Recipe } from './recipe/recipe.model';
+import { Recipe } from './recipe.model';
 
 @Pipe({
   name: 'recipeFilter'

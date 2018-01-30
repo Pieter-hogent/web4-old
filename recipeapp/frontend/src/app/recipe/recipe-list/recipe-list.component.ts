@@ -1,6 +1,6 @@
 import { Component, OnInit } from '@angular/core';
 import { RecipeDataService } from '../recipe-data.service';
-import { Recipe } from '../recipe/recipe.model';
+import { Recipe } from '../recipe.model';
 import { Subject } from 'rxjs/Subject';
 import { HttpErrorResponse } from '@angular/common/http';
 import { distinctUntilChanged, debounceTime, map } from 'rxjs/operators';

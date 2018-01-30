@@ -5,32 +5,20 @@ import { ReactiveFormsModule } from '@angular/forms';
 import { RouterModule, Routes } from '@angular/router';
 
 import { AppComponent } from './app.component';
-import { RecipeComponent } from './recipe/recipe.component';
-import { IngredientComponent } from './ingredient/ingredient.component';
-import { AddRecipeComponent } from './add-recipe/add-recipe.component';
-import { RecipeFilterPipe } from './recipe-filter.pipe';
-import { RecipeListComponent } from './recipe-list/recipe-list.component';
-import { RecipeDataService } from './recipe-data.service';
 import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
 import { AppRoutingModule } from './app-routing/app-routing.module';
+import { RecipeModule } from './recipe/recipe.module';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    RecipeComponent,
-    IngredientComponent,
-    AddRecipeComponent,
-    RecipeFilterPipe,
-    RecipeListComponent,
-    PageNotFoundComponent
-  ],
+  declarations: [AppComponent, PageNotFoundComponent],
   imports: [
     BrowserModule,
+    RecipeModule,
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule
   ],
-  providers: [RecipeDataService],
+  providers: [],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
