@@ -9,6 +9,8 @@ import {
 } from '@angular/forms';
 import { Ingredient, UnitType } from '../ingredient/ingredient.model';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
+import { RecipeDataService } from '../recipe-data.service';
+import { HttpErrorResponse } from '@angular/common/http';
 
 @Component({
   selector: 'app-add-recipe',
@@ -17,10 +19,13 @@ import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 })
 export class AddRecipeComponent implements OnInit {
   public readonly unitTypes = ['', 'Liter', 'Gram', 'Tbsp'];
-  @Output() public newRecipe = new EventEmitter<Recipe>();
   private recipe: FormGroup;
+  public errorMsg: string;
 
-  constructor(private fb: FormBuilder) {}
+  constructor(
+    private fb: FormBuilder,
+    private _recipeDataService: RecipeDataService
+  ) {}
 
   get ingredients(): FormArray {
     return <FormArray>this.recipe.get('ingredients');
@@ -78,6 +83,13 @@ export class AddRecipeComponent implements OnInit {
         recipe.addIngredient(ingredient);
       }
     }
-    this.newRecipe.emit(recipe);
+    this._recipeDataService.addNewRecipe(recipe).subscribe(
+      () => {},
+      (error: HttpErrorResponse) => {
+        this.errorMsg = `Error ${error.status} while adding recipe for ${
+          recipe.name
+        }: ${error.error}`;
+      }
+    );
   }
 }

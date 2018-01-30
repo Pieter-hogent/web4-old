@@ -1,3 +1,4 @@
+<div *ngIf='errorMsg' class="ui error message">{{errorMsg}}</div>
 <form class="ui segment form" [formGroup]='recipe' (ngSubmit)='onSubmit()'>
   <h4 class="ui dividing header">add recipe</h4>
   <div class="field">

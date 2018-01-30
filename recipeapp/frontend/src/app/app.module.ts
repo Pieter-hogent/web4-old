@@ -8,6 +8,8 @@ import { RecipeComponent } from './recipe/recipe.component';
 import { IngredientComponent } from './ingredient/ingredient.component';
 import { AddRecipeComponent } from './add-recipe/add-recipe.component';
 import { RecipeFilterPipe } from './recipe-filter.pipe';
+import { RecipeListComponent } from './recipe-list/recipe-list.component';
+import { RecipeDataService } from './recipe-data.service';
 
 @NgModule({
   declarations: [
@@ -15,10 +17,11 @@ import { RecipeFilterPipe } from './recipe-filter.pipe';
     RecipeComponent,
     IngredientComponent,
     AddRecipeComponent,
-    RecipeFilterPipe
+    RecipeFilterPipe,
+    RecipeListComponent
   ],
   imports: [BrowserModule, HttpClientModule, ReactiveFormsModule],
-  providers: [],
+  providers: [RecipeDataService],
   bootstrap: [AppComponent]
 })
 export class AppModule {}
