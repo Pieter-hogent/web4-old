@@ -11,11 +11,8 @@ import { AddRecipeComponent } from './add-recipe/add-recipe.component';
 import { RecipeFilterPipe } from './recipe-filter.pipe';
 import { RecipeListComponent } from './recipe-list/recipe-list.component';
 import { RecipeDataService } from './recipe-data.service';
-
-const appRoutes: Routes = [
-  { path: 'recipe-list', component: RecipeListComponent },
-  { path: 'add-recipe', component: AddRecipeComponent }
-];
+import { PageNotFoundComponent } from './page-not-found/page-not-found.component';
+import { AppRoutingModule } from './app-routing/app-routing.module';
 
 @NgModule({
   declarations: [
@@ -24,11 +21,12 @@ const appRoutes: Routes = [
     IngredientComponent,
     AddRecipeComponent,
     RecipeFilterPipe,
-    RecipeListComponent
+    RecipeListComponent,
+    PageNotFoundComponent
   ],
   imports: [
     BrowserModule,
-    RouterModule.forRoot(appRoutes),
+    AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule
   ],
