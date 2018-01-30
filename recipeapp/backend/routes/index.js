@@ -34,7 +34,7 @@ router.post('/API/recipes/', function(req, res, next) {
 });
 
 router.param('recipe', function(req, res, next, id) {
-  let query = Recipe.findById(id);
+  let query = Recipe.findById(id).populate('ingredients');
   query.exec(function(err, recipe) {
     if (err) {
       return next(err);

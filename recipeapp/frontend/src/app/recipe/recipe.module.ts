@@ -10,10 +10,12 @@ import { IngredientComponent } from './ingredient/ingredient.component';
 import { AddRecipeComponent } from './add-recipe/add-recipe.component';
 import { RecipeListComponent } from './recipe-list/recipe-list.component';
 import { RecipeFilterPipe } from './recipe-filter.pipe';
+import { RecipeDetailComponent } from './recipe-detail/recipe-detail.component';
 
 const routes = [
   { path: 'recipe-list', component: RecipeListComponent },
-  { path: 'add-recipe', component: AddRecipeComponent }
+  { path: 'add-recipe', component: AddRecipeComponent },
+  { path: 'recipe-detail/:id', component: RecipeDetailComponent }
 ];
 
 @NgModule({
@@ -22,7 +24,8 @@ const routes = [
     IngredientComponent,
     AddRecipeComponent,
     RecipeListComponent,
-    RecipeFilterPipe
+    RecipeFilterPipe,
+    RecipeDetailComponent
   ],
   imports: [
     HttpClientModule,

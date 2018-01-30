@@ -23,7 +23,7 @@ export class RecipeDataService {
       .pipe(map(Recipe.fromJSON));
   }
 
-  removeRecipe(rec) {
+  removeRecipe(rec: Recipe): Observable<Recipe> {
     return this.http
       .delete(`${this._appUrl}/recipe/${rec.id}`)
       .pipe(map(Recipe.fromJSON));
@@ -32,5 +32,11 @@ export class RecipeDataService {
   addIngredientToRecipe(ing: Ingredient, rec: Recipe): Observable<Ingredient> {
     const theUrl = `${this._appUrl}/recipe/${rec.id}/ingredients`;
     return this.http.post(theUrl, ing).pipe(map(Ingredient.fromJSON));
+  }
+
+  getRecipe(id: string): Observable<Recipe> {
+    return this.http
+      .get(`${this._appUrl}/recipe/${id}`)
+      .pipe(map(Recipe.fromJSON));
   }
 }
