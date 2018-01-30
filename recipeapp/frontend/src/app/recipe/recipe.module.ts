@@ -11,11 +11,16 @@ import { AddRecipeComponent } from './add-recipe/add-recipe.component';
 import { RecipeListComponent } from './recipe-list/recipe-list.component';
 import { RecipeFilterPipe } from './recipe-filter.pipe';
 import { RecipeDetailComponent } from './recipe-detail/recipe-detail.component';
+import { RecipeResolver } from './recipe-resolver';
 
 const routes = [
-  { path: 'recipe-list', component: RecipeListComponent },
-  { path: 'add-recipe', component: AddRecipeComponent },
-  { path: 'recipe-detail/:id', component: RecipeDetailComponent }
+  { path: 'list', component: RecipeListComponent },
+  { path: 'add', component: AddRecipeComponent },
+  {
+    path: ':id',
+    component: RecipeDetailComponent,
+    resolve: { recipe: RecipeResolver }
+  }
 ];
 
 @NgModule({
@@ -33,6 +38,6 @@ const routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes)
   ],
-  providers: [RecipeDataService]
+  providers: [RecipeDataService, RecipeResolver]
 })
 export class RecipeModule {}

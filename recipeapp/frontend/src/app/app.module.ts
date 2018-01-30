@@ -13,7 +13,6 @@ import { RecipeModule } from './recipe/recipe.module';
   declarations: [AppComponent, PageNotFoundComponent],
   imports: [
     BrowserModule,
-    RecipeModule,
     AppRoutingModule,
     HttpClientModule,
     ReactiveFormsModule

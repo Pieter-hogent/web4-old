@@ -22,16 +22,12 @@ export class RecipeDetailComponent implements OnInit {
     return this._recipe;
   }
   ngOnInit() {
-    const id = this.route.snapshot.paramMap.get('id');
-    this.recipeDataService.getRecipe(id).subscribe(
-      item => {
-        console.log(item);
-        this._recipe = item;
-      },
+    this.route.data.subscribe(
+      item => (this._recipe = item['recipe']),
       (error: HttpErrorResponse) => {
         this.errorMsg = `Error ${
           error.status
-        } while trying to retrieve recipe with id ${id}: ${error.error}`;
+        } while trying to retrieve recipe: ${error.error}`;
       }
     );
   }
