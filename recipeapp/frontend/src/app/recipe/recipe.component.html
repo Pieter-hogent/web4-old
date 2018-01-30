@@ -5,10 +5,12 @@
       <span class="date">added on {{recipe.dateAdded | date}}</span>
     </div>
     <ul class="ui list">
-      <li *ngFor='let ingredient of recipe.ingredients'>
-        <app-ingredient [name]='ingredient'></app-ingredient>
+      <li *ngFor='let ing of recipe.ingredients'>
+        <app-ingredient [ingredient]='ing'></app-ingredient>
       </li>
     </ul>
-    <button class="ui icon button" (click)="removeRecipe()"><i  class="trash outline icon"></i></button>
+    <button class="ui icon button" (click)="removeRecipe()">
+      <i class="trash outline icon"></i>
+    </button>
   </div>
 </div>

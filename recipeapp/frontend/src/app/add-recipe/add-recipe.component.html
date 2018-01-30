@@ -7,6 +7,21 @@
   <div *ngIf='recipe.get("name").errors?.required && recipe.get("name").touched' class='ui pointing red basic label'>
     error! this is required
   </div>
+  <div class='field' formArrayName='ingredients' *ngFor='let item of ingredients.controls; 
+          let i = index'>
+    <div [formGroupName]='i'>
+      <label for="ingredient_name">ingredient:</label>
+      <div class='three fields'>
+        <input type="text" id="ingredient_amount" formControlName='amount'>
+        <select id="ingredient_unittype" formControlName='unit'>
+          <option *ngFor='let type of unitTypes' [value]='type'>
+            {{type}}
+          </option>
+        </select>
+        <input type="text" id="ingredient_name" formControlName='ingredientname'>
+      </div>
+    </div>
+  </div>
   <button type='submit' class="ui positive right button">
     add recipe
   </button>
