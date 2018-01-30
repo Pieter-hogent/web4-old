@@ -7,7 +7,7 @@ import {
   FormBuilder,
   FormArray
 } from '@angular/forms';
-import { Ingredient } from '../ingredient/ingredient.model';
+import { Ingredient, UnitType } from '../ingredient/ingredient.model';
 import { debounceTime, distinctUntilChanged } from 'rxjs/operators';
 
 @Component({
@@ -28,18 +28,36 @@ export class AddRecipeComponent implements OnInit {
 
   ngOnInit() {
     this.recipe = this.fb.group({
-      name: ['risotto', [Validators.required, Validators.minLength(2)]],
+      name: ['', [Validators.required, Validators.minLength(2)]],
       ingredients: this.fb.array([this.createIngredients()])
     });
 
-    this.ingredients.statusChanges
+    this.ingredients.valueChanges
       .pipe(debounceTime(400), distinctUntilChanged())
-      .subscribe(data => {
-        if (data === 'VALID') {
+      .subscribe(ingList => {
+        // if the last entry's name is typed, add a new empty one
+        // if we're removing an entry's name, and there is an empty one after that one, remove the empty one
+        const lastElement = ingList[ingList.length - 1];
+        if (
+          lastElement.ingredientname &&
+          lastElement.ingredientname.length > 2
+        ) {
           this.ingredients.push(this.createIngredients());
+        } else if (ingList.length >= 2) {
+          const secondToLast = ingList[ingList.length - 2];
+          if (
+            !lastElement.ingredientname &&
+            !lastElement.amount &&
+            !lastElement.unit &&
+            (!secondToLast.ingredientname ||
+              secondToLast.ingredientname.length < 2)
+          ) {
+            this.ingredients.removeAt(this.ingredients.length - 1);
+          }
         }
       });
   }
+
   createIngredients(): FormGroup {
     return this.fb.group({
       amount: [''],
@@ -47,6 +65,7 @@ export class AddRecipeComponent implements OnInit {
       ingredientname: ['', [Validators.required, Validators.minLength(2)]]
     });
   }
+
   onSubmit() {
     const recipe = new Recipe(this.recipe.value.name);
     for (const ing of this.recipe.value.ingredients) {
