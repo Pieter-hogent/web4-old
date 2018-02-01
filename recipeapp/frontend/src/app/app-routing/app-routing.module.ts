@@ -8,7 +8,7 @@ const appRoutes: Routes = [
     path: 'recipe',
     loadChildren: 'app/recipe/recipe.module#RecipeModule'
   },
-  // { path: '', redirectTo: 'recipe/list', pathMatch: 'full' },
+  { path: '', redirectTo: 'recipe/list', pathMatch: 'full' },
   { path: '**', component: PageNotFoundComponent }
 ];
 

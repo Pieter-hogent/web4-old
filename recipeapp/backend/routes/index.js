@@ -3,6 +3,12 @@ var router = express.Router();
 let mongoose = require('mongoose');
 let Recipe = mongoose.model('Recipe');
 let Ingredient = mongoose.model('Ingredient');
+let jwt = require('express-jwt');
+
+let auth = jwt({
+  secret: process.env.RECIPE_BACKEND_SECRET,
+  userProperty: 'payload'
+});
 
 router.get('/API/recipes/', function(req, res, next) {
   let query = Recipe.find().populate('ingredients');
@@ -14,7 +20,7 @@ router.get('/API/recipes/', function(req, res, next) {
   });
 });
 
-router.post('/API/recipes/', function(req, res, next) {
+router.post('/API/recipes/', auth, function(req, res, next) {
   Ingredient.create(req.body.ingredients, function(err, ings) {
     if (err) {
       return next(err);
@@ -51,7 +57,7 @@ router.get('/API/recipe/:recipe', function(req, res, next) {
   res.json(req.recipe);
 });
 
-router.delete('/API/recipe/:recipe', function(req, res) {
+router.delete('/API/recipe/:recipe', auth, function(req, res) {
   Ingredient.remove({ _id: { $in: req.recipe.ingredients } }, function(err) {
     if (err) return next(err);
     req.recipe.remove(function(err) {
@@ -63,7 +69,7 @@ router.delete('/API/recipe/:recipe', function(req, res) {
   });
 });
 
-router.post('/API/recipe/:recipe/ingredients', function(req, res, next) {
+router.post('/API/recipe/:recipe/ingredients', auth, function(req, res, next) {
   let ing = new Ingredient(req.body);
 
   ing.save(function(err, ingredient) {
