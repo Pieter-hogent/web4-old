@@ -12,6 +12,7 @@ import { RecipeListComponent } from './recipe-list/recipe-list.component';
 import { RecipeFilterPipe } from './recipe-filter.pipe';
 import { RecipeDetailComponent } from './recipe-detail/recipe-detail.component';
 import { RecipeResolver } from './recipe-resolver';
+import { httpInterceptorProviders } from '../http-interceptors/index';
 
 const routes = [
   { path: 'list', component: RecipeListComponent },
@@ -38,6 +39,6 @@ const routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes)
   ],
-  providers: [RecipeDataService, RecipeResolver]
+  providers: [httpInterceptorProviders, RecipeDataService, RecipeResolver]
 })
 export class RecipeModule {}

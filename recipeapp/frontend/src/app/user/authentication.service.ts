@@ -71,16 +71,14 @@ export class AuthenticationService {
   }
 
   checkUserNameAvailability(username: string): Observable<boolean> {
-    return this.http
-      .post(`${this._url}/checkusername`, { username: username })
-      .pipe(
-        map((item: any) => {
-          if (item.username === 'alreadyexists') {
-            return false;
-          } else {
-            return true;
-          }
-        })
-      );
+    return this.http.post(`${this._url}/checkusername`, { username }).pipe(
+      map((item: any) => {
+        if (item.username === 'alreadyexists') {
+          return false;
+        } else {
+          return true;
+        }
+      })
+    );
   }
 }
