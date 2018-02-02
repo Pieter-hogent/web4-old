@@ -5,6 +5,7 @@ export class Recipe {
   private _name: string;
   private _dateAdded: Date;
   private _ingredients: Ingredient[];
+  private _chef: string;
 
   constructor(
     name: string,
@@ -19,6 +20,7 @@ export class Recipe {
   static fromJSON(json: any): Recipe {
     const rec = new Recipe(json.name, json.ingredients, json.created);
     rec._id = json._id;
+    rec._chef = json.chef;
     return rec;
   }
 
@@ -27,7 +29,8 @@ export class Recipe {
       _id: this._id,
       name: this._name,
       ingredients: this._ingredients,
-      created: this._dateAdded
+      created: this._dateAdded,
+      chef: this._chef
     };
   }
 
@@ -45,5 +48,9 @@ export class Recipe {
   }
   addIngredient(ing: Ingredient) {
     this._ingredients.push(ing);
+  }
+
+  get chef(): string {
+    return this._chef;
   }
 }

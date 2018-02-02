@@ -4,17 +4,32 @@ import { HttpClient } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 import { map } from 'rxjs/operators';
 
+function parseJwt(token) {
+  if (!token) {
+    return null;
+  }
+  const base64Url = token.split('.')[1];
+  const base64 = base64Url.replace(/-/g, '+').replace(/_/g, '/');
+  return JSON.parse(window.atob(base64));
+}
+
 @Injectable()
 export class AuthenticationService {
-  private _url = '/API/users';
+  private readonly _tokenKey = 'currentUser';
+  private readonly _url = '/API/users';
   private _user$: BehaviorSubject<string>;
 
   public redirectUrl: string;
 
   constructor(private http: HttpClient) {
-    const currentUser = JSON.parse(localStorage.getItem('currentUser'));
+    let parsedToken = parseJwt(localStorage.getItem(this._tokenKey));
+    const expires = new Date(parseInt(parsedToken.exp, 10) * 1000) < new Date();
+    if (expires) {
+      localStorage.removeItem(this._tokenKey);
+      parsedToken = null;
+    }
     this._user$ = new BehaviorSubject<string>(
-      currentUser && currentUser.username
+      parsedToken && parsedToken.username
     );
   }
 
@@ -23,8 +38,8 @@ export class AuthenticationService {
   }
 
   get token(): string {
-    const localCurrentUser = JSON.parse(localStorage.getItem('currentUser'));
-    return !!localCurrentUser ? localCurrentUser.token : '';
+    const localToken = localStorage.getItem(this._tokenKey);
+    return !!localToken ? localToken : '';
   }
 
   login(username: string, password: string): Observable<boolean> {
@@ -32,10 +47,7 @@ export class AuthenticationService {
       map((res: any) => {
         const token = res.token;
         if (token) {
-          localStorage.setItem(
-            'currentUser',
-            JSON.stringify({ username: username, token: token })
-          );
+          localStorage.setItem(this._tokenKey, token);
           this._user$.next(username);
           return true;
         } else {
@@ -47,7 +59,7 @@ export class AuthenticationService {
 
   logout() {
     if (this.user$.getValue()) {
-      localStorage.removeItem('currentUser');
+      localStorage.removeItem(this._tokenKey);
       setTimeout(() => this._user$.next(null));
     }
   }
@@ -57,10 +69,7 @@ export class AuthenticationService {
       map((res: any) => {
         const token = res.token;
         if (token) {
-          localStorage.setItem(
-            'currentUser',
-            JSON.stringify({ username: username, token: res.token })
-          );
+          localStorage.setItem(this._tokenKey, token);
           this._user$.next(username);
           return true;
         } else {

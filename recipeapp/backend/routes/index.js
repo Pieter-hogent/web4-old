@@ -6,8 +6,7 @@ let Ingredient = mongoose.model('Ingredient');
 let jwt = require('express-jwt');
 
 let auth = jwt({
-  secret: process.env.RECIPE_BACKEND_SECRET,
-  userProperty: 'payload'
+  secret: process.env.RECIPE_BACKEND_SECRET
 });
 
 router.get('/API/recipes/', function(req, res, next) {
@@ -27,6 +26,7 @@ router.post('/API/recipes/', auth, function(req, res, next) {
     }
     let recipe = new Recipe({ name: req.body.name, created: req.body.created });
     recipe.ingredients = ings;
+    recipe.chef = req.user.username;
     recipe.save(function(err, rec) {
       if (err) {
         // remove all just added ingredients, don't bother to check if it worked

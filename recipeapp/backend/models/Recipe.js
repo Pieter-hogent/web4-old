@@ -8,7 +8,8 @@ let RecipeSchema = new mongoose.Schema({
       ref: 'Ingredient'
     }
   ],
-  created: { type: Date, default: Date.now }
+  created: { type: Date, default: Date.now },
+  chef: String
 });
 
 mongoose.model('Recipe', RecipeSchema);

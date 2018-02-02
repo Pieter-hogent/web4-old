@@ -2,7 +2,7 @@
   <div class="content">
     <a class="header" href='/recipe/{{recipe.id}}'>{{ recipe.name }}</a>
     <div class="meta">
-      <span class="date">added on {{recipe.dateAdded | date}}</span>
+      <span class="date">added on {{recipe.dateAdded | date}} by {{ recipe.chef }}</span>
     </div>
     <ul class="ui list">
       <li *ngFor='let ing of recipe.ingredients'>
