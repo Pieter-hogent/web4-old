@@ -15,6 +15,7 @@
 
 	<!-- pieter overrides -->
 	<link rel="stylesheet" href="webapps.css">
+	<link rel="stylesheet" href="plugin/codestepper/codestepper.css">
 
 	<!-- Printing and PDF exports -->
 	<script>
@@ -55,32 +56,62 @@
 				<!-- <canvas data-chart="line" data-chart-src="angular_react.csv"> -->
 				<canvas data-chart="line">
 					<!-- prettier-ignore -->
-					Month, April, May, June, July, August, September, October, November, December, Januari
-					Angular, 231, 270, 294, 296, 241, 278, 303, 296, 311, 273
-					React, 51, 67, 87, 83, 63, 80, 90, 96, 107, 88
-
+					Month, April, May, June, July, August, September, October, November, December, Januari, Februari 
+					Angular, 231, 270, 294, 296, 241, 278, 303, 296, 311, 289, 288 
+					React, 51, 67, 87, 83, 63, 80, 90, 96, 107, 101, 92
 				</canvas>
 
 				<iframe id="angular-react-chart" width="500px" , height="400px" data-chart></iframe>
-				<div>angular vs react vs vue</div>
+				<div>angular vs react</div>
 			</section>
 			<section>
-				<h3>Web vs Mobile</h3>
-				<div class="fragment">while we're at it</div>
-				<!-- <canvas class="fragment" data-chart="line" data-chart-src="angular_android_ios.csv"> -->
-				<canvas class="fragment" data-chart="line">
-					Month, April, May, June, July, August, September, October, November, December, Januari
-					Angular, 231, 270, 294, 296, 241, 278, 303, 296, 311, 273
-					Android, 37, 42, 44, 42, 36, 44, 38, 34, 32, 38
-					iOS, 27, 32, 31, 32, 23, 33, 32, 35, 33, 32
-				</canvas>
+				<h3>angular vs other web</h3>
+				<!-- <canvas data-chart="line" data-chart-src="angular_react.csv"> -->
+				<canvas data-chart="line">
+						<!-- prettier-ignore -->
+						Month, April, May, June, July, August, September, October, November, December, Januari, Februari 
+						Angular, 231, 270, 294, 296, 241, 278, 303, 296, 311, 289, 288 
+						Spring, 127, 142, 154, 144, 120, 128, 150, 133, 127, 134, 153
+						ASP, 213, 254, 322, 344, 269, 284, 301, 290, 288, 289, 289
+						jQuery, 132, 169, 192, 179, 143, 156, 171, 169, 166, 151, 145
+					</canvas>
 
+				<iframe id="angular-react-chart" width="500px" , height="400px" data-chart></iframe>
+				<div>angular vs spring vs asp vs jquery</div>
+			</section>
+
+
+			<section>
+				<h3>what are you going to do?</h3>
+				<ul>
+					<li class="fragment">((add chamilo link here))</li>
+					<li class="fragment">so: build a webapp by the end of week 11</li>
+					<li class="fragment">oral exam during week 12 or 13, where you get asked some questions about your webapp</li>
+					<li class="fragment">that's it, nothing during the exam period</li>
+				</ul>
 			</section>
 			<section>
-				<h3>windows mobile?</h3>
-				<p>you forgot the line for windows mobile in the previous graph</p>
-				<img src="img/heart-flatline.jpg" alt="heart-flatline" class="fragment" />
-				<p class="fragment" style="font-size:0.4em">(don't tell mister Van Herreweghe about this slide)</p>
+				<h3>examples</h3>
+				<ul>
+					<li class="fragment">some examples from your predecessors</li>
+					<li class="fragment">
+						<a href="https://frietkoten.gent">frietkoten</a>
+					</li>
+					<li class="fragment">
+						<a href="https://stark-forest-61204.herokuapp.com">drawing app</a>
+					</li>
+					<li class="fragment">
+						<a href="https://surveyymaster.herokuapp.com/">survey master</a>
+					</li>
+					<li class="fragment">(no guarantees these links will keep working, they passed the class)</li>
+				</ul>
+			</section>
+			<section>
+				<div class='fragment' code-step svg-step>
+					<svg id="svg" class="svg-section" width='100%' height='100%' preserveAspectRatio="xMidYMid" snapfile='img/angular_timeline.svg'>
+						<use xlink:href='plugin/codestepper/loaders.svg#myloader'></use>
+					</svg>
+				</div>
 			</section>
 			<section>
 				<h3>class</h3>
@@ -97,11 +128,31 @@
 				<ol start="7">
 					<li class="fragment">modules / angular routing</li>
 					<li class="fragment">users and authentication</li>
-					<li class="fragment">testing</li>
-					<li class="fragment">deploy a production build</li>
-					<li class="fragment">???</li>
+					<li class="fragment">state management</li>
+					<li class="fragment">real time web</li>
+					<li class="fragment">deploy build online</li>
 					<li class="fragment">React</li>
 				</ol>
+			</section>
+
+			<section>
+				<h3>slides?</h3>
+				<ul>
+					<li>they are hosted on my github pages
+						<a href="https://pieter-hogent.github.io/web4/">https://pieter-hogent.github.io/web4/</a>
+					</li>
+					<li>slides, and the code from the slides etc., can all be found on my github
+						<a href="https://www.github.com/pieter-hogent/web4">https://www.github.com/pieter-hogent/web4</a>
+					</li>
+					<li>slides are in
+						<a href="https://revealjs.com/#/">Reveal.js</a> (with some custom plugins)
+						<ul>
+							<li>press ESC to navigate faster</li>
+							<li>you can't really print them</li>
+							<li>should work on touch devices</li>
+						</ul>
+					</li>
+				</ul>
 			</section>
 			<section>
 				<h3>software?</h3>
@@ -114,8 +165,8 @@
 					</li>
 					<li>Angular CLI (v1.6+): "npm install -g @angular/cli"</li>
 					<li>Chrome extension:
-							<a href="https://augury.angular.io/">Augury</a>
-						</li>
+						<a href="https://augury.angular.io/">Augury</a>
+					</li>
 					<li>everything else we'll npm install as needed</li>
 				</ul>
 			</section>
@@ -145,7 +196,8 @@
 				},
 				{ src: 'plugin/chartjs/Chart.min.js' },
 				{ src: 'plugin/chartjs/csv2chart.js' },
-				{ src: 'plugin/fullscreen/fullscreen.js' }
+				{ src: 'plugin/fullscreen/fullscreen.js' },
+				{ src: 'plugin/codestepper/codestepper.js' }
 
 			],
 			chart: {
@@ -171,6 +223,7 @@
 		});
 
 	</script>
+	<script src="js/snap.svg.js"></script>
 </body>
 
 </html>
