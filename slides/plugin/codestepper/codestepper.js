@@ -1,6 +1,6 @@
 var CodeStepper =
   window.CodeStepper ||
-  (function () {
+  (function() {
     // if I'd ever feel the need, these could become options somehow
     const highlightFirstAppearanceInCodeBlocks = true;
 
@@ -174,7 +174,6 @@ var CodeStepper =
               this.svgElement.node.removeAttribute('fill');
             }
           }
-
         } else {
           this.svgElement.animate({ opacity: 0.0 }, 0);
         }
@@ -203,6 +202,8 @@ var CodeStepper =
       }
     }
 
+    // these functions will be bound to all the keys
+    // which are used to advance a slide (down, right, etc.)
     function innerNavigateNext() {
       currentIndex++;
       showHighlightCurrentIndex();
@@ -215,7 +216,7 @@ var CodeStepper =
 
     // constructs the lists and sets up inner navigation
     // when a fragment with the correct attribute is encountered
-    Reveal.addEventListener('fragmentshown', function (event) {
+    Reveal.addEventListener('fragmentshown', function(event) {
       currentSection = event.fragment; // not correct, but using it the first time will adjust this
       let needsInnerNavigation = false;
       currentIndex = 1;
@@ -225,7 +226,8 @@ var CodeStepper =
         needsInnerNavigation = true;
         svgElements = new Set();
         maxIndex = 2; // set it to something > 1, will be overriden by either codestep, or the ASYNC loading of svg
-        // (if there's nothing but a svg, we try to show index 1, while max is still -1, and we move to the next slide)
+        // (if there's nothing but a svg, we try to show index 1, while max is still -1 (loading is async),
+        // and we move to the next slide)
         toArray(event.fragment.getElementsByTagName('svg'))
           .filter(el => el.classList.contains('svg-section'))
           .forEach(el => {
@@ -285,14 +287,25 @@ var CodeStepper =
                 if (item.node.hasAttribute('highlight-color')) {
                   let theColor = item.node.getAttribute('highlight-color');
                   switch (theColor) {
-                    case 'orange': highlightColor = '#ff7e79'; break;
-                    case 'green': highlightColor = '#929000'; break;
-                    case 'blue': highlightColor = '#0096ff'; break;
-                    case 'purple': highlightColor = '#9437ff'; break;
-                    default: highlightColor = theColor;
+                    case 'orange':
+                      highlightColor = '#ff7e79';
+                      break;
+                    case 'green':
+                      highlightColor = '#929000';
+                      break;
+                    case 'blue':
+                      highlightColor = '#0096ff';
+                      break;
+                    case 'purple':
+                      highlightColor = '#9437ff';
+                      break;
+                    default:
+                      highlightColor = theColor;
                   }
                 }
-                svgElements.add(new SvgElement(item, null, highlightRange, highlightColor));
+                svgElements.add(
+                  new SvgElement(item, null, highlightRange, highlightColor)
+                );
               });
 
               showHighlightCurrentIndex(); // loading is async, so make sure our svg is loaded according to current index
@@ -309,7 +322,7 @@ var CodeStepper =
         // and add css to the inner span's
         toArray(event.fragment.getElementsByTagName('*')).forEach(el => {
           if (el.classList.contains('samespot')) {
-            for (let i = 0; i < el.childNodes.length;) {
+            for (let i = 0; i < el.childNodes.length; ) {
               if (el.childNodes[i].nodeType == 3) {
                 // TEXT
                 // remove all the newlines that were used to add the different <span> childnodes
