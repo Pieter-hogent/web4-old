@@ -23,10 +23,13 @@ export class AuthenticationService {
 
   constructor(private http: HttpClient) {
     let parsedToken = parseJwt(localStorage.getItem(this._tokenKey));
-    const expires = new Date(parseInt(parsedToken.exp, 10) * 1000) < new Date();
-    if (expires) {
-      localStorage.removeItem(this._tokenKey);
-      parsedToken = null;
+    if (parsedToken) {
+      const expires =
+        new Date(parseInt(parsedToken.exp, 10) * 1000) < new Date();
+      if (expires) {
+        localStorage.removeItem(this._tokenKey);
+        parsedToken = null;
+      }
     }
     this._user$ = new BehaviorSubject<string>(
       parsedToken && parsedToken.username
