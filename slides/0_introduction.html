@@ -15,6 +15,7 @@
 
 	<!-- pieter overrides -->
 	<link rel="stylesheet" href="webapps.css">
+	<link rel="stylesheet" href="css/introduction.css">
 	<link rel="stylesheet" href="plugin/codestepper/codestepper.css">
 
 	<!-- Printing and PDF exports -->
@@ -42,9 +43,78 @@
 				</ul>
 			</section>
 			<section>
+				<table class='leerlijnen'>
+					<tr>
+						<td class='applicatie'>Applicatieontwikkeling</td>
+					</tr>
+					<tr>
+						<td class='netwerken'>Netwerken en systeembeheer</td>
+					</tr>
+					<tr>
+						<td class='gegevens'>Gegevensbehandeling en beheer</td>
+					</tr>
+					<tr>
+						<td class='probleemanalyse'>Probleemanalyserend denken en Business</td>
+					</tr>
+					<tr>
+						<td class='communicatie'>Communicatie</td>
+					</tr>
+					<tr>
+						<td class='pod'>Probleemonderzoekend en oplossend denken</td>
+					</tr>
+					<tr>
+						<td class='individuele'>Professionele en individuele groei</td>
+					</tr>
+				</table>
+			</section>
+			<section>
+				<table class='leerlijnen'>
+					<tr>
+						<th>1e jaar</th>
+						<th>2e jaar</th>
+						<th>3e jaar</th>
+					</tr>
+					<tr>
+						<td rowspan='9' class='communicatie'>Algemene vorming</td>
+						<td rowspan='3' class='communicatie'>Algemene vorming</td>
+						<td rowspan='2' class='communicatie'>Algemene vorming</td>
+					</tr>
+					<tr></tr>
+					<tr>
+						<td class='applicatie'>KP mobiele applicaties</td>
+					</tr>
+					<tr>
+						<td rowspan='3' class='applicatie'>KP Programmeren</td>
+						<td rowspan='2' class='netwerken'>KP systeem- en netwerkbeheer</td>
+					</tr>
+					<tr></tr>
+					<tr>
+						<td rowspan='2' class='pod'>KP e-Business</td>
+
+					</tr>
+					<tr></tr>
+					<tr>
+						<td rowspan='2' class='netwerken'>KP netwerken</td>
+						<td rowspan='2' class='gegevens'>KP Mainframe applicaties en -beheer</td>
+					</tr>
+					<tr></tr>
+					<tr>
+						<td colspan='3' class='individuele'>Projecten, iTalent, Stage, Bachelorproef</td>
+					</tr>
+				</table>
+			</section>
+			<section>
+				<h3>Applicatieontwikkeling</h3>
+				De student kan kwaliteitsvolle IT-oplossingen efficiënt en autonoom ontwerpen, ontwikkelen, documenteren en testen, rekening
+				houdend met nieuwe ontwikkelingen en toepassingsdomeinen.
+
+				<img src="img/leerlijn.png" alt="">
+
+			</section>
+			<section>
 				<h3>Why Angular? (I love React!)</h3>
 				<ul>
-					<li class="fragment">first of all: it doesn't (really) matter</li>
+					<li class="fragment">first of all: it doesn' t (really) matter</li>
 					<li class="fragment">learning modern javascript (framework) is what matters</li>
 					<li class="fragment">neither will exist (in it's current form) in 5 years anyway</li>
 					<li class="fragment">still, which one to chose to teach a modern javascript framework?</li>
@@ -191,7 +261,7 @@
 
 						// during development, always start at last slide
 						var indices = Reveal.getIndices(document.getElementById('sectionID'));
-						// Reveal.slide(Reveal.getTotalSlides());
+						Reveal.slide(2); //Reveal.getTotalSlides());
 					}
 				},
 				{ src: 'plugin/chartjs/Chart.min.js' },
