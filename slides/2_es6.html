@@ -398,7 +398,7 @@ let htmlString = `
         </code></pre>
         <div style="position:relative">
           <p class="fragment current-visible current-replace" data-fragment-index="2">I hope you can guess what replace string will contain</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="3">this is very similar to Swift string handling (for anyone following iOS)</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">this is very similar to Swift or C# string handling</p>
       </section>
       <section>
         <h3>backtick strings</h3>
@@ -448,7 +448,7 @@ let output = `${amount} will cost you ${amount*price}`;
     }
   };
 
-  <span class="fragment">let {{name, city="Brussels"}, {{name : schoolName}}} = tryhard;</span>
+  <span class="fragment">let { person: { name, city = 'Brussels' }, class: { school: { name: schoolName } } } = tryhard;</span>
 
   <span class="fragment">console.log(name); // Rudy
   console.log(city); // Brussels
