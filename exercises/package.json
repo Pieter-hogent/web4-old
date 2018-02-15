@@ -1,0 +1,13 @@
+{
+  "name": "exercises",
+  "version": "1.0.0",
+  "description": "exercises for Webapps course",
+  "scripts": {
+    "two": "node js_functional_programming.js"
+  },
+  "author": "Pieter Van Der Helst",
+  "license": "ISC",
+  "dependencies": {
+    "lodash": "^4.17.4"
+  }
+}
