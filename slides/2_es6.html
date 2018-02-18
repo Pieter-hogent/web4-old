@@ -120,8 +120,8 @@ function getValue() {
 				</code></pre>
         <div style="position:relative">
           <p class="fragment current-visible current-replace" data-fragment-index="1">const has a similar usage as let, but you have to set an initial value and can't change it later</p>
-          <p class="fragment current-visible current-replace" data-fragment-index="3">in typescript you can explicitly set a type, but it's inferred by assigning an initial value, so it's a bit useless
-            for strings (can be useful for 'const x : double = 8;'</p>
+          <p class="fragment current-visible current-replace" data-fragment-index="3">in typescript you can explicitly set a type, but it's inferred by assigning an initial value, so it's redundant
+            when you'll set the initial value</p>
           <p class="fragment current-visible current-replace" data-fragment-index="2">the variable can't get a new value</p>
         </div>
       </section>
@@ -253,12 +253,12 @@ class Animal {
         <div class='fragment' code-step>
           <pre><code data-noescape data-trim>
 <span highlight-steps='1'>interface</span> Animal {
-  <span highlight-steps='2'>legs: integer;</span>
+  <span highlight-steps='2'>legs: number;</span>
   <span show-steps='4'>name?: string;</span>
 }
 
 class Cat <span highlight-steps='3'>implements</span> Animal {
-  legs: integer;
+  legs: number;
 }
           </code></pre>
           <div class='samespot'>
@@ -448,10 +448,9 @@ let output = `${amount} will cost you ${amount*price}`;
     }
   };
 
-  <span class="fragment">let { person: { name, city = 'Brussels' }, class: { school: { name: schoolName } } } = tryhard;</span>
+  <span class="fragment">let { person: { name }, class: { school: { name: schoolName } } } = tryhard;</span>
 
   <span class="fragment">console.log(name); // Rudy
-  console.log(city); // Brussels
   console.log(schoolName); // HoGent
   </span>
         </code></pre>
@@ -484,6 +483,24 @@ http("http://www.hogent.be", "POST", <span highlight-steps='3'>{ userAgent: "Chr
             <p show-steps='3'>you would call them using an object as a parameter, specifying those options you wish to provide</p>
             <p show-steps='4'>by using a destructuring parameter, you need less boilerplate code -and- it's much clearer from your function
               signature which options are supported</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>parameter destructuring</h3>
+        <div class='fragment' code-step>
+          <pre class='typescript'><code data-noescape data-trim>
+function http(url: string, method<span show-steps='4+'>?</span>: string<span show-steps='3'> = 'GET'</span>, body<span show-steps='4'>?</span>: any<span show-steps='3'> = {}</span>) {
+  <span show-steps='5'>// ERROR: A required parameter can not follow an optional parameter</span>
+}
+
+http('http://hogent.be') <span show-steps='2,5'>// 'ERROR expected 3 arguments but got 1'</span> <span show-steps='3-4'>// OK</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1,2'>unlike in plain javascript, parameters are not by default optional in typescript</p>
+            <p show-steps='3'>you can either provide default values for the parameters to get rid of the errors</p>
+            <p show-steps='4'>or simply add a '?' after the variable name to show the parameter is optional</p>
+            <p show-steps='5'>optional parameters must come at the end of the parameter list</p>
           </div>
         </div>
       </section>
@@ -558,10 +575,10 @@ retrieveUserInfo( <span show-steps='1'><span highlight-steps='1'>???</span></spa
               }</span><span show-steps='1-2'>
               let clone = { ...course }
               console.log(clone) // { name: 'web3', teacher: 'pieter'}</span>
-             <span show-steps='3-4'> clone = { ...course, ...otherCourse }
+             <span show-steps='3-4'> let clone = { ...course, ...otherCourse }
               console.log(clone)<span show-steps='4'> 
               // { name: 'web4', teacher: 'pieter', hours: '3' }</span></span>
-              <span show-steps='5+'>clone = { ...course, name: 'webapps'}<span show-steps='6+'>
+              <span show-steps='5+'>let clone = { ...course, name: 'webapps'}<span show-steps='6+'>
               console.log(clone) // { name: 'webapps', teacher: 'pieter' }</span></span>
           </code></pre>
           <div class='samespot'>
