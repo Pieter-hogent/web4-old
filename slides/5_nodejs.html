@@ -901,17 +901,17 @@ addNewRecipe(recipe): Observable&lt;Recipe&gt; {
         <div class='fragment' code-step>
           <pre>src/app/app.component.ts<code data-noescape data-trim>
 export class AppComponent implements OnInit {
-  private _recipes<span show-steps='2-7'>: Recipe[]</span>;
+  private _recipes<span show-steps='2+'>: Recipe[]</span>;
 
   ngOnInit() {
-    <span show-steps='1-2'>this._recipes = </span>this._recipeDataService.recipes<span show-steps='3-7'>.subscribe(
+    <span show-steps='1-2'>this._recipes = </span>this._recipeDataService.recipes<span show-steps='3+'>.subscribe(
        items => this._recipes = items)</span>;
   }
  
   newRecipeAdded(recipe: Recipe) 
     <span show-steps='5'>this._recipes.push(recipe);
     </span>this._recipeDataService.addNewRecipe(recipe)
-      .subscribe(<span show-steps='4,6-7'>item => this._recipes.push(item)</span>);
+      .subscribe(<span show-steps='4,6+'>item => this._recipes.push(item)</span>);
   }
 }  
             </code></pre>
@@ -923,7 +923,10 @@ export class AppComponent implements OnInit {
             <p show-steps='5'>we can just as well add the recipe immediately, without waiting for the backend, which is better?</p>
             <p show-steps='6'>now we just need to remove the
               <i>| async</i> from the html and we're done</p>
-            <p show-steps='7'>
+            <p show-steps='7'>we're not really using 'best practices' here, there are very few reasons to make local copies of the contents
+              of an observable</p>
+            <p show-steps='8'>it'll do for now, we'll learn how to handle this properly when we talk about state in chapter 9</p>
+            <p show-steps='9'>
               <a href="http://localhost:4200/">let's try this out</a>
             </p>
           </div>
