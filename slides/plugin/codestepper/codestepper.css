@@ -1,6 +1,9 @@
 .reveal .slides section .highlight-red .hljs-keyword {
   color: #fc82c5;
 }
+.reveal .slides section .highlight-red .hljs-symbol {
+  color: #fc82c5;
+}
 .reveal .slides section .highlight-red .hljs-meta {
   color: #fc82c5;
 }
@@ -46,6 +49,10 @@
 }
 
 .reveal .slides section .highlight-green .hljs-keyword {
+  color: #17ff2e !important;
+}
+
+.reveal .slides section .highlight-green .hljs-symbol {
   color: #17ff2e !important;
 }
 .reveal .slides section .highlight-green .hljs-meta {
