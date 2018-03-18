@@ -235,8 +235,8 @@ export class AddRecipeComponent implements OnInit {
 REMOVE {{ recipe.value | json }} {{ recipe.valid }}
 <span show-steps='3+'>{{ spy.className }}</span>
 <span show-steps='4-5'>in src/app/add-recipe/add-recipe.component.css
-    .ng-valid[required]  {
-      border-left: 10px solid #42A948 !important;
+    .ng-invalid:not(form) {
+      border-left: 5px solid #a94442 !important; 
     }
           </code></pre>
           <div class='samespot'>
@@ -580,7 +580,7 @@ export class Recipe {
     private _ingredients: Ingredient[];
 
     constructor(name: string, 
-      ingredients?: Ingredient[], directions?: string[]) {
+      ingredients?: Ingredient[], dateAdded?: Date) {
         this._ingredients = ingredients || new Array<Ingredient>();
     }
     get ingredients(): Ingredient[] {
