@@ -443,7 +443,7 @@ router.post('/API/recipes/', function (req, res, next) {<span show-steps='3+'>
       return next(err);
     }</span>
     let recipe = new Recipe(<span show-steps='2+'>{name: req.body.name, 
-      directions: req.body.directions}</span><span show-steps='1'>req.body</span>);<span show-steps='3+'>
+      created: req.body.created}</span><span show-steps='1'>req.body</span>);<span show-steps='3+'>
     recipe.ingredients = ings;</span>
     recipe.save(function(err, post) {
       if (err){<span show-steps='1-4'> return next(err); }</span><span show-steps='5+'>
