@@ -18,7 +18,11 @@ export class Recipe {
   }
 
   static fromJSON(json: any): Recipe {
-    const rec = new Recipe(json.name, json.ingredients, json.created);
+    const rec = new Recipe(
+      json.name,
+      json.ingredients.map(Ingredient.fromJSON),
+      json.created
+    );
     rec._id = json._id;
     rec._chef = json.chef;
     return rec;
@@ -28,7 +32,7 @@ export class Recipe {
     return {
       _id: this._id,
       name: this._name,
-      ingredients: this._ingredients,
+      ingredients: this._ingredients.map(ing => ing.toJSON()),
       created: this._dateAdded,
       chef: this._chef
     };
