@@ -49,7 +49,7 @@
       <section>
         <h3>modules</h3>
         <ul>
-          <li class="fragment">we've already used modules, everything resides in the AppModule and we've added HttpModule, ReactiveFormsModule
+          <li class="fragment">we've already used modules, everything resides in the AppModule and we've added HttpClientModule, ReactiveFormsModule
             as we needed them</li>
           <li class="fragment">modules can be used to encapsulate parts of your app, promoting reusability and separation of concerns</li>
         </ul>
@@ -106,9 +106,8 @@ onSubmit() {
   this._recipeDataService.addNewRecipe(recipe).subscribe(
       () => {},
       (error: HttpErrorResponse) => {
-        this.errorMsg = `Error ${error.status} while adding recipe for ${
-          recipe.name
-        }: ${error.error}`;
+        this.errorMsg = `Error ${error.status} while adding
+          recipe for ${recipe.name}: ${error.error}`;
       }
     );
 }
@@ -288,23 +287,24 @@ export class AppRoutingModule { }
         <h3>recipe module</h3>
         <div class='fragment' code-step>
           <pre>src/app/recipe/recipe.module.ts<code data-noescape data-trim>
-<span show-steps='4-6'>const routes = [
+<span show-steps='5+'>const routes = [
   { path: 'recipe-list', component: RecipeListComponent },
   { path: 'add-recipe', component: AddRecipeComponent }
 ];</span>
 @NgModule({
-  imports: [<span show-steps='2-4'>
-    HttpModule,
+  imports: [<span show-steps='2-5'>
+    HttpClientModule,
     CommonModule,
-    ReactiveFormsModule</span><span show-steps='5-6'>
-    ...</span><span show-steps='4-6'>,
+    ReactiveFormsModule</span><span show-steps='6+'>
+    ...</span><span show-steps='5+'>,
     RouterModule.forChild(routes)</span>
   ],
   declarations: [<span show-steps='1'>
     RecipeComponent,
     IngredientComponent,
     AddRecipeComponent,
-    RecipeListComponent</span><span show-steps='2-6'>...</span>],<span show-steps='3-6'>
+    RecipeFilterPipe,
+    RecipeListComponent</span><span show-steps='2+'>...</span>],<span show-steps='3+'>
   providers: [ RecipeDataService ]</span>
 })
 export class RecipeModule { }
@@ -314,10 +314,11 @@ export class RecipeModule { }
             <p show-steps='2'>import all the external stuff we'll use, note the CommonModule, not BrowserModule</p>
             <p show-steps='3'>we'll move the RecipeDataService outside of the components and in here, this way all recipe components will share
               one service</p>
-            <p show-steps='4'>we'll also define the routes for our components, this way we're self contained and nobody else needs to know
+            <p show-steps='4'>this means you have to REMOVE the provider from AppComponent, otherwise it will still have it's own version!</p>
+            <p show-steps='5'>we'll also define the routes for our components, this way we're self contained and nobody else needs to know
               about our components</p>
-            <p show-steps='5'>this time we need to forChild static creator, there can be only one forRoot in the root module</p>
-            <p show-steps='6'>these forChild's will reuse the router service provided by forRoot, you can have only one such service active
+            <p show-steps='6'>this time we need to forChild static creator, there can be only one forRoot in the root module</p>
+            <p show-steps='7'>these forChild's will reuse the router service provided by forRoot, you can have only one such service active
               (using forRoot here would result in a runtime error)</p>
           </div>
         </div>
@@ -356,7 +357,7 @@ const appRoutes: Routes = [
 
 @NgModule({
   imports: [
-    RouterModule.forRoot(appRoutes)
+    RouterModule.forRoot(appRoutes<span show-steps='4+'>, {enableTracing: true}</span>)
   ],
   declarations: [],
   exports: [
@@ -369,6 +370,11 @@ export class AppRoutingModule { }
             <p show-steps='1'>and remove the recipe components and routes from the app routing module</p>
             <p show-steps='2'>
               <a href="http://localhost:4200">let's try this out</a>
+            </p>
+            <p show-steps='3'>we always get the 'page not found', what's going on?</p>
+            <p show-steps='4'>when encountering (what appear to be) router problems, you can always log debugging output</p>
+            <p show-steps='5'>
+              <a href="http://localhost:4200">let's try this </a>
             </p>
           </div>
         </div>
@@ -384,8 +390,8 @@ export class AppRoutingModule { }
                   ],
                   imports: [
                     BrowserModule,
-                    <span show-steps='1-2'><span highlight-steps='2'>AppRoutingModule,
-                    RecipeModule</span></span><span show-steps='3-4'>RecipeModule,
+                    <span show-steps='1'><span highlight-steps='1'>AppRoutingModule,
+                    RecipeModule</span></span><span show-steps='2+'>RecipeModule,
                     AppRoutingModule</span>
                   ],
                   bootstrap: [AppComponent]
@@ -393,10 +399,9 @@ export class AppRoutingModule { }
                 export class AppModule { }
                           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>we always get the 'page not found', what's going on?</p>
-            <p show-steps='2'>the problem is that the order matters! the approutingmodule is loaded first and it has a '**' which matches everything</p>
-            <p show-steps='3'>so we never reach the routes of RecipeModule, let's swap the order</p>
-            <p show-steps='4'>
+            <p show-steps='1'>the problem is that the order matters! the approutingmodule is loaded first and it has a '**' which matches everything</p>
+            <p show-steps='2'>so we never reach the routes of RecipeModule, let's swap the order</p>
+            <p show-steps='3'>
               <a href="http://localhost:4200">let's try this out</a>
             </p>
           </div>
@@ -516,9 +521,10 @@ const routes = [
 ];
           </code></pre>
           <div class='samespot'>
-            <p show-steps='1'>for some use cases it's not desirable that a component is loaded before its contents are retrieved (TODO: stuk
-              tonen dat er errors zijn voor de async get gedaan is)</p>
-            <p show-steps='2'>this can be done by prefetching the data using a 'resolve guard'</p>
+            <p show-steps='1'>for some use cases it's not desirable that a component is loaded before its contents are retrieved, 'undefined'
+              variables are accessed
+              <img src="img/recipe-detail.error.png" alt=""> </p>
+            <p show-steps='2'>avoiding this can be done by prefetching the data using a 'resolve guard'</p>
             <p show-steps='3'>there are many other guards available, most of them check for access somehow (logged in? allowed to load?)
               <p>
           </div>
@@ -615,7 +621,7 @@ const routes = [
           </code></pre>
           <div class='samespot'>
             <p show-steps='1'>before we get to the lazy loading, let's clean up our recipe module a bit, we should change all recipe routes
-              to use the same prefix url </p>
+              to use the same prefix url (and change the same links in our AppComponent nav)</p>
             <p show-steps='2'>we will specify this prefix where we load the module, so let's remove it here (or we'd have to go to /recipe/recipe/list)</p>
           </div>
         </div>
@@ -655,7 +661,7 @@ const appRoutes: Routes = [<span show-steps='2-7'>
           <pre class='typescript'>src/app/app-routing/app-routing.module.ts<code data-noescape data-trim>
 @NgModule({
   imports: [
-    RouterModule.forRoot(appRoutes<span show-steps='3-6'>,
+    RouterModule.forRoot(appRoutes<span show-steps='3+'>,
       {preloadingStrategy: PreloadAllModules}</span>)
   ],
   declarations: [],
@@ -671,10 +677,68 @@ export class AppRoutingModule { }
               in the meantime you download them</p>
             <p show-steps='3'>then if the user navigates he doesn't have to wait for the modules to load, you do this by adding a preloadingStrategy</p>
             <p show-steps='4'>so simply load everything you need for the startpage and lazy load but prefetch everything else</p>
-            <p show-steps='5'>sometimes it makes more sense to selectively preload modules, not prefetching parts that are rarely used (e.g.
+            <p show-steps='5'>it's best to restart your angular when you change how modules are loaded</p>
+            <p show-steps='6'>sometimes it makes more sense to selectively preload modules, not prefetching parts that are rarely used (e.g.
               an admin portion of your site)</p>
-            <p show-steps='6'>you can do that too, by specifying a
-              <a href="https://vsavkin.com/angular-router-preloading-modules-ba3c75e424cb">custom preloading strategy</a>, it's not hard, and not much work, read the link and simply do it</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>custom preloading strategy</h3>
+        <div class='fragment' code-step>
+          <pre class='typescript'>src/app/app-routing/SelectivePreloadStrategy.ts<code data-noescape data-trim>
+import { PreloadingStrategy<span show-steps='2'>, Route</span> } from '@angular/router';<span show-steps='3'>
+import { Observable } from 'rxjs/Observable';
+import 'rxjs/add/observable/of';</span>
+
+export class SelectivePreloadStrategy implements PreloadingStrategy {
+  <span show-steps='2+'>preload(route: Route, load: Function): Observable&lt;any&gt; {
+    <span show-steps='3+'>if (route.data && route.data.preload) {
+      console.log('preload ' + route.path);
+      return load();
+    }
+    return Observable.of(null);</span>
+  }</span>
+}
+        </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>to illustrate this, let's create a preloadingstrategy that only preloads certain modules</p>
+            <p show-steps='2'>the preload method has two parameters, the route that is being considered, and the function that will perform
+              the loading, you decide if you call the function or not (and hence preload)</p>
+            <p show-steps='3'>in this simple example, let's preload if the preload data parameter is passed in the module specification, and
+              a log statement to show this works</p>
+            <p show-steps='4'>now we still need to update the routing module to use this</p>
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>custom preloading strategy</h3>
+        <div class='fragment' code-step>
+          <pre class='typescript'><code data-noescape data-trim>
+const appRoutes: Routes = [
+{
+  path: 'recipe',
+  loadChildren: 'app/recipe/recipe.module#RecipeModule',
+  <span highlight-steps='1'>data: { preload: true }</span>
+}, ... ];
+
+@NgModule({
+  imports: [
+    RouterModule.forRoot(appRoutes, <span highlight-steps='2'>{
+      preloadingStrategy: SelectivePreloadStrategy
+    }</span>)
+  ],
+  <span highlight-steps='3'>providers: [SelectivePreloadStrategy]</span>, ...
+  })
+export class AppRoutingModule {}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>first add the data property with preload to the route</p>
+            <p show-steps='2'>then tell the routermodule to use our new strategy to preload everything</p>
+            <p show-steps='3'>and make sure the strategy is provided, that's it</p>
+            <p show-steps='4'>restart and
+              <a href="http://localhost:4200/">let's try this</a>
+            </p>
           </div>
         </div>
       </section>
