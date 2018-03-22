@@ -687,7 +687,7 @@ export class AppRoutingModule { }
         <h3>custom preloading strategy</h3>
         <div class='fragment' code-step>
           <pre class='typescript'>src/app/app-routing/SelectivePreloadStrategy.ts<code data-noescape data-trim>
-import { PreloadingStrategy<span show-steps='2'>, Route</span> } from '@angular/router';<span show-steps='3'>
+import { PreloadingStrategy<span show-steps='2+'>, Route</span> } from '@angular/router';<span show-steps='3+'>
 import { Observable } from 'rxjs/Observable';
 import 'rxjs/add/observable/of';</span>
 
@@ -729,7 +729,7 @@ const appRoutes: Routes = [
     }</span>)
   ],
   <span highlight-steps='3'>providers: [SelectivePreloadStrategy]</span>, ...
-  })
+})
 export class AppRoutingModule {}
           </code></pre>
           <div class='samespot'>
