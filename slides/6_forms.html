@@ -371,7 +371,7 @@ let RecipeSchema = new mongoose.Schema({
     name: String,
     ingredients: <span show-steps='1'>[String]</span><span show-steps='2-3'>[{type: mongoose.Schema.Types.ObjectId, 
       ref: 'Ingredient'}]</span>,
-    directions: [String]
+    created: Date
 });
 
 mongoose.model('Recipe', RecipeSchema);
@@ -421,7 +421,7 @@ mongoose.model('Ingredient', IngredientSchema);
           <pre>routes/index.js<code data-noescape data-trim>
 router.get('/API/recipes/', function(req, res, next) {
   let query = Recipe.find<span show-steps='1'>(function</span><span show-steps='2'>().populate('ingredients');
-  query.exec(</span>(err, recipes) {
+  query.exec(function</span>(err, recipes) {
     if (err) return next(err);
     res.json(recipes);
   })
