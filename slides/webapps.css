@@ -195,3 +195,14 @@ pre {
 .reveal .slides section .highlight-blue {
   color: #1b91ff;
 }
+
+.reveal .databasetable tr {
+  border: 1px solid black;
+}
+.reveal .databasetable th {
+  font-size: 90%;
+}
+
+.reveal .databasetable td {
+  font-size: 70%;
+}
