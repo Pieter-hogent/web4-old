@@ -320,6 +320,10 @@ UserSchema.methods.generateJWT = function () {<span show-steps='3-4'>
           <pre data-trim class="console" style='font-size:0.5em'>
 <span class='prompt'>~$</span> export RECIPE_BACKEND_SECRET="IfThisEndsUpInGithubYouFailTheClass"</span>
           </pre>
+          <p style='font-size: 70%'>windows users:
+            <a href="https://www.twilio.com/blog/2017/01/how-to-set-environment-variables.html">add this to your system env variables</a>
+            <br> (don't forget to restart VS code / node / ... afterwards)
+          </p>
           <div class='samespot'>
             <p show-steps='1'>we'll store the secret as an environment variable on the server</p>
             <p show-steps='2'>this way our code can use the secret, but it's not stored anywhere in our source files (and github) or database
