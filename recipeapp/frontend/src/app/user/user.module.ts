@@ -5,9 +5,10 @@ import { LoginComponent } from './login/login.component';
 import { AuthenticationService } from './authentication.service';
 import { NgModule } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import {HttpModule} from '@angular/http';
+import { HttpModule } from '@angular/http';
 import { RegisterComponent } from './register/register.component';
 import { LogoutComponent } from './logout/logout.component';
+import { basehttpInterceptorProviders } from '../http-interceptors';
 
 const routes = [
   { path: 'login', component: LoginComponent },
@@ -22,16 +23,12 @@ const routes = [
     ReactiveFormsModule,
     RouterModule.forChild(routes)
   ],
-  declarations: [
-    LoginComponent,
-    RegisterComponent,
-    LogoutComponent
-  ],
+  declarations: [LoginComponent, RegisterComponent, LogoutComponent],
   providers: [
+    basehttpInterceptorProviders,
     AuthenticationService,
     AuthGuardService
   ],
-  exports: [
-  ]
+  exports: []
 })
-export class UserModule { }
+export class UserModule {}

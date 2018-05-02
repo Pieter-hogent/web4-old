@@ -7,7 +7,7 @@ import { Ingredient } from './ingredient/ingredient.model';
 
 @Injectable()
 export class RecipeDataService {
-  private readonly _appUrl = '/API/';
+  private readonly _appUrl = '/API';
 
   constructor(private http: HttpClient) {}
 
