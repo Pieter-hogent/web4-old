@@ -164,8 +164,52 @@ export class RecipeDataService {
         </div>
       </section>
       <section>
-        <h3>client and url sync problems</h3>
-        gelijkaardige slide maken client - url sync probleem
+        <h3>client &lt;-&gt; url sync problems</h3>
+        <div class='fragment' code-step>
+          <pre class='typescript'><code data-noescape data-trim style='font-size: 80%'>
+export class RecipeListComponent {
+  constructor(private _dataService: RecipeDataService<span show-steps='5'>, private router: Router</span><span show-steps='6+'>, route: ActivatedRoute</span>) {<span show-steps='6+'>
+    route.params.subscribe( (filters) => {
+      this._dataService.getRecipeWithFilter(filters);
+    });
+  </span>}
+
+  filterChanged(recipeFilter: String) {
+    this._dataService.getRecipeWithFilter(recipeFilter)<span show-steps='1-5'>;</span><span show-steps='5+'>.subscribe( 
+      () => {
+        this.router.navigate(['/recipe/list'], filtersToParams(recipeFilter));
+      }
+    )</span>
+  }
+}
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>imagine we have a huge database full op recipes, obviously we no longer want to retrieve them all and filter
+              them client side</p>
+            <p show-steps='2'>so we add a function to our RecipeDataService, which can retrieve the first 20 recipes based on a filter</p>
+            <p show-steps='3'>right now the state is transient, the URL is not updated with the filter, so on a refresh all is lost</p>
+            <p show-steps='4'>as previously stated, at all times we want our URL to reflect what we see, so we to update the url when our filter
+              changes (so back works, and copy pasting urls, and bookmarking)
+            </p>
+            <p show-steps='5'>we could naively fix this by router navigating to our url whenever the filter changes (so effectively changing
+              our url)</p>
+            <p show-steps='5'>the url is not read, so navigating doesn't do anything, but at least we can see the filters in the url</p>
+            <p show-steps='6'>obviously we want to reverse to work as well, when our page is loaded with filters in the url, they need to be
+              applied
+            </p>
+            <p show-steps='7'>this seems like it's working, when we change the filters everything updates and our url changes too, when we
+              refresh the callback is called and everyhting is updated correctly</p>
+
+          </div>
+        </div>
+      </section>
+      <section>
+        <h3>client &lt;-&gt; url sync problems</h3>
+        <div class='fragment' code-step svg-step>
+          <svg id="svg4" class="svg-section" width='100%' height='100%' preserveAspectRatio="xMidyMid" snapfile='img/client_url_sync_problem.svg'>
+            <use xlink:href='plugin/codestepper/loaders.svg#myloader'></use>
+          </svg>
+        </div>
       </section>
       <section>
         <h3>mistakes</h3>
@@ -180,13 +224,31 @@ export class RecipeDataService {
         <h2>store</h2>
         <h4>redux / ngrx</h4>
       </section>
-      <section>slide(s) met uitleg over wat flux is, hoe redux dan is, en wat een store juist moet doen</section>
+      <section>
+        <h3>Flux</h3>
+        <ul style='font-size: 90%'>
+          <li>React was developed by facebook in 2011, made public in 2013</li>
+          <li>it provides the user interface part of what is known as the Flux architecture</li>
+          <li>you could see this as an alternative to the MVC pattern</li>
+          <li>actions are sent via dispatchers to the store, changes are propagated to the view</li>
+          <li>everything follows a unidirectional data flow</li>
+          <li>there is no 'offical' flux implementation, Redux is probably the most known implementation of this idea</li>
+        </ul>
+      </section>
+      <section>
+        <h3>flux</h3>
+        <div class='fragment' code-step svg-step>
+          <svg id="svg5" class="svg-section" width='100%' height='100%' preserveAspectRatio="xMidyMid" snapfile='img/unidirectional_data_flow.svg'>
+            <use xlink:href='plugin/codestepper/loaders.svg#myloader'></use>
+          </svg>
+        </div>
+      </section>
       <section>
         <h3>prerequisites</h3>
         <pre data-trim class='console'>
 <span class='prompt'>~$</span> npm install -g ts-node
-        </pre> we'll write our own store in typescript, you can set op a typescript compiler with a watch for your code and run
-        the compiled code but it's a lot more convenient to simply install ts-node
+        </pre> to illustrate and properly understand this, we'll write our own store in typescript, you can set op a typescript
+        compiler with a watch for your code and run the compiled code but it's a lot more convenient to simply install ts-node
       </section>
       <section>
         <h3>action</h3>
@@ -395,22 +457,39 @@ store.unsubscribe(<span show-steps='2'>subscribeFn</span><span show-steps='1'><s
         </div>
       </section>
       <section>
-        <h3>client sync opgelost</h3>
-        tonen hoe switchmap + subscriben effectief aan de gang zijnde updates 'opeet' (race condities voorkomt)
-      </section>
-      <section>
-        <h3>regels</h3>
-        deze illustreren, zien welke en hoe juist?
-        <ul>
-          <li>router source of truth (= toont hoe router sync opgelost is)</li>
-          <li>immutable data</li>
-          <li>optimistische updates hebben aparte acties nodig als er errors zijn</li>
-          <li>doe dingen bewust, geen ad hoc 'oplossingen'</li>
-        </ul>
+        <h3>sync problems solved?</h3>
+        <div class='fragment' code-step>
+          <pre class='typescript'><code data-noescape data-trim style='font-size: 80%'>
+<span show-steps='1-2'>const rateRecipe = new Action({type: 'RATE_RECIPE', payload: { id: recipe.id ,stars: 4} });</span><span show-steps='2' no-highlight-first>
+// ....
+this.dataService.rateRecipe(action.payload.id, action.payload.stars).catch( () => {
+    const unrate = new Action({type: 'UNRATE_RECIPE', payload: action.payload});
+});</span><span show-steps='3+' no-highlight-first>
+this.actions$.ofType('RATE_RECIPE').switchMap(action => {
+  this.dataService.rateRecipe(action.payload.id, action.payload.stars).catch( 
+    () => Observable.of({type: 'UNRATE_RECIPE', payload: action.payload})
+  }); 
+})</span>
+          </code></pre>
+          <div class='samespot'>
+            <p show-steps='1'>rating our recipe now becomes an action</p>
+            <p show-steps='2'>when our action fails, we no longer try to cope with this directly (by setting rating to null), but we trigger
+              a new action, which will 'unrate'</p>
+            <p show-steps='3'>if we now add a single observable with all rate actions, and trigger the side effects using hte switchmap pipeable
+              operator, we are guaranteed only the last one will have a lasting effect, exactly what we want </p>
+          </div>
+        </div>
       </section>
       <section>
         <h3>ngrx</h3>
-        daar bestaan libraries voor: ngrx, kort tonen? of op zijn minst link zetten
+        <ul>
+          <li>for real code, you shouldn't write your own store, ngrx implements all this functionality (and much more!) very
+            cleanly
+          </li>
+          <li>it's like redux-for-angular, and it's becoming more and more popular for managing state in angular apps </li>
+          <li>let's do a small
+            <a href="https://coursetro.com/posts/code/151/Angular-Ngrx-Store-Tutorial---Learn-Angular-State-Management">tutorial</a> to set up a small app with ngrx</li>
+        </ul>
       </section>
 
 
@@ -438,7 +517,7 @@ store.unsubscribe(<span show-steps='2'>subscribeFn</span><span show-steps='1'><s
 
                 // during development, always start at last slide
                 var indices = Reveal.getIndices(document.getElementById('sectionID'));
-                // Reveal.slide(Reveal.getTotalSlides());
+                Reveal.slide(29); //Reveal.getTotalSlides());
               }
             },
             { src: 'plugin/codestepper/codestepper.js' }
