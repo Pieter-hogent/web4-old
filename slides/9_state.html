@@ -168,7 +168,7 @@ export class RecipeDataService {
         <div class='fragment' code-step>
           <pre class='typescript'><code data-noescape data-trim style='font-size: 80%'>
 export class RecipeListComponent {
-  constructor(private _dataService: RecipeDataService<span show-steps='5'>, private router: Router</span><span show-steps='6+'>, route: ActivatedRoute</span>) {<span show-steps='6+'>
+  constructor(private _dataService: RecipeDataService<span show-steps='5'>, private router: Router</span><span show-steps='7+'>, route: ActivatedRoute</span>) {<span show-steps='7+'>
     route.params.subscribe( (filters) => {
       this._dataService.getRecipeWithFilter(filters);
     });
@@ -193,12 +193,12 @@ export class RecipeListComponent {
             </p>
             <p show-steps='5'>we could naively fix this by router navigating to our url whenever the filter changes (so effectively changing
               our url)</p>
-            <p show-steps='5'>the url is not read, so navigating doesn't do anything, but at least we can see the filters in the url</p>
-            <p show-steps='6'>obviously we want to reverse to work as well, when our page is loaded with filters in the url, they need to be
+            <p show-steps='6'>the url is not read, so navigating doesn't do anything, but at least we can see the filters in the url</p>
+            <p show-steps='7'>obviously we want to reverse to work as well, when our page is loaded with filters in the url, they need to be
               applied
             </p>
-            <p show-steps='7'>this seems like it's working, when we change the filters everything updates and our url changes too, when we
-              refresh the callback is called and everyhting is updated correctly</p>
+            <p show-steps='8'>this seems like it's working, when we change the filters everything updates and our url changes too, when we
+              refresh the callback is called and everything is updated correctly</p>
 
           </div>
         </div>
@@ -297,7 +297,7 @@ export class RecipeListComponent {
         <h3>reducer</h3>
         <div class='fragment' code-step>
           <pre class='typescript'><code data-noescape data-trim>
-            function recipesReducer(state<span show-steps='2+'> = {}</span>, action) {<span show-steps='2+'>
+            function recipesReducer(state<span show-steps='2+'> = { recipes: { data: [] } }</span>, action) {<span show-steps='2+'>
               switch (action.type) {
                 case 'ADD_RECIPE': {
                   return <span highlight-steps='3'>{</span>
@@ -345,7 +345,7 @@ export class RecipeListComponent {
                 for (const prop in this.reducers) {
                   newState[prop] = this.reducers[prop](state[prop], action);
                 }</span><span show-steps='7'>
-                newState.recipes = this.reducers.recipes(state.recipes, action);</span>
+                newState.recipes = this.reducers.recipes(this.state.recipes, action);</span>
                 this.state = newState;</span>
               }</span>
             }
@@ -394,7 +394,7 @@ export class RecipeListComponent {
   }</span><span show-steps='4+'>
   dispatch(action) {
     // ....
-    this.subscribers.forEach(fn => fn(this.value));
+    this.subscribers.forEach(fn => fn(this.state));
   }</span>
 }</span></code></pre>
           <div class='samespot'>
