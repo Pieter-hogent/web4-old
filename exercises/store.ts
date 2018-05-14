@@ -27,9 +27,9 @@ export class Store {
   private _reducers: { [key: string]: Function };
   private subscribers: Function[];
 
-  constructor(reducers = {}, initialState = {}) {
+  constructor(reducers = {}, initialState = { recipes: { data: [] } }) {
     this._reducers = reducers;
-    this._state = this.reduce(initialState, {});
+    this._state = initialState;
     this.subscribers = [];
   }
 
@@ -49,15 +49,12 @@ export class Store {
     this._state = state;
   }
   dispatch(action) {
-    this.state = this.reduce(this.state, action);
-    this.subscribers.forEach(fn => fn(this.state));
-  }
-  private reduce(state, action) {
     const newState = {};
-    for (const prop in this.reducers) {
-      newState[prop] = this.reducers[prop](state[prop], action);
+    for (const prop in this._reducers) {
+      newState[prop] = this._reducers[prop](this._state[prop], action);
     }
-    return newState;
+    this._state = newState;
+    this.subscribers.forEach(fn => fn(this._state));
   }
 }
 const reducers = {

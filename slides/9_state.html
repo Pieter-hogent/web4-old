@@ -138,7 +138,7 @@ export class RecipeDataService {
 
   rateRecipe(recipe: Recipe, stars: number) {
     recipe.stars = stars;
-    <span highlight-steps='2'>return this.http.post(/'rate', {recipe, stars})</span><span show-steps='3+'>.catch(e => {
+    <span highlight-steps='2'>return this.http.post('/rate', {recipe, stars})</span><span show-steps='3+'>.catch(e => {
       recipe.stars = null;
       throw e;
     })</span>;
@@ -175,7 +175,7 @@ export class RecipeListComponent {
   </span>}
 
   filterChanged(recipeFilter: String) {
-    this._dataService.getRecipeWithFilter(recipeFilter)<span show-steps='1-5'>;</span><span show-steps='5+'>.subscribe( 
+    this._dataService.getRecipeWithFilter(recipeFilter)<span show-steps='1-4'>;</span><span show-steps='5+'>.subscribe( 
       () => {
         this.router.navigate(['/recipe/list'], filtersToParams(recipeFilter));
       }
