@@ -138,7 +138,7 @@ export class RecipeDataService {
 
   rateRecipe(recipe: Recipe, stars: number) {
     recipe.stars = stars;
-    <span highlight-steps='2'>return this.http.post('/rate', {recipe, stars})</span><span show-steps='3+'>.catch(e => {
+    <span highlight-steps='2'>return this.http.put('/rate', {recipe, stars})</span><span show-steps='3+'>.catch(e => {
       recipe.stars = null;
       throw e;
     })</span>;
@@ -297,13 +297,12 @@ export class RecipeListComponent {
         <h3>reducer</h3>
         <div class='fragment' code-step>
           <pre class='typescript'><code data-noescape data-trim>
-            function recipesReducer(state<span show-steps='2+'> = { recipes: { data: [] } }</span>, action) {<span show-steps='2+'>
+            function recipesReducer(state<span show-steps='2+'> = { data: [] }</span>, action) {<span show-steps='2+'>
               switch (action.type) {
                 case 'ADD_RECIPE': {
                   return <span highlight-steps='3'>{</span>
-                    <span highlight-steps='5'><span highlight-steps='4'>...</span>state,
-                    recipes</span>: { <span highlight-steps='4'>...</span>state.recipes, 
-                              data: [<span highlight-steps='4'>...</span>state.recipes.data, action.payload]}
+                    <span highlight-steps='4'>...</span>state,
+                    data: [<span highlight-steps='4'>...</span>state.data, action.payload]
                  <span highlight-steps='3'> }</span>
                 }
               }</span>
@@ -317,11 +316,8 @@ export class RecipeListComponent {
             </p>
             <p show-steps='4'>using array and object destructuring, new objects can be created based on existing objects relatively easily
             </p>
-            <p show-steps='5'>here you see how reducers only update their 'slice', keep everything from the state, only overriding the recipes
-              part
-            </p>
-            <p show-steps='6'>the other important thing here is that our reducer function should be pure, given the same input, it should always
-              return the exact same output</p>
+            <p show-steps='5'>it's important to point at that our reducer function should be pure, given the same input, it should always return
+              the exact same output</p>
           </div>
         </div>
       </section>
